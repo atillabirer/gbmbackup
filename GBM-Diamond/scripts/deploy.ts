@@ -4,6 +4,8 @@ const { getSelectors, FacetCutAction } = require("./libraries/diamond.ts");
 import { ethers } from "hardhat";
 import config from "../hardhat.config";
 
+import { time } from "@nomicfoundation/hardhat-network-helpers";  // << Required for time dependendant test
+
 var conf: any;
 
 
@@ -270,7 +272,6 @@ async function runTestAuction() {
     //console.log(erc20C);
     console.log("ERC-20 token deployed at address: " + erc20C.address);
 
-
     //Deploying a test ERC721
     console.log("Creating an ERC-721 token");
     gasPrice = await fetchGasPrice();
@@ -389,7 +390,6 @@ async function runTestAuction() {
     console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
 
-
     //Create a safe GBM auction
     console.log("Creating test safe ERC721 auction....");
 
@@ -454,6 +454,62 @@ async function runTestAuction() {
     highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
 
     console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    console.log("Now starting to wait for the auctions to be claimable.");
+    console.log("⚠️   Make sure that the chain is minting blocks at regular intervals! ⚠️");
+
+    let endTimeStampTarget 
+    let auctionEndTime;
+    let gracePeriod;
+    let totalNumberOfSales = await gBMGettersFacet.getTotalNumberOfSales();
+    let targetChainTimestamp;
+
+    for(let i =1; i <= totalNumberOfSales; i++){
+
+        let delta = 1;
+        while(delta >=0){
+            timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
+
+            auctionEndTime = await gBMGettersFacet.getSale_EndTimestamp(i);
+            gracePeriod = await  gBMGettersFacet.getSale_GBMPreset_CancellationPeriodDuration(i);
+            targetChainTimestamp = auctionEndTime.add(gracePeriod);  
+            console.log("AuctionID: "+ i + " auctionEndTime is " + auctionEndTime + " with a grace period of " + gracePeriod + " seconds : Chain target timestamp for claim is " + targetChainTimestamp);
+            console.log("Current chain timestamp is " + timestamp);
+
+            delta = parseInt(targetChainTimestamp.sub(timestamp).toString());
+
+            if(delta > 0 && delta < 100){
+                console.log("This is " + delta + "s in the future, waiting for " + (delta)+"s");
+                if(time){
+                    await time.increaseTo(targetChainTimestamp);
+                    await ethers.provider.send("evm_mine",[]);
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, (delta * 1000)));
+                }
+                
+            } else if(delta > 0){
+                console.log("This is " + delta + "s in the future, waiting for 100s");
+                if(time){
+                    await time.increaseTo(targetChainTimestamp);
+                    await ethers.provider.send("evm_mine",[]);
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, (100 * 1000)));
+                }
+            } else {
+                //Claming the auction
+
+                // TODO
+            }
+     
+        }
+
+
+    }
+
+    
+
+
+    //getSale_GBMPreset_CancellationPeriodDuration
 
     console.log("Tests Over\n\**********************************************\x1b[0m");
 }
