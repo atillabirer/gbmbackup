@@ -76,7 +76,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 startTimestamp, 
                                         uint256 currencyID, 
                                         address beneficiary) external onlyAdmin() {
-        internalRegister1155Auction(tokenID, tokenContractAddress, amount, gbmPreset, startTimestamp, currencyID, beneficiary);
+        internalRegister1155AuctionUnsafe(tokenID, tokenContractAddress, amount, gbmPreset, startTimestamp, currencyID, beneficiary);
     }
 
     function internalRegister721Auction( uint256 tokenID, 
@@ -144,7 +144,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                                             
     }
 
-    function internalRegister1155Auction( uint256 tokenID, 
+    function internalRegister1155AuctionUnsafe( uint256 tokenID, 
                                         address tokenContractAddress, 
                                         uint256 amount,
                                         uint256 gbmPreset, 

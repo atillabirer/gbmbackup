@@ -1,10 +1,12 @@
 const hre = require("hardhat");
 const prompt = require("prompt-sync")();
-const { getSelectors,FacetCutAction} = require("./libraries/diamond.ts");
+const { getSelectors, FacetCutAction } = require("./libraries/diamond.ts");
 import { ethers } from "hardhat";
 import config from "../hardhat.config";
 
 var conf: any;
+
+
 
 const FacetNames = [
     "DiamondInitFacet",
@@ -24,12 +26,12 @@ const facets: any[] = [];
 let diamondCutFacetAddress: string;
 let diamondAddress: string;
 
-export function setDiamondAddress(address: string) { 
-    diamondAddress = address 
+export function setDiamondAddress(address: string) {
+    diamondAddress = address
 };
 
-export function setDiamondCutFacetAddress(address: string) { 
-    diamondCutFacetAddress = address 
+export function setDiamondCutFacetAddress(address: string) {
+    diamondCutFacetAddress = address
 };
 
 export function addToPreviousCuts(prevCut: any) {
@@ -46,35 +48,36 @@ async function fetchGasPrice() {
 
 export async function performDeploymentStep(step: number) {
     conf = JSON.parse(require("./libraries/gbm.default.config.ts").conf);
+    //switching colour to black on white
     switch (step) {
         case 0:
             await deployDiamondCutFacet();
-            return `DiamondCutFacet deployed at: ${diamondCutFacetAddress}`; 
-        case 1: 
+            return `DiamondCutFacet deployed at: ${diamondCutFacetAddress}`;
+        case 1:
             await deployDiamond();
-            return `Diamond deployed at: ${diamondAddress}`; 
-        case 11: 
+            return `Diamond deployed at: ${diamondAddress}`;
+        case 11:
             await cutDiamond();
             return `Diamond has been cut with new facets`;
-        case 12: 
+        case 12:
             await setPresets();
             return `GBM Presets registered`;
-        case 13: 
+        case 13:
             await setCurrency();
             return `Default currency has been set`;
-        case 14: 
+        case 14:
             await runTestAuction();
-            return `Successfully performed a test auction`;           
-        default: 
+            return `Successfully performed a test auction`;
+        default:
             await deployFacet(step - 2);
-            return `Deployed ${FacetNames[step-2]}`
+            return `Deployed ${FacetNames[step - 2]}`
     }
 }
 
 async function deployDiamondCutFacet() {
     const accounts = await ethers.getSigners();
     const contractOwner = accounts[0];
-    console.log("Now deploying the Diamond and its core facet");
+    console.log("Now deploying the Diamond and its core facets");
     let gasPrice = await fetchGasPrice();
     const DiamondCutFacet = await ethers.getContractFactory("DiamondCutFacet");
     const diamondCutFacet = await DiamondCutFacet.deploy({
@@ -82,7 +85,7 @@ async function deployDiamondCutFacet() {
     });
     await diamondCutFacet.deployed();
     diamondCutFacetAddress = diamondCutFacet.address
-    console.log("DiamondCutFacet deployed:", diamondCutFacet.address);
+    console.log("DiamondCutFacet deployed:", diamondCutFacet.address,);
 }
 
 async function deployDiamond() {
@@ -91,13 +94,13 @@ async function deployDiamond() {
     let gasPrice = await fetchGasPrice();
     const Diamond = await ethers.getContractFactory("Diamond");
     const diamond = await Diamond.deploy(
-            contractOwner.address,
-            diamondCutFacetAddress, {
-            gasPrice: gasPrice
-        });
+        contractOwner.address,
+        diamondCutFacetAddress, {
+        gasPrice: gasPrice
+    });
     await diamond.deployed();
     diamondAddress = diamond.address;
-    console.log("Diamond deployed:", diamond.address, " <<< THIS IS THE ADDRESS OF YOUR GBM MARKETPLACE");
+    console.log("\x1b[42m\x1b[31mDiamond deployed:", diamond.address, " <<< THIS IS THE ADDRESS OF YOUR GBM MARKETPLACE\x1b[0m\x1b[30m\x1b[47m");
 }
 
 async function deployFacet(step: number) {
@@ -145,23 +148,23 @@ async function setPresets() {
         for (let i = 0; i < conf.GBMPresetArray.length; i++) {
             let dapreset: any = conf.GBMPresetArray[i];
             console.log("Registering GBM preset at index " + dapreset.presetIndex);
-            console.log(dapreset);
+            console.log(JSON.stringify(dapreset));
             let res;
 
             //Updating gas price
             gasPrice = await fetchGasPrice();
 
             let tx = await gBMAdminFacet.setGBMPreset(
-                    dapreset.presetIndex,
-                    dapreset.auctionDuration,
-                    dapreset.hammerTimeDuration,
-                    dapreset.cancellationPeriodDuration,
-                    dapreset.stepMin,
-                    dapreset.incentiveMin,
-                    dapreset.incentiveMax,
-                    dapreset.incentiveGrowthMultiplier, {
-                    gasPrice: gasPrice,
-                });
+                dapreset.presetIndex,
+                dapreset.auctionDuration,
+                dapreset.hammerTimeDuration,
+                dapreset.cancellationPeriodDuration,
+                dapreset.stepMin,
+                dapreset.incentiveMin,
+                dapreset.incentiveMax,
+                dapreset.incentiveGrowthMultiplier, {
+                gasPrice: gasPrice,
+            });
 
         }
 
@@ -202,47 +205,49 @@ async function setCurrency() {
         for (let i = 0; i < conf.CurrenciesArray.length; i++) {
             let dapreset: any = conf.CurrenciesArray[i];
             console.log("Registering currency at index " + dapreset.CurrencyIndex);
-            console.log(dapreset);
+            console.log(JSON.stringify(dapreset));
 
             //Updating gas price
             gasPrice = await fetchGasPrice();
             tx = await gBMCurrencyFacet.setCurrencyName(
-            dapreset.CurrencyIndex, 
-            dapreset.CurrencyName,{
-            gasPrice: gasPrice,
+                dapreset.CurrencyIndex,
+                dapreset.CurrencyName, {
+                gasPrice: gasPrice,
             });
 
             let res = await gBMCurrencyFacet.getCurrencyAddress(dapreset.CurrencyIndex);
-            if( res.toLowerCase() != dapreset.CurrencyAddress.toLowerCase()){
-            gasPrice = await fetchGasPrice();
-            tx = await gBMCurrencyFacet.setCurrencyAddress(
-                dapreset.CurrencyIndex, 
-                dapreset.CurrencyAddress,{
-                gasPrice: gasPrice,
-            });
+            if (res.toLowerCase() != dapreset.CurrencyAddress.toLowerCase()) {
+                gasPrice = await fetchGasPrice();
+                tx = await gBMCurrencyFacet.setCurrencyAddress(
+                    dapreset.CurrencyIndex,
+                    dapreset.CurrencyAddress, {
+                    gasPrice: gasPrice,
+                });
             }
         }
 
         gasPrice = await fetchGasPrice();
         console.log("Setting the default currency to currency at index: " + conf.CurrenciesArray[0].CurrencyIndex);
         tx = await gBMCurrencyFacet.setDefaultCurrency(
-        conf.CurrenciesArray[0].CurrencyIndex,
-        {
-            gasLimit: 100000, //hardcoded cause ethers fuckery
-            gasPrice: gasPrice,
-        });
+            conf.CurrenciesArray[0].CurrencyIndex,
+            {
+                gasLimit: 100000, //hardcoded cause ethers fuckery
+                gasPrice: gasPrice,
+            });
 
-        let res =  await gBMCurrencyFacet.getDefaultCurrency();
+        let res = await gBMCurrencyFacet.getDefaultCurrency();
         console.log(res);
-        while(res.toString() == "0"){
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        res = await gBMCurrencyFacet.getDefaultCurrency();
-        console.log(res.toString());
+        while (res.toString() == "0") {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            res = await gBMCurrencyFacet.getDefaultCurrency();
+            console.log(res.toString());
         }
     }
 }
 
 async function runTestAuction() {
+
+    console.log("\x1b[34m\x1b[47mStarting the tests")
 
     let tokenURIList = require("./libraries/NFTTestList.json").nftarray;
     let tokenIDMintedSofar = 0;
@@ -270,7 +275,7 @@ async function runTestAuction() {
     console.log("Creating an ERC-721 token");
     gasPrice = await fetchGasPrice();
     const erc721 = await ethers.getContractFactory("ERC721Generic");
-    const erc721C = await erc721.deploy("GBM-TEST-721", "GBM721",{
+    const erc721C = await erc721.deploy("GBM-TEST-721", "GBM721", {
         gasPrice: gasPrice
     });
     await erc721C.deployed();
@@ -279,7 +284,7 @@ async function runTestAuction() {
     console.log("Creating an ERC-1155 token");
     gasPrice = await fetchGasPrice();
     const erc1155 = await ethers.getContractFactory("ERC1155Generic");
-    const erc1155C = await erc1155.deploy("GBM-TEST-1155", "GBM1155",{
+    const erc1155C = await erc1155.deploy("GBM-TEST-1155", "GBM1155", {
         gasPrice: gasPrice
     });
     await erc1155C.deployed();
@@ -289,70 +294,71 @@ async function runTestAuction() {
 
 
     //Minting a bunch of 721 
-    for(let i =0; i<5; i++){
-        console.log("Minting ERC-721 tokenID " + (tokenIDMintedSofar+1));
+    for (let i = 0; i < 5; i++) {
+        console.log("Minting ERC-721 tokenID " + (tokenIDMintedSofar + 1));
         let tx = await erc721C.mint(
             tokenURIList[tokenIDMintedSofar],
             {
-            gasPrice: gasPrice,
-        });
-        console.log("Transfering ERC-721 tokenID " + (tokenIDMintedSofar+1) + " to the GBM diamond contract");
+                gasPrice: gasPrice,
+            });
+        console.log("Transfering ERC-721 tokenID " + (tokenIDMintedSofar + 1) + " to the GBM diamond contract");
         tx = await erc721C["safeTransferFrom(address,address,uint256)"](
-            wallets[0].address, 
-            diamondAddress, 
-            (tokenIDMintedSofar+1), 
+            wallets[0].address,
+            diamondAddress,
+            (tokenIDMintedSofar + 1),
             {
-            gasPrice: gasPrice,
-        });
-    
+                gasPrice: gasPrice,
+            });
+
         tokenIDMintedSofar++;
     }
 
     let tokenIDOffset = tokenIDMintedSofar;
     //Minting a bunch of 1155 
-    for(let i =0; i<5; i++){
-        
-        console.log("Minting 10 of ERC-1155 tokenID " + (tokenIDMintedSofar +1));
+    for (let i = 0; i < 5; i++) {
+
+        console.log("Minting 10 of ERC-1155 tokenID " + (tokenIDMintedSofar + 1));
         let tx = await erc1155C.mint(
-            (tokenIDMintedSofar +1),
+            (tokenIDMintedSofar + 1),
             10,
             tokenURIList[tokenIDMintedSofar],
             {
-            gasPrice: gasPrice,
-        });
-        console.log("Transfering ERC-1155 tokenID " +  (tokenIDMintedSofar +1) + " to the GBM diamond contract");
+                gasPrice: gasPrice,
+            });
+        console.log("Transfering ERC-1155 tokenID " + (tokenIDMintedSofar + 1) + " to the GBM diamond contract");
         tx = await erc1155C["safeTransferFrom(address,address,uint256,uint256,bytes)"](
-            wallets[0].address, 
+            wallets[0].address,
             diamondAddress,
-            (tokenIDMintedSofar +1),
+            (tokenIDMintedSofar + 1),
             10,
             "0x",
             {
-            gasPrice: gasPrice,
-        });
-    
+                gasPrice: gasPrice,
+            });
+
         tokenIDMintedSofar++;
     }
 
-
     let timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
 
-    //Create an unsafe GBM auction
-    console.log("Creating test auction....");
+
+    //Create a safe GBM auction
+    console.log("Creating test unsafe ERC721 auction....");
     gasPrice = await fetchGasPrice();
     let tx = await gBMAuctionRegistrationFacet.unsafeRegister721Auction(
-      0, //Token ID 
-      "0x0000000000000000000000000000000000000000", // tokenContractAddress, 
-      0, //gbmPreset
-      timestamp, //Start time = ASAP
-      0, //currencyID
-      wallets[0].address, //beneficiary
-      {
-      gasPrice: gasPrice,
-    });
+        1, //Token ID 
+        erc721C.address, // tokenContractAddress, 
+        0, //gbmPreset
+        timestamp, //Start time = ASAP
+        0, //currencyID
+        wallets[0].address, //beneficiary
+        {
+            gasPrice: gasPrice,
+        });
+
 
     //Fetching the latest auctionID :
-    
+
     let bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
     //console.log(res);
 
@@ -360,41 +366,108 @@ async function runTestAuction() {
 
     let highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
 
-    console.log("Test auction created at saleID "+ bidIDRes +", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+    console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
-     //placing a bid for 10 wei
-     tx = await gBMBiddingFacet.bid( 
-      1, //SaleID 
-      10,
-      0,
-      {          
-          gasLimit: "312345",
-          gasPrice: gasPrice,
-          value:10
-      }
-      );
+    //placing a bid for 10 wei
+    tx = await gBMBiddingFacet.bid(
+        bidIDRes, //SaleID 
+        10,
+        0,
+        {
+            gasLimit: "312345",
+            gasPrice: gasPrice,
+            value: 10
+        }
+    );
 
-    console.log(tx)
+    //console.log(tx)
 
     numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
 
     highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
 
-    console.log("Bid placed at saleID "+ bidIDRes +", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
-    
-    console.log("Tests Over\n\**********************************************");
+    console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+
+
+    //Create a safe GBM auction
+    console.log("Creating test safe ERC721 auction....");
+
+    timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
+    gasPrice = await fetchGasPrice();
+    tx = await gBMAuctionRegistrationFacet.safeRegister721Auction(
+        2, //Token ID 
+        erc721C.address, // tokenContractAddress, 
+        0, //gbmPreset
+        timestamp, //Start time = ASAP
+        0, //currencyID
+        wallets[0].address, //beneficiary
+        {
+            gasPrice: gasPrice,
+        });
+
+
+    //Fetching the latest auctionID :
+
+    bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
+    //console.log(res);
+
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+
+    console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    //placing a bid for 10 wei
+    tx = await gBMBiddingFacet.bid(
+        bidIDRes, //SaleID 
+        10,
+        0,
+        {
+            gasLimit: "312345",
+            gasPrice: gasPrice,
+            value: 10
+        }
+    );
+
+
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+
+    console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    //placing a bid for 20 wei
+    tx = await gBMBiddingFacet.bid(
+        bidIDRes, //SaleID 
+        20,
+        10,
+        {
+            gasLimit: "312345",
+            gasPrice: gasPrice,
+            value: 20
+        }
+    );
+
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+
+    console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    console.log("Tests Over\n\**********************************************\x1b[0m");
 }
 
-async function main(){
+async function main() {
 
-    
+    console.log("\x1b[30m\x1b[47m");
 
-    for(let i=0; i<15; i++){
+    for (let i = 0; i < 15; i++) {
         await performDeploymentStep(i);
     }
-
+    console.log("\x1b[0m");
 }
 
-if(true){
+if (true) {
     main();
 }
