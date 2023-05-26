@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="styles/deployment.css" />
+        <link rel="stylesheet" href="styles/navbar.css" />
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
+    </head>
+    <body>
+        <div class="nav-bar">
+            <div>
+                <img class="gbm-logo" src="./images/gbm-logo.svg" />
+            </div>
+            <div class="nav-links">
+                <a href="/auctions">Browse Auctions</a>
+                <a href="/admin">Admin Panel</a>
+                <a href="/deployment">GBM Deployment</a>
+            </div>
+        </div>
+        <h1>GBM Diamond Deployment Wizard</h1>
+        <div class="deployment-container">
+            <div class="column-container info-container">
+                <div class="deployment-step">
+                    <div class="step-counter">Step 1: Deploy DiamondCutFacet</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 2: Deploy Diamond</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 3: Deploy DiamondInitFacet</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 4: Deploy DiamondLoupeFacet</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 5: Deploy OwnershipFacet</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 6: Deploy GBMAdminFacet</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 7: Deploy GBMAuctionBiddingFacet</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 8: Deploy GBMCurrencyFacet</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 9: Deploy GBMEscrowFacet_NoTracking</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 10: Deploy GBMGettersFacet</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 11: Deploy GBMPrimaryAuctionRegistrationFacet</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 12: Cut Diamond</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 13: Set GBM Presets</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 14: Set Accepted Currencies</div>
+                    <div class="step-progress"></div>
+                </div>
+                <div class="deployment-step">
+                    <div class="step-counter">Step 15: Run Test Auction</div>
+                    <div class="step-progress"></div>
+                </div>
+            </div>
+            <div class="column-container terminal-container">
+                <div class="terminal-text"></div>
+            </div>
+        </div>
+        <div class="btn-container">
+            <button class="deploy-btn" onclick="connectToDeployer()">Deploy Diamond</button>
+        </div>
+        <script type="text/javascript" src="scripts/metamask.js"></script>
+        <script>
+            let currentDeploymentStep = 0;
+
+            function connectToDeployer() {
+                const deployButton = document.getElementsByClassName("deploy-btn")[0];
+                deployButton.classList.add('deploying');
+                deployButton.disabled = true;
+                deployButton.innerHTML = "Deploying..."
+
+                const webSocket = new WebSocket('ws://localhost:443/');
+                webSocket.onmessage = (event) => {
+                    if ((event.data).substring(0,17) === 'Server: Diamond d'){
+                        saveNewDiamond((event.data).substring(29));
+                    }
+                    let msg = `${new Date().toLocaleTimeString()} - ${(event.data).substring(8)}`;
+
+                    updateProgress();
+                    document.getElementsByClassName('terminal-text')[0].innerHTML += msg + '<br/>';
+                    webSocket.send("Keep going!");
+                };
+            }
+
+            function saveNewDiamond(diamondAddress) {
+                console.log(diamondAddress);
+                localStorage.setItem("DiamondAddress", diamondAddress)
+            }
+
+            function updateProgress() {
+                const stepProgressContainers = document.getElementsByClassName("step-progress");
+                stepProgressContainers[currentDeploymentStep].innerHTML = `<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>`;
+                if (currentDeploymentStep > 0) stepProgressContainers[currentDeploymentStep - 1].innerHTML = `Done!`;
+                currentDeploymentStep++;
+            }
+         </script>
+    </body>
+</html>

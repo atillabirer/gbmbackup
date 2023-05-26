@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+    background-color: #085F63;
+    font-family: 'Muli', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+h1 {
+    margin: 50px 0 30px;
+    text-align: center;
+    color: #fff;
+}
+
+.auction-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: space-between;
+    justify-content: center;
+    margin: 20px auto;
+    max-width: 1500px;
+}
+
+.auction { 
+    background-color: #49BEB7;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(100, 100, 100, 0.5);
+    margin: 10px;
+    padding: 20px;
+    text-align: center;
+}
+
+.new-auction-btn {
+    cursor: pointer;
+    margin: 0 auto 10px;
+    width:  300px;
+    height: 3rem;
+    background-color: #49BEB7;
+    border-radius: 50px;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: medium;
+}
+
+.view-btn {
+    cursor: pointer;
+    margin: 5px 0;
+    height: 2rem;
+    width: 100%;
+    background-color: #05848A;
+    border-radius: 50px;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 5px;
+    font-size: medium;
+}
+
+.lds-ellipsis {
+    display: block;
+    position: relative;
+    margin: 10px auto;
+    width: 80px;
+    height: 80px;
+  }
+  
+.lds-ellipsis div {
+    position: absolute;
+    top: 33px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #fff;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+  
+.lds-ellipsis div:nth-child(1) {
+    left: 8px;
+    animation: lds-ellipsis1 0.6s infinite;
+}
+  
+.lds-ellipsis div:nth-child(2) {
+    left: 8px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+  
+.lds-ellipsis div:nth-child(3) {
+    left: 32px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+  
+.lds-ellipsis div:nth-child(4) {
+    left: 56px;
+    animation: lds-ellipsis3 0.6s infinite;
+}
+  
+@keyframes lds-ellipsis1 {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+}
+
+@keyframes lds-ellipsis3 {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0);
+    }
+}
+  
+@keyframes lds-ellipsis2 {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(24px, 0);
+    }
+}

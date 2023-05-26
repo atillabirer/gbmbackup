@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="styles/auctionlist.css" />
+        <link rel="stylesheet" href="styles/navbar.css" />
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
+    </head>
+    <body>
+        <div class="nav-bar">
+            <div>
+                <img class="gbm-logo" src="./images/gbm-logo.svg" />
+            </div>
+            <div class="nav-links">
+                <a href="/auctions">Browse Auctions</a>
+                <a href="/admin">Admin Panel</a>
+                <a href="/deployment">GBM Deployment</a>
+            </div>
+        </div>
+        <h1>GBM Auctions List</h1>
+        <button class="new-auction-btn" onclick="createNewAuctionTest()">
+            Start new auction
+        </button>
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <div class="auction-container">
+        </div>
+        <script type="text/javascript" src="scripts/metamask.js"></script>
+        <script type="text/javascript" src="scripts/auctions.js"></script>
+        <script>
+            window.onload = async function() {
+                await loadContracts();
+                const auctionNo = await getNumberOfAuctions();
+                const auctions = await loadAuctions(auctionNo);
+                const loader = document.getElementsByClassName('lds-ellipsis');
+                loader[0].style.visibility = 'collapse';
+                for (i = 0; i < auctions.length; i++) {
+                    generateAuctionElement(auctions[i], i);
+                }
+                subscribeToNewAuctions(retrieveNewAuction);
+            };
+
+            async function createNewAuctionTest() {
+                await startNewAuction(Math.floor(Math.random() * 20), "0xbf9006d65fcD2f479D348099037870aD6B6D430B", 0, 'test', 0, "0xbf9006d65fcD2f479D348099037870aD6B6D430B");
+            }
+
+            function retrieveNewAuction(newAuction) {
+                const adjustedNewAuction = {
+                    startTimestamp: newAuction.startTimestamp,
+                    endTimestamp: newAuction.endTimeStamp,
+                    tokenID: newAuction.tokenID,
+                    tokenAmount: newAuction.tokenAmount,
+                    highestBidValue: 0,
+                    saleKind: newAuction.saleKind ?? 'GBM',
+                    currencyName: newAuction.currencyName ?? 'FakETH',
+                }
+                generateAuctionElement(adjustedNewAuction, newAuction.saleID);
+            }
+
+            function redirectToAuction(number) {
+                location.href = `${window.location.protocol}//${window.location.host}/auction?saleId=${number}`;
+            }
+
+            function generateAuctionElement(auction, index) {
+                const auctionsContainer = document.getElementsByClassName('auction-container')
+                const auctionEl = document.createElement('div');
+                auctionEl.classList.add("auction");
+                let timeMessage;
+
+                if (auction.startTimestamp*1000 - Date.now() > 0) {
+                    const auctionDate = new Date(parseInt(auction.startTimestamp * 1000)); 
+                    timeMessage = `Starts at: ${auctionDate.getHours()}:${("0"+auctionDate.getMinutes()).substr(-2)}:${("0"+auctionDate.getSeconds()).substr(-2)}`;
+                } else if (auction.endTimestamp*1000 - Date.now() >= 0){
+                    const auctionDate = new Date(parseInt(auction.endTimestamp * 1000)); 
+                    timeMessage = `Ends at: ${auctionDate.getHours()}:${("0"+auctionDate.getMinutes()).substr(-2)}:${("0"+auctionDate.getSeconds()).substr(-2)}`;
+                } else {
+                    timeMessage = 'Ended';
+                }
+
+                const auctionInnerHTML = `
+                    <h3 class="auction-header">
+                        Token #${auction.tokenID} - x${auction.tokenAmount} - ${auction.saleKind === '0x00000000' ? 'GBM' : 'Direct'}   
+                    </h3>
+                    <p class="auction-bid">
+                        Highest Bid: ${auction.highestBidValue} ${auction.currencyName}
+                    </p>  
+                    <p class="auction-end"> 
+                        ${timeMessage}
+                    </p>
+                    <button class="view-btn" onclick="redirectToAuction(${i+1})">
+                        View
+                    </button>
+                `
+                auctionEl.innerHTML = auctionInnerHTML;
+                auctionsContainer[0].appendChild(auctionEl);
+            }
+        </script>
+    </body>
+</html>
