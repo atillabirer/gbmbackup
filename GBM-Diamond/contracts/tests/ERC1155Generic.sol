@@ -19,7 +19,7 @@ contract ERC1155Generic is IERC1155, IERC165 {
     mapping(address => mapping(address => bool)) internal isApprovedForAllVar; // owner => oprator => isapproved ?
 
     mapping(bytes4 => bool) supportedInterfaces;
-
+    
     /// @notice Constructor
     /// @dev Please change the values in here if you want more specific values, or make the constructor takes arguments
     constructor(string memory _name, string memory _symbol)
@@ -28,12 +28,10 @@ contract ERC1155Generic is IERC1155, IERC165 {
         name = _name;
         symbol = _symbol;
 
-        supportedInterfaces[0x2a55205a] = true;
-        supportedInterfaces[0x80ac58cd] = true;
-        supportedInterfaces[0x01ffc9a7] = true;
-        
-    }   
-
+        supportedInterfaces[0xd9b67a26] = true; //1155
+        supportedInterfaces[0x2a55205a] = true; //2981
+        supportedInterfaces[0x01ffc9a7] = true; //165
+    }
 
     /// @notice Transfers `_value` amount of an `_id` from the `_from` address to the `_to` address specified (with safety call).
     /// @dev Caller must be approved to manage the tokens being transferred out of the `_from` account (see "Approval" section of the standard).
@@ -170,14 +168,17 @@ contract ERC1155Generic is IERC1155, IERC165 {
     /// @return `true` if the contract implements `interfaceID` and
     ///  `interfaceID` is not 0xffffffff, `false` otherwise
     function supportsInterface(bytes4 interfaceID) external override pure returns (bool){
-        return (interfaceID == 0xd9b67a26);
+        bool retour = interfaceID == 0xd9b67a26;
+        return (retour);
     }
 
 
     /// @notice Mint tokens for message.sender
     /// @param _id      The tokens ID
     /// @param _value   Minted amount
-    function mint(uint256 _id, uint256 _value) external{
+    /// @param _uri   The token URi
+    function mint(uint256 _id, uint256 _value, string calldata _uri) external{
+        require(msg.sender == owner);
 
         //Adjusting the balance
         balanceOfVar[msg.sender][_id] = balanceOfVar[msg.sender][_id] + _value;
@@ -189,30 +190,13 @@ contract ERC1155Generic is IERC1155, IERC165 {
             //bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)")) == 0xf23a6e61
             require(IERC1155TokenReceiver(msg.sender).onERC1155Received(msg.sender, msg.sender, _id, _value, "") == bytes4(0xf23a6e61));
         }
-    
+
+        emit URI(_uri, _id);
     }
 
-    
-    /// @notice Mint tokens for message.sender
-    /// @param _ids      The tokens IDs
-    /// @param _values   Minted amounts. length must match _ids
-    function mint(uint256[] calldata _ids, uint256[] calldata _values) external{
-
-        require(_ids.length == _values.length, "mint: _ids and _values lenght mismatch");
-
-        uint256 tmp;
-        while(tmp < _ids.length){ //using while for 0 case optimization
-            balanceOfVar[msg.sender][_ids[tmp]] = balanceOfVar[msg.sender][_ids[tmp]] + _values[tmp];
-        }
-
-        //Emitting the event
-        emit TransferBatch(msg.sender, address(0x0),  msg.sender, _ids, _values);
-
-        if(isContract(msg.sender)){
-            //bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)")) == 0xf23a6e61
-            require(IERC1155TokenReceiver(msg.sender).onERC1155BatchReceived(msg.sender, address(0x0), _ids, _values, "") == bytes4(0xbc197c81));
-        }
-    
+    function setURI(uint256 _id, string calldata _uri) external{
+        require(msg.sender == owner);
+        emit URI(_uri, _id);
     }
 
 
@@ -232,14 +216,15 @@ contract ERC1155Generic is IERC1155, IERC165 {
     mapping(uint256 => address) royaltyReceiver;
     mapping(uint256 => uint256) royaltyPercentage;
 
-    function setRoyaltyInfo(uint256 tokenId, address receiver, uint256 percentage) external {
-        royaltyReceiver[tokenId] = receiver;
-        royaltyPercentage[tokenId] = percentage;
+    function setRoyaltyInfo(uint256, address receiver, uint256 percentkage) external {
+        require(msg.sender == owner);
+        royaltyReceiver[0] = receiver;
+        royaltyPercentage[0] = percentkage;
     }
 
-    function royaltyInfo(uint256 tokenId, uint256 finalAmount) public view returns(address receiver, uint256 royaltyAmount) {
-        uint256 royalty = finalAmount * royaltyPercentage[tokenId] / 100;
-        return(royaltyReceiver[tokenId], royalty);
+    function royaltyInfo(uint256, uint256 finalAmount) public view returns(address receiver, uint256 royaltyAmount) {
+        uint256 royalty = finalAmount * royaltyPercentage[0] / 100000;
+        return(royaltyReceiver[0], royalty);
     }
 
 }

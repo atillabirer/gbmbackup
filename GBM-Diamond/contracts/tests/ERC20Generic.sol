@@ -25,12 +25,10 @@ contract ERC20Generic is IERC20, IERC165  {
         name = "Generic ERC20";
         symbol = "GEN20";
         decimals = 18; //Same as ETH
-
-        supportedInterfaces[type(IERC165).interfaceId] = true;
+        
         supportedInterfaces[0x01ffc9a7] = true; //ERC165
         supportedInterfaces[0x36372b07] = true; //ERC20
 
-        require(bytes4(0x36372b07) != type(IERC20).interfaceId, "Interface ID do not match");
     }
 
 

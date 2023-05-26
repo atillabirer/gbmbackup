@@ -45,7 +45,7 @@ contract ERC721Generic is IERC721, IERC165 {
     /// @param _tokenId The identifier for an NFT
     /// @return The address of the owner of the NFT
     function ownerOf(uint256 _tokenId) external override view returns (address){
-        //require(ownerOfVar[_tokenId] != address(0x0), "ownerOf: ERC721 NFTs assigned to the zero address are considered invalid");
+        require(ownerOfVar[_tokenId] != address(0x0), "ownerOf: ERC721 NFTs assigned to the zero address are considered invalid");
         return ownerOfVar[_tokenId];
     }
 
@@ -156,7 +156,8 @@ contract ERC721Generic is IERC721, IERC165 {
         return internalMint(_URI);
     }
 
-      /// @notice Mint a token for msg.sender
+
+    /// @notice Mint a token for msg.sender
     function mintCreator(address _creator, string calldata _URI) external returns (uint256) {
         require(owner == msg.sender, "Only the owner can mint");
         return internalMintCreator(_creator, _URI);
@@ -193,7 +194,6 @@ contract ERC721Generic is IERC721, IERC165 {
 
         return totalSupply;
     }
-
 
 
     /// @dev Called by both variants of Safetransfer. Is a transfer followed by a smartContract check and then
