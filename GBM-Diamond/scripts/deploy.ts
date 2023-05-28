@@ -6,8 +6,6 @@ import config from "../hardhat.config";
 
 var conf: any;
 
-
-
 const FacetNames = [
     "DiamondInitFacet",
     "DiamondLoupeFacet",
@@ -20,26 +18,28 @@ const FacetNames = [
     "GBMPrimaryAuctionRegistrationFacet"
 ];
 
-const cut: any[] = [];
-const facets: any[] = [];
+let deployOrder = ["DCF", "DD", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "CUT", "PRST", "CRC", "TST"]
+
+let cut: any[] = [];
+let facets: any[] = [];
 
 let diamondCutFacetAddress: string;
 let diamondAddress: string;
 
-export function setDiamondAddress(address: string) {
-    diamondAddress = address
+export function setDiamondAddress(address: string) { 
+    diamondAddress = address 
 };
 
-export function setDiamondCutFacetAddress(address: string) {
-    diamondCutFacetAddress = address
+export function setDiamondCutFacetAddress(address: string) { 
+    diamondCutFacetAddress = address 
 };
 
 export function addToPreviousCuts(prevCut: any) {
-    cut.push(prevCut);
+    cut = prevCut;
 }
 
-export function addToPreviousFacets(prevFacet: any) {
-    facets.push(prevFacet);
+export function addToPreviousFacets(prevFacets: any) {
+    facets = prevFacets;
 }
 
 async function fetchGasPrice() {
@@ -52,25 +52,25 @@ export async function performDeploymentStep(step: number) {
     switch (step) {
         case 0:
             await deployDiamondCutFacet();
-            return `DiamondCutFacet deployed at: ${diamondCutFacetAddress}`;
+            return [`SERVER || MSG || DiamondCutFacet deployed at: ${diamondCutFacetAddress}`, `SERVER || DCF || ${diamondCutFacetAddress}`];
         case 1:
             await deployDiamond();
-            return `Diamond deployed at: ${diamondAddress}`;
+            return [`SERVER || MSG || Diamond deployed at: ${diamondAddress}`, `SERVER || DD || ${diamondAddress}`];
         case 11:
             await cutDiamond();
-            return `Diamond has been cut with new facets`;
+            return [`SERVER || MSG || Diamond has been cut with new facets`, `SERVER || CUT`];
         case 12:
             await setPresets();
-            return `GBM Presets registered`;
+            return [`SERVER || MSG || GBM Presets registered`, `SERVER || PRST`];
         case 13:
             await setCurrency();
-            return `Default currency has been set`;
+            return [`SERVER || MSG || Default currency has been set`, `SERVER || CRC`];
         case 14:
             await runTestAuction();
-            return `Successfully performed a test auction`;
+            return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST`];
         default:
             await deployFacet(step - 2);
-            return `Deployed ${FacetNames[step - 2]}`
+            return [`SERVER || MSG || Deployed ${FacetNames[step - 2]}`, `SERVER || FT || ${JSON.stringify(cut)} || ${JSON.stringify(facets)}`];
     }
 }
 
@@ -124,7 +124,11 @@ async function cutDiamond() {
     const diamondCut = await ethers.getContractAt("IDiamondCut", diamondAddress);
     let tx;
     let receipt;
-    let functionCall = facets[0].interface.encodeFunctionData("init", [177013]); //Henshin
+
+    const reloadInitFacet = await ethers.getContractAt(FacetNames[0], cut[0].facetAddress);
+
+    console.log(reloadInitFacet.interface)
+    let functionCall = reloadInitFacet.interface.encodeFunctionData("init", [177013]); //Henshin
     let gasPrice = await fetchGasPrice();
 
     tx = await diamondCut.diamondCut(cut, facets[0].address, functionCall, {
@@ -140,6 +144,8 @@ async function cutDiamond() {
 
 async function setPresets() {
     const gBMAdminFacet = await ethers.getContractAt("GBMAdminFacet", diamondAddress);
+
+    console.log(gBMAdminFacet);
 
     let tx;
     let gasPrice;
@@ -341,7 +347,6 @@ async function runTestAuction() {
 
     let timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
 
-
     //Create a safe GBM auction
     console.log("Creating test unsafe ERC721 auction....");
     gasPrice = await fetchGasPrice();
@@ -456,6 +461,7 @@ async function runTestAuction() {
     console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
     console.log("Tests Over\n\**********************************************\x1b[0m");
+    console.log(await ethers.provider.getBlockNumber());
 }
 
 async function main() {
@@ -468,6 +474,6 @@ async function main() {
     console.log("\x1b[0m");
 }
 
-if (true) {
-    main();
-}
+// if (true) {
+//     main();
+// }

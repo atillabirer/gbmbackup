@@ -94,9 +94,14 @@
         </div>
         <script type="text/javascript" src="scripts/metamask.js"></script>
         <script>
-            let currentDeploymentStep = 0;
+            let step = localStorage.getItem("currentDeploymentStep") ?? 0
+            let diamondCutAddress = localStorage.getItem("diamondCutAddress") ?? ""
+            let diamondAddress = localStorage.getItem("diamondAddress") ?? ""
+            let cuts = localStorage.getItem("cuts") ?? [];
+            let facets = localStorage.getItem("facets") ?? [];
 
             function connectToDeployer() {
+                localStorage.clear();
                 const deployButton = document.getElementsByClassName("deploy-btn")[0];
                 deployButton.classList.add('deploying');
                 deployButton.disabled = true;
@@ -104,29 +109,61 @@
 
                 const webSocket = new WebSocket('ws://localhost:443/');
                 webSocket.onmessage = (event) => {
-                    if ((event.data).substring(0,17) === 'Server: Diamond d'){
-                        saveNewDiamond((event.data).substring(29));
-                    }
-                    let msg = `${new Date().toLocaleTimeString()} - ${(event.data).substring(8)}`;
+                    let deployOrder = ["DCF", "DD", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "CUT", "PRST", "CRC", "TST"]
+                    
+                    let receivedMsg = event.data;
+                    let commands = receivedMsg.split(" || ");
+                    if (commands[0] !== 'SERVER') return;
 
-                    updateProgress();
-                    document.getElementsByClassName('terminal-text')[0].innerHTML += msg + '<br/>';
-                    if (currentDeploymentStep < 15) {
-                        webSocket.send("Keep going!");
+                    switch (commands[1]) {
+                        case 'MSG': 
+                            let msgToDisplay = `${new Date().toLocaleTimeString()} - ${commands[2]}`;
+                            document.getElementsByClassName('terminal-text')[0].innerHTML += msgToDisplay + '<br/>';
+                            break;
+                        case 'TST':
+                            document.getElementsByClassName('terminal-text')[0].innerHTML += 'All done!<br/>';
+                            step++;
+                            updateProgress();
+                            deployButton.innerHTML = "Deployment complete!"
+                            webSocket.close();
+                            break;
+                        default: 
+                            step++;
+                            localStorage.setItem("currentDeploymentStep", step);
+                            saveDeployerStatus(commands);
+                            updateProgress();
+                            if (step > 14) return;
+                        case 'ACK':
+                            webSocket.send(`CLIENT || ${deployOrder[step]} || ${step} || ${diamondCutAddress} || ${diamondAddress} || ${cuts} || ${facets}`);
                     }
                 };
             }
 
-            function saveNewDiamond(diamondAddress) {
-                console.log(diamondAddress);
-                localStorage.setItem("DiamondAddress", diamondAddress)
+            function saveDeployerStatus(commands) {
+                switch(commands[1]) {
+                    case "DCF": 
+                        localStorage.setItem("diamondCutAddress", commands[2]);
+                        diamondCutAddress = commands[2];
+                        break;
+                    case "DD": 
+                        localStorage.setItem("diamondAddress", commands[2]);
+                        diamondAddress = commands[2];
+                        break;
+                    case "FT": 
+                        localStorage.setItem("cuts", commands[2]);
+                        cuts = commands[2];
+                        localStorage.setItem("facets", commands[3]);
+                        facets = commands[3];
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            function updateProgress() {
+            function updateProgress() { 
                 const stepProgressContainers = document.getElementsByClassName("step-progress");
-                if (currentDeploymentStep < 15) stepProgressContainers[currentDeploymentStep].innerHTML = `<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>`;
-                if (currentDeploymentStep > 0) stepProgressContainers[currentDeploymentStep - 1].innerHTML = `Done!`;
-                currentDeploymentStep++;
+                if (step < 15) stepProgressContainers[step].innerHTML = `<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>`;
+                if (step > 0) stepProgressContainers[step - 1].innerHTML = `Done!`;
             }
          </script>
     </body>

@@ -33,6 +33,7 @@
         <script>
             window.onload = async function() {
                 await loadContracts();
+                console.log('test');
                 const auctionNo = await getNumberOfAuctions();
                 const auctions = await loadAuctions(auctionNo);
                 const loader = document.getElementsByClassName('lds-ellipsis');

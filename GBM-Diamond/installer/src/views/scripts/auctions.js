@@ -2179,12 +2179,13 @@ let biddingContract;
 let web3;
 
 async function loadContracts() {
-    diamondAddress = await localStorage.getItem("DiamondAddress");
+    diamondAddress = await localStorage.getItem("diamondAddress");
     web3 = new Web3(window.ethereum);
     const latest = await web3.eth.getBlockNumber()
     console.log(latest);
 
     auctionsContract = new web3.eth.Contract(auctionAbi, diamondAddress);
+    console.log(auctionsContract);
     gettersContract = new web3.eth.Contract(gettersAbi, diamondAddress);
     adminContract = new web3.eth.Contract(adminAbi, diamondAddress);
     biddingContract = new web3.eth.Contract(biddingAbi, diamondAddress);
@@ -2226,6 +2227,7 @@ async function confirmAdminStatus() {
 } 
 
 async function getNumberOfAuctions() {
+  console.log(gettersContract);
   const availableAuctions = await gettersContract.methods.getTotalNumberOfSales().call();
   return availableAuctions;
 }
