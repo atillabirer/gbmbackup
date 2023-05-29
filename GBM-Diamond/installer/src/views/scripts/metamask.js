@@ -27,8 +27,34 @@ function setUpMetamask() {
       }
 }
 
-setUpMetamask();
+const metamaskTrigger = document.getElementById('metamask-enable');
+metamaskTrigger.onchange = enableMetamask;
 
-ethereum.request({ method: 'eth_requestAccounts' }).then(()=> {}).catch((err) => {
-  console.error(err);
-});
+setUpMetamask();  
+isConnected();
+      
+async function isConnected() {
+   const accounts = await ethereum.request({method: 'eth_accounts'});       
+   if (accounts.length) {
+      ethereum.request({ method: 'eth_requestAccounts' }).then(()=> enablePage()).catch((err) => {
+        console.error(err);
+      });
+      metamaskTrigger.checked = true;
+   } else {
+      metamaskTrigger.checked = false;
+      console.log("Metamask is not connected");
+   }
+}
+
+function enableMetamask(event) {
+  console.log(event.target.checked);
+
+  ethereum.request({ method: 'eth_requestAccounts' }).then(()=> enablePage()).catch((err) => {
+    console.error(err);
+  });
+}
+
+function enablePage() {
+  const accountLabel = document.getElementById('metamask-account');
+  accountLabel.innerHTML = window.ethereum.selectedAddress;
+}

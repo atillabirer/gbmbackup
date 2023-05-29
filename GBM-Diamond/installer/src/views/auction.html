@@ -3,6 +3,7 @@
     <head>
         <link rel="stylesheet" href="styles/auction.css" />
         <link rel="stylesheet" href="styles/navbar.css" />
+        <link rel="stylesheet" href="styles/metamask.css" />
         <script
         src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
         integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
@@ -11,6 +12,42 @@
       ></script>
     </head>
     <body  style="background-color: #085F63;">
+        <div class="metamask-bar">
+            <div class="metamask-toggles"> 
+                <div class="metamask-activate">
+                    <div>
+                        <img class="metamask-logo" src="./images/metamask-fox.svg" />
+                    </div>
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" id="metamask-enable">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <!-- <div class="metamask-activate">
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox">;
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="environment">
+                        Test Mode
+                    </div>
+                </div> -->
+            </div>
+            <div class="metamask-toggles">
+                <div class="metamask-activate metamask-text">
+                    <label style="margin-right: 5px;">Account: </label>
+                    <div id="metamask-account">Not connected</div>
+                </div>
+                <!-- <div class="metamask-text">
+                    <label>Diamond: </label>
+                    <div class="diamond-address"></div>
+                </div> -->
+            </div>
+        </div>
         <div class="nav-bar">
             <div>
                 <img class="gbm-logo" src="./images/gbm-logo.svg" />
