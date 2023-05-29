@@ -77,6 +77,8 @@ struct GBMStorage {
     mapping (address => mapping(uint256 => address)) erc721tokensAddressAndIDToEscrower; //A mapping keeping track of who deposited an ERC721 token in escrow
     mapping (address => mapping(uint256 => mapping(address => uint256))) erc1155tokensAddressAndIDToEscrowerAmount; //A mapping keeping track of how much by whom ERC1155 tokens have been deposited in escrow    
     mapping (address => mapping(uint256 => mapping(address => uint256))) erc1155tokensAddressAndIDToEscrowerUnderSaleAmount; //A mapping keeping track of how much by whom ERC1155 tokens are under sale 
-    mapping (uint256 => uint256) saleToSeller; // A mapping storing who has deposited the token in escrow and created the sale                                            
+    mapping (uint256 => uint256) saleToSeller; // A mapping storing who has deposited the token in escrow and created the sale       
+
+     mapping (uint256 => bool) saleToClaimed; // A mapping storing wether or not a sale have been settled                                          
 }
 

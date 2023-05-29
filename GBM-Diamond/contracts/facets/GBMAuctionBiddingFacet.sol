@@ -117,7 +117,9 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
     /// @notice Attribute the token and payment to a finished GBM auction
     /// @param auctionID The saleID of the auction you wish to settle
-    function claim(uint256 auctionID) external reentrancyProtector() {
+    function claim(uint256 auctionID) external {
+        require(!s.saleToClaimed[auctionID], "This auction has already been settled");
+        s.saleToClaimed[auctionID] = true;
         uint256 _presetIndex = s.saleToGBMPreset[auctionID];
         uint256 _tokenID = s.saleToTokenId[auctionID];
         uint256 _highestBidIndex = s.saleToNumberOfBids[auctionID];
@@ -143,6 +145,22 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             //Fetch the address of the currency used by the auction
             address _currAddress = s.currencyAddress[_currencyID];
 
+            
+
+            //Sending money to GBM
+            if(s.isLicensePaidOnChain && s.saleToBidIncentives[auctionID][1] != 0){ //Only send money if this was a gbm auction
+                _due = (_pot * s.GBMFeePercentKage) / DECIMALSK;
+                _debt += _due;
+
+                if(_currAddress == address(0x0)){
+                    sendbaseCurrency(s.GBMAccount, _due);
+                } else {
+                    // Case of an ERC20 token
+                    //Transfer the money of the bidder to the GBM smart contract
+                    IERC20(_currAddress).transferFrom(address(this), s.GBMAccount, _due);
+                }
+            }
+
             //Sending money to marketplace share
             _due = (_pot * s.mPlaceGBMFeePercentKage) / DECIMALSK;
             _debt += _due;
@@ -154,21 +172,6 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
                 // Case of an ERC20 token
                 //Transfer the money of the bidder to the GBM smart contract
                 IERC20(_currAddress).transferFrom( address(this), s.marketPlaceRoyalty, _due);
-            }
-
-            //Sending money to GBM
-            if(s.isLicensePaidOnChain){
-
-                _due = (_pot * s.GBMFeePercentKage) / DECIMALSK;
-                _debt += _due;
-
-                if(_currAddress == address(0x0)){
-                    sendbaseCurrency(s.GBMAccount, _due);
-                } else {
-                    // Case of an ERC20 token
-                    //Transfer the money of the bidder to the GBM smart contract
-                    IERC20(_currAddress).transferFrom(address(this), s.GBMAccount, _due);
-                }
             }
 
             //Sending money to beneficiary aka seller
@@ -219,7 +222,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             (bool result, bytes memory data ) = s.saleToTokenAddress[auctionID].call(abi.encodeWithSignature("ownerOf(uint256)", s.saleToTokenId[auctionID]));
             if(result){
                 //_from = address(uint160(bytes20(data)));
-                _from = bytesToAddress(data);
+               // _from = bytesToAddress(data);
             } // No else. A freshly pushed address is initialized to 0x0
 
             if(_highestBidIndex == 0) //Case of no bids : send NFT to seller
@@ -297,6 +300,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
     function sendbaseCurrency(address to, uint256 amount) internal{
 
+        if(amount == 0){return;}
         //For security reasons, smart contract do not get to receive instantly the currency. They have to withdraw it in a separate transaction.
         if(isContract(to)){
             // A smart contract could pass as a normal wallet at constructor time, but I fail to see any use for this exploit in our case : the worst damage you could do is prevent yourself from bidding.

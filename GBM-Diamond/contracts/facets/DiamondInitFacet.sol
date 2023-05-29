@@ -22,6 +22,8 @@ contract DiamondInitFacet {
         LibDiamond.enforceIsContractOwner();
 
         s.GBMAdminAccount = msg.sender;
+        s.isLicensePaidOnChain = true;
+        s.GBMFeePercentKage = 2000;
 
         // adding ERC165 data, implementation in DiamondLoupeFacet
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();

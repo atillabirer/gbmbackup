@@ -501,4 +501,12 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.smartContractsUsersNativeCurrencyBalance[smartContract];
     }
 
+    /// @notice Get the claimed status of a sale
+    /// @param saleID The ID of the sale you wish to know the details of
+    /// @return claimed Wether or not a sale have already been settled
+    function getSmartContractsUsersNativeCurrencyBalance (uint256 saleID) external view returns(bool){
+        return s.saleToClaimed[saleID];
+    }
+    
+
 }

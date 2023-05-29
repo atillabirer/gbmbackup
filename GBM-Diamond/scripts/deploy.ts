@@ -17,7 +17,7 @@ const FacetNames = [
     "GBMAdminFacet",
     "GBMAuctionBiddingFacet",
     "GBMCurrencyFacet",
-    "GBMEscrowFacet_NoTracking",
+    "GBMEscrowFacet_Tracking",
     "GBMGettersFacet",
     "GBMPrimaryAuctionRegistrationFacet"
 ];
@@ -372,12 +372,12 @@ async function runTestAuction() {
     //placing a bid for 10 wei
     tx = await gBMBiddingFacet.bid(
         bidIDRes, //SaleID 
-        10,
+        100,
         0,
         {
             gasLimit: "312345",
             gasPrice: gasPrice,
-            value: 10
+            value: 100
         }
     );
 
@@ -422,12 +422,12 @@ async function runTestAuction() {
     //placing a bid for 10 wei
     tx = await gBMBiddingFacet.bid(
         bidIDRes, //SaleID 
-        10,
+        100,
         0,
         {
             gasLimit: "312345",
             gasPrice: gasPrice,
-            value: 10
+            value: 100
         }
     );
 
@@ -441,12 +441,12 @@ async function runTestAuction() {
     //placing a bid for 20 wei
     tx = await gBMBiddingFacet.bid(
         bidIDRes, //SaleID 
-        20,
-        10,
+        200,
+        100,
         {
             gasLimit: "312345",
             gasPrice: gasPrice,
-            value: 20
+            value: 200
         }
     );
 
@@ -459,74 +459,65 @@ async function runTestAuction() {
     console.log("Now starting to wait for the auctions to be claimable.");
     console.log("⚠️   Make sure that the chain is minting blocks at regular intervals or support evm_setTime ⚠️");
 
-    let endTimeStampTarget 
+    let endTimeStampTarget
     let auctionEndTime;
     let gracePeriod;
     let totalNumberOfSales = await gBMGettersFacet.getTotalNumberOfSales();
     let targetChainTimestamp;
 
-    for(let i =1; i <= totalNumberOfSales; i++){
+    for (let i = 1; i <= totalNumberOfSales; i++) {
 
         let delta = 1;
-        while(delta >=0){
+        while (delta > 0) {
             timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
 
             auctionEndTime = await gBMGettersFacet.getSale_EndTimestamp(i);
-            gracePeriod = await  gBMGettersFacet.getSale_GBMPreset_CancellationPeriodDuration(i);
-            targetChainTimestamp = auctionEndTime.add(gracePeriod);  
-            console.log("AuctionID: "+ i + " auctionEndTime is " + auctionEndTime + " with a grace period of " + gracePeriod + " seconds : Chain target timestamp for claim is " + targetChainTimestamp);
+            gracePeriod = await gBMGettersFacet.getSale_GBMPreset_CancellationPeriodDuration(i);
+            targetChainTimestamp = auctionEndTime.add(gracePeriod);
+            console.log("AuctionID: " + i + " auctionEndTime is " + auctionEndTime + " with a grace period of " + gracePeriod + " seconds : Chain target timestamp for claim is " + targetChainTimestamp);
             console.log("Current chain timestamp is " + timestamp);
 
             delta = parseInt(targetChainTimestamp.sub(timestamp).toString());
 
-            if(delta > 0 && delta < 100){
-                console.log("This is " + delta + "s in the future, waiting for " + (delta)+"s");
-                if(time){
+            if (delta > 0 && delta < 100) {
+                console.log("This is " + delta + "s in the future, waiting for " + (delta) + "s");
+                if (time) {
                     await time.increaseTo(targetChainTimestamp);
-                    await ethers.provider.send("evm_mine",[]);
+                    await ethers.provider.send("evm_mine", []);
                 } else {
                     await new Promise(resolve => setTimeout(resolve, (delta * 1000)));
                 }
-                
-            } else if(delta > 0){
+
+            } else if (delta > 0) {
                 console.log("This is " + delta + "s in the future, waiting for 100s");
-                if(time){
+                if (time) {
                     await time.increaseTo(targetChainTimestamp);
-                    await ethers.provider.send("evm_mine",[]);
+                    await ethers.provider.send("evm_mine", []);
                 } else {
                     await new Promise(resolve => setTimeout(resolve, (100 * 1000)));
                 }
             } else {
-
-                //Current token sold in auction
-                let auctioNTOken = await gBMGettersFacet.getSale_TokenID(i);
-                let auctionContract = await  gBMGettersFacet.getSale_TokenAddress(i);
-                let tokenOwner = await erc721C.ownerOf(auctioNTOken);
-                console.log("TokenAddress: " + auctionContract +" AuctionTokenID: " + auctioNTOken);
-
-                console.log("Owner:" + tokenOwner);
-
-                console.log(erc721C.address);
-
-
-
-                //Claming the auction
-                console.log("Claming SaleID : " + i);
-                gasPrice = await fetchGasPrice();
-                tx = await gBMBiddingFacet.claim(
-                    i, //SaleID 
-                    {
-                        gasPrice: gasPrice,
-                    }
-                );
+                console.log("This is " + delta + "s in the past, claiming now");
             }
-     
+
         }
+
+        //We have reach the timer, time to claim
+
+        //Claming the auction
+        console.log("Claming SaleID : " + i);
+        gasPrice = await fetchGasPrice();
+        tx = await gBMBiddingFacet.claim(
+            i, //SaleID 
+            {
+                gasPrice: gasPrice,
+            }
+        );
 
 
     }
 
-    
+
 
 
     //getSale_GBMPreset_CancellationPeriodDuration
