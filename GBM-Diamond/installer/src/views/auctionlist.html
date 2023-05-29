@@ -13,16 +13,26 @@
     </head>
     <body>
         <div class="metamask-bar">
+            <div class="metamask-toggles">
+                <div class="metamask-activate metamask-text">
+                    <label style="margin-right: 5px;">Account: </label>
+                    <div id="metamask-account">Not connected</div>
+                </div>
+                <!-- <div class="metamask-text">
+                    <label>Diamond: </label>
+                    <div class="diamond-address"></div>
+                </div> -->
+            </div>
             <div class="metamask-toggles"> 
                 <div class="metamask-activate">
-                    <div>
-                        <img class="metamask-logo" src="./images/metamask-fox.svg" />
-                    </div>
                     <div>
                         <label class="switch">
                             <input type="checkbox" id="metamask-enable">
                             <span class="slider round"></span>
                         </label>
+                    </div>
+                    <div>
+                        <img class="metamask-logo" src="./images/metamask-fox.svg" />
                     </div>
                 </div>
                 <!-- <div class="metamask-activate">
@@ -37,35 +47,33 @@
                     </div>
                 </div> -->
             </div>
-            <div class="metamask-toggles">
-                <div class="metamask-activate metamask-text">
-                    <label style="margin-right: 5px;">Account: </label>
-                    <div id="metamask-account">Not connected</div>
-                </div>
-                <!-- <div class="metamask-text">
-                    <label>Diamond: </label>
-                    <div class="diamond-address"></div>
-                </div> -->
-            </div>
         </div>
         <div class="nav-bar">
             <div>
                 <img class="gbm-logo" src="./images/gbm-logo.svg" />
             </div>
             <div class="nav-links">
-                <a href="/auctions">Browse Auctions</a>
-                <a href="/admin">Admin Panel</a>
+                <a class="deployment-required" hidden href="/auctions">Browse Auctions</a>
+                <a class="deployment-required" hidden href="/admin">Admin Panel</a>
                 <a href="/deployment">GBM Deployment</a>
             </div>
         </div>
-        <h1>GBM Auctions List</h1>
-        <button class="new-auction-btn" onclick="createNewAuctionTest()">
-            Start new auction
-        </button>
-        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-        <div class="auction-container">
+        <div class="deployment-required" hidden>
+            <div class="auctions-page">
+                <h1>GBM Auctions List</h1>
+                <button class="new-auction-btn" onclick="createNewAuctionTest()">
+                    Start new auction
+                </button>
+                <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                <div class="auction-container">
+                </div>
+            </div>
+        </div>
+        <div class="pre-deployment">
+            Please go through the deployment step first!
         </div>
         <script type="text/javascript" src="scripts/metamask.js"></script>
+        <script type="text/javascript" src="scripts/navbar.js"></script>
         <script type="text/javascript" src="scripts/auctions.js"></script>
         <script>
             window.onload = async function() {

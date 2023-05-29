@@ -13,16 +13,26 @@
     </head>
     <body>
         <div class="metamask-bar">
+            <div class="metamask-toggles">
+                <div class="metamask-activate metamask-text">
+                    <label style="margin-right: 5px;">Account: </label>
+                    <div id="metamask-account">Not connected</div>
+                </div>
+                <!-- <div class="metamask-text">
+                    <label>Diamond: </label>
+                    <div class="diamond-address"></div>
+                </div> -->
+            </div>
             <div class="metamask-toggles"> 
                 <div class="metamask-activate">
-                    <div>
-                        <img class="metamask-logo" src="./images/metamask-fox.svg" />
-                    </div>
                     <div>
                         <label class="switch">
                             <input type="checkbox" id="metamask-enable">
                             <span class="slider round"></span>
                         </label>
+                    </div>
+                    <div>
+                        <img class="metamask-logo" src="./images/metamask-fox.svg" />
                     </div>
                 </div>
                 <!-- <div class="metamask-activate">
@@ -37,24 +47,14 @@
                     </div>
                 </div> -->
             </div>
-            <div class="metamask-toggles">
-                <div class="metamask-activate metamask-text">
-                    <label style="margin-right: 5px;">Account: </label>
-                    <div id="metamask-account">Not connected</div>
-                </div>
-                <!-- <div class="metamask-text">
-                    <label>Diamond: </label>
-                    <div class="diamond-address"></div>
-                </div> -->
-            </div>
         </div>
         <div class="nav-bar">
             <div>
                 <img class="gbm-logo" src="./images/gbm-logo.svg" />
             </div>
             <div class="nav-links">
-                <a href="/auctions">Browse Auctions</a>
-                <a href="/admin">Admin Panel</a>
+                <a class="deployment-required" hidden href="/auctions">Browse Auctions</a>
+                <a class="deployment-required" hidden href="/admin">Admin Panel</a>
                 <a href="/deployment">GBM Deployment</a>
             </div>
         </div>
@@ -130,12 +130,15 @@
             <button class="deploy-btn" onclick="connectToDeployer()">Deploy Diamond</button>
         </div>
         <script type="text/javascript" src="scripts/metamask.js"></script>
+        <script type="text/javascript" src="scripts/navbar.js"></script>
         <script>
             let step = localStorage.getItem("currentDeploymentStep") ?? 0
             let diamondCutAddress = localStorage.getItem("diamondCutAddress") ?? ""
             let diamondAddress = localStorage.getItem("diamondAddress") ?? ""
             let cuts = localStorage.getItem("cuts") ?? [];
             let facets = localStorage.getItem("facets") ?? [];
+
+            if (step >= 14) setResetState();
 
             function connectToDeployer() {
                 localStorage.clear();
@@ -162,6 +165,8 @@
                             step++;
                             updateProgress();
                             deployButton.innerHTML = "Deployment complete!"
+                            setResetState();
+                            flipVisibility();
                             webSocket.close();
                             break;
                         default: 
@@ -169,7 +174,6 @@
                             localStorage.setItem("currentDeploymentStep", step);
                             saveDeployerStatus(commands);
                             updateProgress();
-                            if (step > 14) return;
                         case 'ACK':
                             webSocket.send(`CLIENT || ${deployOrder[step]} || ${step} || ${diamondCutAddress} || ${diamondAddress} || ${cuts} || ${facets}`);
                     }
@@ -201,6 +205,20 @@
                 const stepProgressContainers = document.getElementsByClassName("step-progress");
                 if (step < 15) stepProgressContainers[step].innerHTML = `<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>`;
                 if (step > 0) stepProgressContainers[step - 1].innerHTML = `Done!`;
+            }
+         
+            function setResetState() {
+                const deployButton = document.getElementsByClassName("deploy-btn")[0];
+                deployButton.innerHTML = "Reset and Redeploy"
+                deployButton.style.backgroundColor = 'red';
+                deployButton.style.border = 'none';
+                deployButton.style.cursor = 'pointer';
+                deployButton.onclick = initReset;
+            }
+
+            function initReset() {
+                localStorage.clear();
+                window.location.reload();
             }
          </script>
     </body>
