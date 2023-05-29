@@ -2182,10 +2182,8 @@ async function loadContracts() {
     diamondAddress = await localStorage.getItem("diamondAddress");
     web3 = new Web3(window.ethereum);
     const latest = await web3.eth.getBlockNumber()
-    console.log(latest);
 
     auctionsContract = new web3.eth.Contract(auctionAbi, diamondAddress);
-    console.log(auctionsContract);
     gettersContract = new web3.eth.Contract(gettersAbi, diamondAddress);
     adminContract = new web3.eth.Contract(adminAbi, diamondAddress);
     biddingContract = new web3.eth.Contract(biddingAbi, diamondAddress);
@@ -2322,4 +2320,20 @@ async function submitBid(auctionId, newBidAmount, previousHighestBidAmount) {
     const newAmount = web3.utils.toWei(newBidAmount);
     const oldAmount = web3.utils.toWei(previousHighestBidAmount);
     await biddingContract.methods.bid(auctionId, newAmount, oldAmount).send({from: window.ethereum.selectedAddress, to: diamondAddress, value: newAmount, gasLimit: 300000 })
+}
+
+async function getPresets() {
+  const presetIndex = await gettersContract.methods.getGBMPresetDefault().call();
+  const presets = await gettersContract.methods.getGBMPreset(presetIndex).call();
+  return presets;
+}
+
+async function getGBMAdmin() {
+  const admin = await gettersContract.methods.getGBMAccount().call();
+  return admin;
+}
+
+async function updatePreset(auctionDuration, hammerTimeDuration, cancellationPeriodDuration, stepMin, incentiveMin, incentiveMax, incentiveGrowthMultiplier) {
+  const presetIndex = await gettersContract.methods.getGBMPresetDefault().call();
+  await adminContract.methods.setGBMPreset(presetIndex, auctionDuration, hammerTimeDuration, cancellationPeriodDuration, stepMin, incentiveMin, incentiveMax, incentiveGrowthMultiplier).send({from: window.ethereum.selectedAddress, to: diamondAddress, gasLimit: 300000 });
 }

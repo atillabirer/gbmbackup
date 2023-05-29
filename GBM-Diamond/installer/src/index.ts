@@ -19,6 +19,10 @@ app.get("/auctions", async (req: Request, res: Response) =>
     res.status(200).sendFile(path.join(__dirname+'/views/auctionlist.html'))
 );
 
+app.get("/admin", async (req: Request, res: Response) => 
+    res.status(200).sendFile(path.join(__dirname+'/views/config.html'))
+);
+
 app.get("/auction", async (req: Request, res: Response) => 
     res.status(200).sendFile(path.join(__dirname+'/views/auction.html'))
 );
