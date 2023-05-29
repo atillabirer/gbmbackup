@@ -2289,6 +2289,7 @@ async function getAuctionInfoMinimal(saleID) {
     startTimestamp: await gettersContract.methods.getSale_StartTimestamp(saleID).call(),
     endTimestamp: await gettersContract.methods.getSale_EndTimestamp(saleID).call(),
     highestBidValue: web3.utils.fromWei(await gettersContract.methods.getSale_HighestBid_Value(saleID).call()),
+    highestBidBidder: await gettersContract.methods.getSale_HighestBid_Bidder(saleID).call(),
     gbmPreset: await gettersContract.methods.getSale_GBMPreset(saleID).call(), // can break this down further
   }
 }

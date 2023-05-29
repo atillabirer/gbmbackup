@@ -107,6 +107,7 @@
                     tokenID: newAuction.tokenID,
                     tokenAmount: newAuction.tokenAmount,
                     highestBidValue: 0,
+                    highestBidBidder: "Nobody   yet!",
                     saleKind: newAuction.saleKind ?? 'GBM',
                     currencyName: newAuction.currencyName ?? 'FakETH',
                     gbmPreset: presets ?? {},
@@ -118,6 +119,10 @@
 
             function redirectToAuction(number) {
                 location.href = `${window.location.protocol}//${window.location.host}/auction?saleId=${number}`;
+            }
+
+            function shortenAddress(address) {
+                return `${address.substring(0,6)}...${address.substring(address.length-6)}` 
             }
 
             function generateAuctionElement(auction, index) {
@@ -149,7 +154,7 @@
                             <h4>Highest Bid</h4>
                             <div id="highest-bid" class="auction-field">${auction.highestBidValue} ${auction.currencyName}</div>
                             <h4>Bidder</h4>
-                            <div id="bidder" class="auction-field">0xf39fd...b92266</div>
+                            <div id="bidder" class="auction-field">${shortenAddress(auction.highestBidBidder)}</div>
                         </div>
                         <div class="separator-vertical"></div>
                         <div class="auction-status">
