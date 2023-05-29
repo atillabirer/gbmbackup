@@ -57,7 +57,9 @@ struct GBMStorage {
     mapping (uint256 => uint256) saleToTokenId;         // A mapping storing the associated tokenID with a sale
     mapping (uint256 => uint256) saleToTokenAmount;     // A mapping storing the associated tokenAmount offered by a sale
     mapping (uint256 => bytes4) saleToTokenKind;        // A mapping storing the associated tokenKind with a sale
-                                                        //  _tokenKind = 0x73ad2146 if the token is ERC721, 0x973bb640 if the token is ERC1155
+                                                            //  _tokenKind = 0x73ad2146 if the token is ERC721, 0x973bb640 if the token is ERC1155
+    mapping (uint256 => bytes4) saleToTokenFrom;        // A mapping storing where a token from a sale is gonna be transferred from. 
+                                                            //ie : is it in escrow with the GBM smart contract or simply approved by the beneficiary
 
     mapping (uint256 => uint256) saleToGBMPreset;           // A mapping storing the associated GBM preset with a sale
     mapping (uint256 => uint256) saleTocurrencyID;          // A mapping storing the associated main currency with a sale

@@ -145,8 +145,6 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             //Fetch the address of the currency used by the auction
             address _currAddress = s.currencyAddress[_currencyID];
 
-            
-
             //Sending money to GBM
             if(s.isLicensePaidOnChain && s.saleToBidIncentives[auctionID][1] != 0){ //Only send money if this was a gbm auction
                 _due = (_pot * s.GBMFeePercentKage) / DECIMALSK;
@@ -154,8 +152,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
                 if(_currAddress == address(0x0)){
                     sendbaseCurrency(s.GBMAccount, _due);
-                } else {
-                    // Case of an ERC20 token
+                } else { // Case of an ERC20 token
                     //Transfer the money of the bidder to the GBM smart contract
                     IERC20(_currAddress).transferFrom(address(this), s.GBMAccount, _due);
                 }
@@ -168,24 +165,19 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             //Case of a native currency : Eth, Matic, etc...
             if(_currAddress == address(0x0)){
                 sendbaseCurrency(s.marketPlaceRoyalty, _due);
-            } else {
-                // Case of an ERC20 token
+            } else {    // Case of an ERC20 token
                 //Transfer the money of the bidder to the GBM smart contract
                 IERC20(_currAddress).transferFrom( address(this), s.marketPlaceRoyalty, _due);
             }
 
             //Sending money to beneficiary aka seller
             _due = _pot - _debt;
-
              if(_currAddress == address(0x0)){
                    sendbaseCurrency(s.saleToBeneficiary[auctionID], _due);
-            } else {
-                // Case of an ERC20 token
+            } else { // Case of an ERC20 token
                 //Transfer the money of the bidder to the GBM smart contract
                 IERC20(_currAddress).transferFrom(address(this), s.GBMAccount, _due);
             }
-
-            
         }
 
         //Transfering the auctionned asset
@@ -242,12 +234,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
   
         }
 
-        //TODO : Case ERC1155
-
         //TODO: Events
-    
- 
-
         //TODO : Royalty checks
 
     }
