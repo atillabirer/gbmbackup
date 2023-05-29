@@ -48,6 +48,7 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
     /// @param incentiveMin The minimal %k incentive reward from a bid
     /// @param incentiveMax The maximal %k incentive reward from a bid
     /// @param incentiveGrowthMultiplier The growth factor in a GBM auction
+    /// @param presetName The name of the preset
     function setGBMPreset (
         uint256 presetIndex, 
         uint256 auctionDuration,                // How long will the auction last at the minimum
@@ -56,8 +57,11 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
         uint256 stepMin,                        // The minimal %k increase between two successive bids   
         uint256 incentiveMin,                   // The minimal %k incentive reward from a bid
         uint256 incentiveMax,                   // The maximal %k incentive reward from a bid
-        uint256 incentiveGrowthMultiplier       // The growth factor in a GBM auction
+        uint256 incentiveGrowthMultiplier,      // The growth factor in a GBM auction
+        string calldata presetName              // The name of the preset
     ) external onlyAdmin {
+
+        require((s.GBMPresetsAmount+1) <= presetIndex, "Preset doesn't exist or is too far ahead in the index to be added");
 
         // Setting the preset
         s.GBMPresets[presetIndex] = GBM_preset({
@@ -70,6 +74,13 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
             incentiveGrowthMultiplier:incentiveGrowthMultiplier  
         });
 
+        s.GBMPresetName[presetIndex] = presetName;
+
+
+        if(presetIndex > s.GBMPresetsAmount){ //id expanding the pseudo array
+            s.GBMPresetsAmount++;
+        }
+
         // Emit the preset updated event
         emit GBMPreset_Updated(
             presetIndex,
@@ -79,7 +90,8 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
             stepMin,
             incentiveMin,
             incentiveMax,
-            incentiveGrowthMultiplier
+            incentiveGrowthMultiplier,
+            presetName
         );
 
     }

@@ -14,7 +14,7 @@ struct GBM_preset{
     uint256 stepMin;                        // The minimal %k increase between two successive bids   
     uint256 incentiveMin;                   // The minimal %k incentive reward from a bid
     uint256 incentiveMax;                   // The maximal %k incentive reward from a bid
-    uint256 incentiveGrowthMultiplier;                  // The growth factor in a GBM auction
+    uint256 incentiveGrowthMultiplier;      // The growth factor in a GBM auction
 }
 
 //Design philosophy : 
@@ -45,6 +45,8 @@ struct GBMStorage {
 
 
     mapping (uint256 => GBM_preset) GBMPresets;    // The list of presets usable by auctions on the marketplace
+    mapping (uint256 => string) GBMPresetName;    // The name of a GBM preset
+    uint256 GBMPresetsAmount;                       // The total number of presets
     uint256 defaultPreset;                         // The default preset used by auctions
 
     uint256 totalNumberOfSales;                      //Total number of sales ran by the contract so far

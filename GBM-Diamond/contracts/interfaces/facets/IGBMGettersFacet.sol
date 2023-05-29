@@ -36,7 +36,18 @@ interface IGBMGettersFacet {
 
     /// @notice Get a preset usable by auctions on the marketplace
     /// @param index The index of the preset you wish to inspect
+    /// @return GBMPreset the preset you wished to inspect
     function getGBMPreset(uint256 index) external view returns(GBM_preset memory);
+
+    /// @notice Get the total number of presets registered in the GBM diamond
+    /// @param index The index of the preset you wish to inspect
+    /// @return amount the GBM presets amount
+    function getGBMPresetsAmount(uint256 index) external view returns(uint256);
+
+    /// @notice Get a preset's name: 
+    /// @param index The index of the preset you wish to inspect
+    /// @return name the name of the GBM preset
+    function getGBMPreset_Name(uint256 index) external view returns(string memory);
 
     /// @notice Get a preset's auctionDuration: 
     /// @param index The index of the preset you wish to inspect
@@ -150,7 +161,6 @@ interface IGBMGettersFacet {
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return incentiveGrowthMultiplier The growth factor in a GBM auction
     function getSale_GBMPreset_IncentiveGrowthMultiplier(uint256 saleID) external view returns(uint256);
-
     
     /// @notice Get the sale's currencyID
     /// @param saleID The ID of the sale you wish to know the details of
@@ -182,7 +192,6 @@ interface IGBMGettersFacet {
     /// @return beneficiary The address of the beneficiary of a sale
     function getSale_Beneficiary(uint256 saleID) external view returns(address);
 
-    
     /// @notice Get the sale's GBM debt
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return debt The amount of currency distributed in incentives
@@ -212,7 +221,6 @@ interface IGBMGettersFacet {
     /// @return currencyIndex The currency index of the currency the bid was made in.
     function getSale_Bid_CurrencyIndex(uint256 saleID, uint256 bidIndex) external view returns(uint256);
 
-    
     /// @notice Get the sale's bid currency address
     /// @param saleID The ID of the sale you wish to know the details of
     /// @param bidIndex The position of the bid you wish to know the details of. Starts at 1.
@@ -244,7 +252,6 @@ interface IGBMGettersFacet {
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return currencyIndex The currency index of the currency the bid was made in.
     function getSale_HighestBid_CurrencyIndex(uint256 saleID) external view returns(uint256);
-
     
     /// @notice Get the sale's highest bid currency address
     /// @param saleID The ID of the sale you wish to know the details of
@@ -260,7 +267,6 @@ interface IGBMGettersFacet {
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return numberOdBids The number of bids made in this auction
     function getSale_NumberOfBids (uint256 saleID) external view returns(uint256);
-
 
     /// @notice Get the withdrawable balance a smart contract user has
     /// @param smartContract The address of the smart contract that own a balance on the GBM smart contract.
