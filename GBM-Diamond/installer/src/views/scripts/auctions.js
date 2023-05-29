@@ -2225,7 +2225,6 @@ async function confirmAdminStatus() {
 } 
 
 async function getNumberOfAuctions() {
-  console.log(gettersContract);
   const availableAuctions = await gettersContract.methods.getTotalNumberOfSales().call();
   return availableAuctions;
 }
@@ -2290,6 +2289,7 @@ async function getAuctionInfoMinimal(saleID) {
     startTimestamp: await gettersContract.methods.getSale_StartTimestamp(saleID).call(),
     endTimestamp: await gettersContract.methods.getSale_EndTimestamp(saleID).call(),
     highestBidValue: web3.utils.fromWei(await gettersContract.methods.getSale_HighestBid_Value(saleID).call()),
+    gbmPreset: await gettersContract.methods.getSale_GBMPreset(saleID).call(), // can break this down further
   }
 }
 

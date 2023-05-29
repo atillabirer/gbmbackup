@@ -78,7 +78,6 @@
         <script>
             window.onload = async function() {
                 await loadContracts();
-                console.log('test');
                 const auctionNo = await getNumberOfAuctions();
                 const auctions = await loadAuctions(auctionNo);
                 const loader = document.getElementsByClassName('lds-ellipsis');
@@ -90,10 +89,11 @@
             };
 
             async function createNewAuctionTest() {
-                await startNewAuction(Math.floor(Math.random() * 20), "0xbf9006d65fcD2f479D348099037870aD6B6D430B", 0, 'test', 0, "0xbf9006d65fcD2f479D348099037870aD6B6D430B");
+                await startNewAuction(Math.floor(Math.random() * 999), "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 0, 'test', 0, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266");
             }
 
-            function retrieveNewAuction(newAuction) {
+            async function retrieveNewAuction(newAuction) {
+                const presets = await getPresets(newAuction.gbmPresetIndex);
                 const adjustedNewAuction = {
                     startTimestamp: newAuction.startTimestamp,
                     endTimestamp: newAuction.endTimeStamp,
@@ -102,6 +102,7 @@
                     highestBidValue: 0,
                     saleKind: newAuction.saleKind ?? 'GBM',
                     currencyName: newAuction.currencyName ?? 'FakETH',
+                    gbmPreset: presets ?? {},
                 }
                 generateAuctionElement(adjustedNewAuction, newAuction.saleID);
             }
@@ -111,6 +112,7 @@
             }
 
             function generateAuctionElement(auction, index) {
+                console.log(auction)
                 const auctionsContainer = document.getElementsByClassName('auction-container')
                 const auctionEl = document.createElement('div');
                 auctionEl.classList.add("auction");
@@ -118,28 +120,46 @@
 
                 if (auction.startTimestamp*1000 - Date.now() > 0) {
                     const auctionDate = new Date(parseInt(auction.startTimestamp * 1000)); 
-                    timeMessage = `Starts at: ${auctionDate.getHours()}:${("0"+auctionDate.getMinutes()).substr(-2)}:${("0"+auctionDate.getSeconds()).substr(-2)}`;
+                    timeMessage = `Starts at-${auctionDate.getHours()}:${("0"+auctionDate.getMinutes()).substr(-2)}:${("0"+auctionDate.getSeconds()).substr(-2)}`;
                 } else if (auction.endTimestamp*1000 - Date.now() >= 0){
                     const auctionDate = new Date(parseInt(auction.endTimestamp * 1000)); 
-                    timeMessage = `Ends at: ${auctionDate.getHours()}:${("0"+auctionDate.getMinutes()).substr(-2)}:${("0"+auctionDate.getSeconds()).substr(-2)}`;
+                    timeMessage = `Ends at-${auctionDate.getHours()}:${("0"+auctionDate.getMinutes()).substr(-2)}:${("0"+auctionDate.getSeconds()).substr(-2)}`;
                 } else {
                     timeMessage = 'Ended';
                 }
 
                 const auctionInnerHTML = `
-                    <h3 class="auction-header">
-                        Token #${auction.tokenID} - x${auction.tokenAmount} - ${auction.saleKind === '0x00000000' ? 'GBM' : 'Direct'}   
-                    </h3>
-                    <p class="auction-bid">
-                        Highest Bid: ${auction.highestBidValue} ${auction.currencyName}
-                    </p>  
-                    <p class="auction-end"> 
-                        ${timeMessage}
-                    </p>
-                    <button class="view-btn" onclick="redirectToAuction(${i+1})">
-                        View
-                    </button>
-                `
+                        <div class="auction-token"></div>
+                        <div class="separator-vertical"></div>
+                        <div class="auction-description">
+                            <div id="item-sold" class="auction-field">Sample Collection #${auction.tokenID}</div>
+                            <div id="amount-sold" class="auction-field">x${auction.tokenAmount}</div>
+                            <button class="view-btn-neo" onclick="redirectToAuction(${i+1})">View</button>
+                        </div>
+                        <div class="separator-vertical"></div>
+                        <div class="auction-bid">
+                            <h4>Highest Bid</h4>
+                            <div id="highest-bid" class="auction-field">${auction.highestBidValue} ${auction.currencyName}</div>
+                            <h4>Bidder</h4>
+                            <div id="bidder" class="auction-field">0xf39fd...b92266</div>
+                        </div>
+                        <div class="separator-vertical"></div>
+                        <div class="auction-status">
+                            <h4>${timeMessage.split("-")[0]}</h4>
+                            <div class="timer">${timeMessage.split("-")[0] === 'Ended' ? '' : timeMessage.split("-")[1]}</div>
+                        </div>                    
+                        <div class="separator-vertical"></div>
+                        <div class="auction-preset">
+                            <div class="presets-header">Settings</div>
+                            <div class="separator"></div>
+                            <div class="presets-container">
+                                <div id="hammer-time" class="auction-field">Hammer Time: ${auction.gbmPreset.hammerTimeDuration}</div>
+                                <div id="cancellation-time" class="auction-field">Cancellation Time: ${auction.gbmPreset.cancellationPeriodDuration}</div>
+                                <div id="step-min" class="auction-field">Step Min: ${auction.gbmPreset.stepMin}</div>
+                            </div>
+                        </div>
+                `;
+
                 auctionEl.innerHTML = auctionInnerHTML;
                 auctionsContainer[0].appendChild(auctionEl);
             }
