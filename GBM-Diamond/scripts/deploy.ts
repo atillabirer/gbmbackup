@@ -418,6 +418,7 @@ async function runTestAuction() {
 
     console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
+    gasPrice = await fetchGasPrice();
     //placing a bid for 10 wei
     tx = await gBMBiddingFacet.bid(
         bidIDRes, //SaleID 
@@ -456,7 +457,7 @@ async function runTestAuction() {
     console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
     console.log("Now starting to wait for the auctions to be claimable.");
-    console.log("⚠️   Make sure that the chain is minting blocks at regular intervals! ⚠️");
+    console.log("⚠️   Make sure that the chain is minting blocks at regular intervals or support evm_setTime ⚠️");
 
     let endTimeStampTarget 
     let auctionEndTime;
@@ -496,9 +497,28 @@ async function runTestAuction() {
                     await new Promise(resolve => setTimeout(resolve, (100 * 1000)));
                 }
             } else {
-                //Claming the auction
 
-                // TODO
+                //Current token sold in auction
+                let auctioNTOken = await gBMGettersFacet.getSale_TokenID(i);
+                let auctionContract = await  gBMGettersFacet.getSale_TokenAddress(i);
+                let tokenOwner = await erc721C.ownerOf(auctioNTOken);
+                console.log("TokenAddress: " + auctionContract +" AuctionTokenID: " + auctioNTOken);
+
+                console.log("Owner:" + tokenOwner);
+
+                console.log(erc721C.address);
+
+
+
+                //Claming the auction
+                console.log("Claming SaleID : " + i);
+                gasPrice = await fetchGasPrice();
+                tx = await gBMBiddingFacet.claim(
+                    i, //SaleID 
+                    {
+                        gasPrice: gasPrice,
+                    }
+                );
             }
      
         }

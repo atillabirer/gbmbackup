@@ -194,7 +194,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             //A properly implemented ERC721 contract should throw if the owner of a token is 0x0. Hence the raw call.
             (bool result, bytes memory data ) = s.saleToTokenAddress[auctionID].call(abi.encodeWithSignature("ownerOf(uint256)", s.saleToTokenId[auctionID]));
             if(result){
-                _from = address(uint160(bytes20(data)));
+                _from = abi.decode(data, (address));
             } // No else. A freshly pushed address is initialized to 0x0
 
             if(_highestBidIndex == 0) //Case of no bids : send NFT to seller
@@ -212,13 +212,14 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
                 s.erc721tokensAddressAndIDToEscrower[s.saleToTokenAddress[auctionID]][_tokenID] = address(0);
             }
   
-        } else if(s.saleToTokenKind[auctionID] == 0x973bb640){ //ERC 1155
+        } else if(s.saleToTokenKind[auctionID] == 0x973bb640){ //ERC 1155  //TODO
             //Get the owner of the asset
             address _from;
             //A properly implemented ERC721 contract should throw if the owner of a token is 0x0. Hence the raw call.
             (bool result, bytes memory data ) = s.saleToTokenAddress[auctionID].call(abi.encodeWithSignature("ownerOf(uint256)", s.saleToTokenId[auctionID]));
             if(result){
-                _from = address(uint160(bytes20(data)));
+                //_from = address(uint160(bytes20(data)));
+                _from = bytesToAddress(data);
             } // No else. A freshly pushed address is initialized to 0x0
 
             if(_highestBidIndex == 0) //Case of no bids : send NFT to seller
@@ -246,6 +247,12 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
         //TODO : Royalty checks
 
+    }
+
+    function bytesToAddress(bytes memory bys) private pure returns (address addr) {
+        assembly {
+            addr := mload(add(bys,20))
+        } 
     }
 
     
