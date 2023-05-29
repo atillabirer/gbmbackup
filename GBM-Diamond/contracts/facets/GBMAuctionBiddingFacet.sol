@@ -93,6 +93,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
         s.saleToBidValues[auctionID][_bidIndex] = newBidAmount;
         _dueIncentives = calculateIncentives(auctionID, newBidAmount, _prevBidAmount);
         s.saleToBidIncentives[auctionID][_bidIndex] = _dueIncentives;
+        s.saleToBidders[auctionID][_bidIndex] = msg.sender;
 
 
         emit AuctionBid_Placed(auctionID, _bidIndex, msg.sender, newBidAmount, _dueIncentives);
