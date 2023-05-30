@@ -11,6 +11,10 @@ import { IERC1155TokenReceiver } from "./IERC1155TokenReceiver.sol";
 import { IGBMCurrencyFacet } from "./facets/IGBMCurrencyFacet.sol";
 import { IGBMAdminFacet } from "./facets/IGBMAdminFacet.sol";
 import { IGBMEventsFacet } from "./facets/IGBMEventsFacet.sol";
+import { IGBMGettersFacet } from "./facets/IGBMGettersFacet.sol";
+import { IGBMAuctionBiddingFacet } from "./facets/IGBMAuctionBiddingFacet.sol";
+import { IGBMPrimaryAuctionRegistrationFacet } from "./facets/IGBMPrimaryAuctionRegistrationFacet.sol";
+
 
 /// @title GBM_Interface
 /// @dev Use this to generate ABIs or to interact with the diamond in general. It contains all the functions, even those you chose to disable.
@@ -23,4 +27,7 @@ interface GBM_Interface is  IGBMEventsFacet,
                             IERC721TokenReceiver, 
                             IERC1155TokenReceiver, 
                             IGBMAdminFacet, 
-                            IGBMCurrencyFacet {}
+                            IGBMCurrencyFacet,
+                            IGBMGettersFacet,
+                            IGBMAuctionBiddingFacet,
+                            IGBMPrimaryAuctionRegistrationFacet {}

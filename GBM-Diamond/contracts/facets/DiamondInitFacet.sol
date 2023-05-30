@@ -21,6 +21,7 @@ contract DiamondInitFacet {
     function init(uint256 _conf) external {
         LibDiamond.enforceIsContractOwner();
 
+        //TODO : Move it to getters and setters
         s.GBMAdminAccount = msg.sender;
         s.isLicensePaidOnChain = true;
         s.GBMFeePercentKage = 2000;
@@ -31,18 +32,6 @@ contract DiamondInitFacet {
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true; // Ownable
-
-        /*
-        if(_conf == 177013){
-            s.defaultCurrency = 1;
-            s.currencyNames[1] = "FakETH";
-            s.currencyAddress[1] = address(0);
-            s.defaultPreset = 1; 
-            s.GBMPresets[1] = GBM_preset(600, 300, 300, 5000, 1000, 10000, 11120);
-        }
-
-        */
-
     }
 
 }

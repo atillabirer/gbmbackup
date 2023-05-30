@@ -28,6 +28,7 @@ interface IGBMAdminFacet {
     /// @param incentiveMin The minimal %k incentive reward from a bid
     /// @param incentiveMax The maximal %k incentive reward from a bid
     /// @param incentiveGrowthMultiplier The growth factor in a GBM auction
+    /// @param firstMinBid The minimal amount of the first bid
     /// @param presetName The name of the preset
     function setGBMPreset(
         uint256 presetIndex,                    // Need to be either already existing or at the open position in the preset arrqy
@@ -38,6 +39,7 @@ interface IGBMAdminFacet {
         uint256 incentiveMin,                   // The minimal %k incentive reward from a bid
         uint256 incentiveMax,                   // The maximal %k incentive reward from a bid
         uint256 incentiveGrowthMultiplier,      // The growth factor in a GBM auction
+        uint256 firstMinBid,                     // The minimal amount of the first bid
         string calldata presetName              // The preset Name
     ) external;
 

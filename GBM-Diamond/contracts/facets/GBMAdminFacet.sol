@@ -48,6 +48,7 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
     /// @param incentiveMin The minimal %k incentive reward from a bid
     /// @param incentiveMax The maximal %k incentive reward from a bid
     /// @param incentiveGrowthMultiplier The growth factor in a GBM auction
+    /// @param firstMinBid The minimal amount of the first bid
     /// @param presetName The name of the preset
     function setGBMPreset (
         uint256 presetIndex, 
@@ -58,6 +59,7 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
         uint256 incentiveMin,                   // The minimal %k incentive reward from a bid
         uint256 incentiveMax,                   // The maximal %k incentive reward from a bid
         uint256 incentiveGrowthMultiplier,      // The growth factor in a GBM auction
+        uint256 firstMinBid,                    // The minimal amount of the first bid
         string calldata presetName              // The name of the preset
     ) external onlyAdmin {
 
@@ -71,7 +73,8 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
             stepMin:stepMin,                        
             incentiveMin:incentiveMin,                   
             incentiveMax:incentiveMax,                 
-            incentiveGrowthMultiplier:incentiveGrowthMultiplier  
+            incentiveGrowthMultiplier:incentiveGrowthMultiplier,
+            firstMinBid: firstMinBid  
         });
 
         s.GBMPresetName[presetIndex] = presetName;
@@ -90,6 +93,7 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
             incentiveMin,
             incentiveMax,
             incentiveGrowthMultiplier,
+            firstMinBid,
             presetName
         );
 

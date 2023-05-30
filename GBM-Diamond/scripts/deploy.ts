@@ -29,12 +29,12 @@ let diamondCutFacetAddress: string;
 let diamondAddress: string;
 let savedERC721Address: string;
 
-export function setDiamondAddress(address: string) { 
-    diamondAddress = address 
+export function setDiamondAddress(address: string) {
+    diamondAddress = address
 };
 
-export function setDiamondCutFacetAddress(address: string) { 
-    diamondCutFacetAddress = address 
+export function setDiamondCutFacetAddress(address: string) {
+    diamondCutFacetAddress = address
 };
 
 export function addToPreviousCuts(prevCut: any) {
@@ -182,6 +182,7 @@ async function setPresets() {
                 dapreset.incentiveMin,
                 dapreset.incentiveMax,
                 dapreset.incentiveGrowthMultiplier,
+                dapreset.firstMinBid,
                 dapreset.name,
                 {
                     gasPrice: gasPrice,
@@ -414,8 +415,6 @@ async function runTestAuction() {
             gasPrice: gasPrice,
         });
 
-
-    //Fetching the latest auctionID :
     bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
     numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
     highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
@@ -457,8 +456,46 @@ async function runTestAuction() {
     console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
 
-    console.log();
 
+    //Create an unsafe GBM auction
+    console.log("Creating test unsafe ERC1155 🐰 auction....");
+    gasPrice = await fetchGasPrice();
+    tx = await gBMAuctionRegistrationFacet.unsafeRegister1155auction(
+        6, //Token ID 
+        erc1155C.address, // tokenContractAddress, 
+        6, //Amount
+        0, //gbmPreset
+        timestamp, //Start time = ASAP
+        0, //currencyID
+        wallets[0].address, //beneficiary
+        {
+            gasPrice: gasPrice,
+        });
+
+    bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+    console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    //Create a safe GBM auction
+    console.log("Creating test safe ERC1155 🐰 auction....");
+    gasPrice = await fetchGasPrice();
+    tx = await gBMAuctionRegistrationFacet.safeRegister1155auction(
+        7, //Token ID 
+        erc1155C.address, // tokenContractAddress, 
+        7, //Amount
+        0, //gbmPreset
+        timestamp, //Start time = ASAP
+        0, //currencyID
+        wallets[0].address, //beneficiary
+        {
+            gasPrice: gasPrice,
+        });
+
+    bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+    console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
     console.log("Now starting to wait for the auctions to be claimable.");
     console.log("⚠️   Make sure that the chain is minting blocks at regular intervals or support evm_setTime ⚠️");
@@ -519,8 +556,6 @@ async function runTestAuction() {
 
 
     }
-
-
 
 
     //getSale_GBMPreset_CancellationPeriodDuration
@@ -743,6 +778,46 @@ async function runTestAuctionManual() {
 
 
     //getSale_GBMPreset_CancellationPeriodDuration
+    //Create an unsafe GBM auction
+    console.log("Creating test unsafe ERC1155 🐰 auction....");
+    gasPrice = await fetchGasPrice();
+    tx = await gBMAuctionRegistrationFacet.unsafeRegister1155auction(
+        6, //Token ID 
+        erc1155C.address, // tokenContractAddress, 
+        6, //Amount
+        0, //gbmPreset
+        timestamp, //Start time = ASAP
+        0, //currencyID
+        wallets[0].address, //beneficiary
+        {
+            gasPrice: gasPrice,
+        });
+
+    bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+    console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    //Create a safe GBM auction
+    console.log("Creating test safe ERC1155 🐰 auction....");
+    gasPrice = await fetchGasPrice();
+    tx = await gBMAuctionRegistrationFacet.safeRegister1155auction(
+        7, //Token ID 
+        erc1155C.address, // tokenContractAddress, 
+        7, //Amount
+        0, //gbmPreset
+        timestamp, //Start time = ASAP
+        0, //currencyID
+        wallets[0].address, //beneficiary
+        {
+            gasPrice: gasPrice,
+        });
+
+    bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+    console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
 
     console.log("Auctions ready to be tested manually\n\**********************************************\x1b[0m");
 }
