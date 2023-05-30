@@ -28,6 +28,8 @@ In order to modify the deployment parameters, you can edit the gbm.config file o
 
 Make sure both of the above are installed before going through the steps below.
 
+If you're having any issues scroll down to the Troubleshooting section.
+
 ## List of steps
 
 1) Clone the project
@@ -92,7 +94,8 @@ Navigate to the GBM Deployment page, and click on the 'Deploy' button at the bot
 
 ## Troubleshooting
  
-A lot of the issues you might come across can be best described as "Hardhat and MetaMask don't play well with each other". If a simple page refresh doesn't solve the issue, check the console logs of your browser. 
+A lot of the issues you might come across can be best described as "Hardhat and MetaMask don't play well with each other". You might have an issue fetching information right after a deployment due to MetaMask not syncing with Hardhat in time, but refreshing the page after a few seconds should solve that. If that doesn't solve the issue, check the console logs of your browser.
+
 Another solution would be to go to MetaMask and click on Account > Settings > Advanced > Clear Activity Tab Data, to reset your transaction nonce and keep the two plugins synchronized (this does not affect your other accounts).
 
 Similarly, shutting down the node annoyingly enough doesn't report the action to MetaMask. So assuming you wanted to relaunch everything from scratch you'd need to follow the steps below:

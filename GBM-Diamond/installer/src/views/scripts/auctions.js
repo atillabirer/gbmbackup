@@ -2314,7 +2314,6 @@ async function loadContracts() {
     diamondAddress = await localStorage.getItem("diamondAddress");
     web3 = new Web3(window.ethereum);
     const latest = await web3.eth.getBlockNumber()
-
     gbmContracts = new web3.eth.Contract(gbmAbi, diamondAddress);
 }
 

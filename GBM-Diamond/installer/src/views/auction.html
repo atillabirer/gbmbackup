@@ -113,7 +113,6 @@
 
                 await loadContracts();
                 const auction = await getAuctionInfo(saleId);
-                console.log(auction);
                 generateAuctionElements(auction);
                 const loader = document.getElementsByClassName("loading-container");
                 const container = document.getElementsByClassName("auction-container");
@@ -140,7 +139,6 @@
                 highestBid = newBidValue;
                 
                 minimumBid = parseFloat(newBidValue)*((parseFloat(stepMin)/100000) + 1)
-                console.log(minimumBid);
                 const minimumBidContainer = document.getElementsByClassName('minimum-bid');
                 minimumBidContainer[0].innerHTML = `Minimum bid: ${minimumBid} ${currencyName}`
             }
@@ -183,7 +181,6 @@
                 const incentiveContainer = document.getElementsByClassName('incentive');
                 const bidButton = document.getElementsByClassName('bid-btn')[0];
                 try {
-                    console.log(e.target.value);
                     const incentivePercentage = parseFloat(incentiveMax)/100000;
                     const incentiveContainer = document.getElementsByClassName('incentive');
                     const currentBidInput = parseFloat(e.target.value || 0)
@@ -278,14 +275,12 @@
                 const bidInput = document.getElementsByClassName('bid-input')[0].value;
                 const urlParams = new URLSearchParams(window.location.search);
                 const saleId = urlParams.get('saleId');
-                console.log(highestBid);
                 submitBid(parseInt(saleId), bidInput, highestBid);
             }
 
             async function claim() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const saleId = urlParams.get('saleId');
-                console.log("test");
                 await claimToken(saleId);
             }
         </script>

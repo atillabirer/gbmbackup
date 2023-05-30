@@ -2381,8 +2381,6 @@ async function callUpdatePreset(newName, index) {
 
     const inputs = document.getElementsByClassName(`preset${[index]}`);
     
-    console.log(index+1);
-
     await gbmContracts.methods.setGBMPreset(
         index+1, 
         inputs[0].value, // Auction Duration
