@@ -105,8 +105,22 @@ interface IGBMEventsFacet {
         uint256 incentivesPaid                  // How much incentive was earned with this bid
     );
 
+    /// **************************************************
+    /// ************ Auction Finishing Events ************
+    /// **************************************************
 
-
+  /// @dev This event emits whenever a new auction has been registered individually
+    event Auction_Claimed(
+        uint256 indexed saleID,                 // The id of auction
+        address tokenContractAddress,   // The address of the contract of the NFT being auctionned
+        uint256 tokenID,                // The ID of the token being auctionned
+        uint256 tokenAmount,                    // How many tokens sold at once in this auction
+        bytes4 tokenKind,                       // tokenKind = 0x73ad2146 if the token is ERC721, 0x973bb640 if the token is ERC1155
+        address beneficiary,                    // Who is the seller that is receiving the profits of the sale
+        uint256 winningBidAmount,               // How big was the winning bid
+        uint256 winningBidCurrencyIndex,        // In what currency was the winning bid
+        address winner                          // What is the adress of the winning bidder
+    );
 
 
 }
