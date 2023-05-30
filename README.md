@@ -1,6 +1,23 @@
 # GBM_Istari
 
+A GBM auction is an Open Ended, Incentivized English auction. More details on how it works here : https://www.gbm.auction      
 
+This codebase include ready to use smart contracts in order for you to deploy your own marketplaces on any EVM enabled Chains. You will be owning all the contracts deployed with full admin rights on all of those, as well as being able to control fees, presets, currencies, etc... 
+A demo Frontend is included so that you can iterate on top of it when integrating to your own marketplace. You can also use this frontend as a basis for a completely new marketplace.
+
+In order to modify the deployment parameters, you can edit the gbm.config file options yourself or use the upcoming wizard part of the deployment scripts.
+
+## Features coming very soon (Days) : 
+=> Secondary sales registration by third parties on whitelisted set of NFT smart contracts          
+=> Direct Sale support                
+=> TheGraph built in schema    
+=> Grace period           
+=> Admin Panel          
+=> Configuration wizard          
+=> Demo Frontend polish    
+
+## Feature Roadmap :
+=> Solidity codebase audit                
 
 # Launching the Demo
 
@@ -11,6 +28,8 @@
 
 Make sure both of the above are installed before going through the steps below.
 
+If you're having any issues scroll down to the Troubleshooting section.
+
 ## List of steps
 
 1) Clone the project
@@ -18,10 +37,11 @@ Make sure both of the above are installed before going through the steps below.
 3) cd GBM-Diamond
 4) npm install
 5) npm run build
-6) Import account #0 from the output to MetaMask
-7) Navigate to http://localhost:3000
-8) Click on the 'Add Local Chain to Metamask' button
-9) Go to the GBM Deployment page and click on the 'Deploy Button'
+6) Import account #0 from the output to 🦊 MetaMask 🦊              
+7) Add private key of account #0 to [hardhat.config.ts](GBM-Diamond/hardhat.config.ts)  (replace 0xdead[...]dead with the actual private key given to you by hardhat)
+8) Navigate to http://localhost:3000
+9) Click on the Metamask slider at the top right
+10) Go to the GBM Deployment page and click on the 'Deploy Button'
 
 To end the demo at any point tap Ctrl + C while focused on your terminal window. 
 ## Cloning the project
@@ -58,7 +78,15 @@ Let's start with the former. You should have noticed that your terminal likely w
 
 With that value in our clipboard, go to the MetaMask plugin on your browser of choice. Click on the abstract color collage that's diametrically opposed to the fox logo to access the Accounts menu, and click on 'Import account'. Paste the value from your clipboard to the empty field and click on Import to finalize the demo account creation. MetaMask will also switch to this account right away. 
 
-Go to http://localhost:3000 and click on the slider next to the fox logo. This will enable the use of metamask for this page.
+While you are still holding onto that private key, it needs to be added to one more place. In our project directory, open the file called hardhat.config.ts with your text editor of choice (VSCode recommended) and look at line 12:
+
+> accounts: ["0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead"], // Demo pkey
+
+Replace the hex value in the array (keeping the quotes) with your private key, and save the file. 
+
+Now reset the demo project by focusing on the terminal window and tapping Ctrl+C (even on Mac), then re-running 'npm run build'.
+
+Go to http://localhost:3000 and click on the slider next to the fox logo. This will enable the use of metamask for this page, as well as add the local node instance as an available network. 
 
 ## Deploying the GBM Diamond
 
@@ -66,7 +94,8 @@ Navigate to the GBM Deployment page, and click on the 'Deploy' button at the bot
 
 ## Troubleshooting
  
-A lot of the issues you might come across can be best described as "Hardhat and MetaMask don't play well with each other". If a simple page refresh doesn't solve the issue, check the console logs of your browser. 
+A lot of the issues you might come across can be best described as "Hardhat and MetaMask don't play well with each other". You might have an issue fetching information right after a deployment due to MetaMask not syncing with Hardhat in time, but refreshing the page after a few seconds should solve that. If that doesn't solve the issue, check the console logs of your browser.
+
 Another solution would be to go to MetaMask and click on Account > Settings > Advanced > Clear Activity Tab Data, to reset your transaction nonce and keep the two plugins synchronized (this does not affect your other accounts).
 
 Similarly, shutting down the node annoyingly enough doesn't report the action to MetaMask. So assuming you wanted to relaunch everything from scratch you'd need to follow the steps below:

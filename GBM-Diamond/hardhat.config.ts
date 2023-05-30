@@ -9,12 +9,12 @@ const config: HardhatUserConfig = {
     },
     actualHardhat: {
       url: "http://127.0.0.1:8545",
-      accounts: ["0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead"], // Demo pkey
+      accounts: ["0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead"], // <============== REPLACE THE PRIVATE KEY WITH THE ONE GIVEN TO YOU BY HARDHAT FOR DEMO
     },
-    moonbase: {
-      url: "some/url",
-      accounts: ["some/pk"],
-    },
+//     moonbase: {
+//       url: "some/url",
+//       accounts: ["some/pk"],
+//     },
   },
 };
 

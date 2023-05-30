@@ -2338,6 +2338,9 @@ async function addNewAuctionButtons() {
 async function loadAuctionListContracts() {
     diamondAddress = await localStorage.getItem("diamondAddress");
     web3 = new Web3(window.ethereum);
+    const latest = await web3.eth.getBlockNumber()
+    console.log(diamondAddress);
+    console.log(latest);
     gbmContracts = new web3.eth.Contract(gbmAbi, diamondAddress);
 }
 
@@ -2376,8 +2379,6 @@ async function loadAuctions(noOfAuctions) {
 
 async function getAuctionInfoMinimal(saleID) {
     const gbmPresetIndex = await gbmContracts.methods.getSale_GBMPresetIndex(saleID).call();
-    console.log(saleID)
-    console.log(gbmPresetIndex)
 
     return {
       saleKind: await gbmContracts.methods.getSale_SaleKind(saleID).call(),
@@ -2411,10 +2412,9 @@ function generateAuctionElement(auction, index) {
         timeMessage = 'Ended';
     }
 
-    console.log(auction);
 
     const auctionInnerHTML = `
-        <div class="auction-token" style="background-image: url('../images/whale${i+1}.png');"></div>
+        <div class="auction-token" style="background-image: url('../images/whale${i}.png');"></div>
         <div class="separator-vertical"></div>
         <div class="auction-description">
             <div id="item-sold" class="auction-field">Sample Collection #${auction.tokenID}</div>
@@ -2487,7 +2487,6 @@ function subscribeToNewAuctions(callback) {
     gbmContracts.events.AuctionRegistration_NewAuction({}, function(error, event) {
       // console.log(event);
     }).on('data', function(event) {
-        console.log(event.returnValues);
       callback(event.returnValues)
     }).on('changed', function(event) {
       // console.log(event);
