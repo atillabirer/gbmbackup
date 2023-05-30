@@ -36,9 +36,10 @@ Make sure both of the above are installed before going through the steps below.
 4) npm install
 5) npm run build
 6) Import account #0 from the output to MetaMask
-7) Navigate to http://localhost:3000
-8) Click on the 'Add Local Chain to Metamask' button
-9) Go to the GBM Deployment page and click on the 'Deploy Button'
+7) Add private key of account #0 to hardhat.config.ts
+8) Navigate to http://localhost:3000
+9) Click on the 'Add Local Chain to Metamask' button
+10) Go to the GBM Deployment page and click on the 'Deploy Button'
 
 To end the demo at any point tap Ctrl + C while focused on your terminal window. 
 ## Cloning the project
@@ -75,7 +76,13 @@ Let's start with the former. You should have noticed that your terminal likely w
 
 With that value in our clipboard, go to the MetaMask plugin on your browser of choice. Click on the abstract color collage that's diametrically opposed to the fox logo to access the Accounts menu, and click on 'Import account'. Paste the value from your clipboard to the empty field and click on Import to finalize the demo account creation. MetaMask will also switch to this account right away. 
 
-Go to http://localhost:3000 and click on the slider next to the fox logo. This will enable the use of metamask for this page.
+While you are still holding onto that private key, it needs to be added to one more place. In our project directory, open the file called hardhat.config.ts with your text editor of choice (VSCode recommended) and look at line 12:
+
+> accounts: ["0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead"], // Demo pkey
+
+Replace the hex value in the array (keeping the quotes) with your private key, and save the file. 
+
+Go to http://localhost:3000 and click on the slider next to the fox logo. This will enable the use of metamask for this page, as well as add the local node instance as an available network. 
 
 ## Deploying the GBM Diamond
 
