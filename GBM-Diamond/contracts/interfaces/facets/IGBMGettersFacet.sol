@@ -272,5 +272,35 @@ interface IGBMGettersFacet {
     /// @return balance How much base currency can be withdrawn using withdraw()
     function getSmartContractsUsersNativeCurrencyBalance (address smartContract) external view returns(uint256);
 
+    // @notice Get the claimed status of a sale
+    /// @param saleID The ID of the sale you wish to know the details of
+    /// @return claimed Wether or not a sale have already been settled
+    function getSale_Claimed(uint256 saleID) external view returns(bool);
+    
+    /// @notice Get the depositor of a 721 token
+    /// @param tokenAddress The address of the token that was deposited 
+    /// @param tokenID The tokenID of the deposited token
+    /// @return depositor The address of the depositor
+    function getERC721Token_depositor(address tokenAddress, uint256 tokenID) external view returns(address);
+    /// @notice Get the sale status of a 721 token
+    /// @param tokenAddress The address of the token that was deposited 
+    /// @param tokenID The tokenID of the deposited token
+    /// @return underSale True if the token is currently under sale
+    function getERC721Token_underSale(address tokenAddress, uint256 tokenID) external view returns(bool);
+
+    /// @notice Get the deposited amount of a 1155 token
+    /// @param tokenAddress The address of the token that was deposited 
+    /// @param tokenID The tokenID of the deposited token
+    /// @param depositor The address of the depositor
+    /// @return amount The amount deposited by the specified depostior
+    function getERC1155Token_depositor(address tokenAddress, uint256 tokenID, address depositor) external view returns(uint256);
+
+    /// @notice Get the deposited amount of a 1155 token under sale
+    /// @param tokenAddress The address of the token that were deposited and are under sale
+    /// @param tokenID The tokenID of the deposited token and are under sale
+    /// @param depositor The address of the depositor
+    /// @return amount The amount under sale by the specified depostior
+    function getERC1155Token_UnderSaleByDepositor(address tokenAddress, uint256 tokenID, address depositor) external view returns(uint256);
+
 }
 
