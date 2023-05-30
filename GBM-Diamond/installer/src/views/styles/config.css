@@ -36,7 +36,7 @@ h3 {
   color: #fff;
 }
 
-.presets {
+#presets {
   margin: 20px 0;
 }
 
@@ -60,10 +60,6 @@ h3 {
   align-content: center;
 }
 
-.presets {
-
-}
-
 .admin-address {
   color: #fff;
   font-size: larger;
@@ -84,13 +80,14 @@ h3 {
   margin: 10px auto;
 }
 
-.preset-display {
+.preset {
   border: 2px solid white;
   border-radius: 20px;
   padding: 10px;
   align-content: center;
   display: flex;
   flex-direction: column;
+  margin: 20px auto;
 }
 
 .preset-field {

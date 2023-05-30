@@ -285,6 +285,12 @@ let auctionAbi = [
         "internalType": "uint256",
         "name": "incentiveGrowthMultiplier",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "presetName",
+        "type": "string"
       }
     ],
     "name": "GBMPreset_Updated",
@@ -629,7 +635,45 @@ let gettersAbi = [
         "type": "uint256"
       }
     ],
+    "name": "getGBMPreset_Name",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
     "name": "getGBMPreset_StepMin",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getGBMPresetsAmount",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1399,6 +1443,25 @@ let gettersAbi = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "saleID",
+        "type": "uint256"
+      }
+    ],
+    "name": "getSmartContractsUsersNativeCurrencyBalance",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getTotalNumberOfSales",
     "outputs": [
@@ -1450,7 +1513,7 @@ let gettersAbi = [
     "stateMutability": "pure",
     "type": "function"
   }
-]
+];
 
 let adminAbi = [
   {
@@ -1739,6 +1802,12 @@ let adminAbi = [
         "internalType": "uint256",
         "name": "incentiveGrowthMultiplier",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "presetName",
+        "type": "string"
       }
     ],
     "name": "GBMPreset_Updated",
@@ -1824,6 +1893,11 @@ let adminAbi = [
         "internalType": "uint256",
         "name": "incentiveGrowthMultiplier",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "presetName",
+        "type": "string"
       }
     ],
     "name": "setGBMPreset",
@@ -2120,6 +2194,12 @@ let biddingAbi = [
         "internalType": "uint256",
         "name": "incentiveGrowthMultiplier",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "presetName",
+        "type": "string"
       }
     ],
     "name": "GBMPreset_Updated",
@@ -2187,6 +2267,7 @@ async function loadContracts() {
     gettersContract = new web3.eth.Contract(gettersAbi, diamondAddress);
     adminContract = new web3.eth.Contract(adminAbi, diamondAddress);
     biddingContract = new web3.eth.Contract(biddingAbi, diamondAddress);
+    console.log(gettersContract)
 }
 
 function subscribeToNewAuctions(callback) {
@@ -2314,7 +2395,7 @@ async function startNewAuction(tokenID, tokenContractAddress, gbmPreset, startTi
     /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
     /// @param beneficiary The address of whom should the proceed from the sales goes to.
     */
-    await auctionsContract.methods.unsafeRegister721Auction(tokenID, tokenContractAddress, gbmPreset, Math.ceil(Date.now() / 1000) + 300, currencyID, beneficiary).send({ from: window.ethereum.selectedAddress })
+    await auctionsContract.methods.unsafeRegister721Auction(tokenID, tokenContractAddress, gbmPreset, Math.ceil(Date.now() / 1000) + 30, currencyID, beneficiary).send({ from: window.ethereum.selectedAddress })
 }
 
 async function submitBid(auctionId, newBidAmount, previousHighestBidAmount) {
@@ -2324,9 +2405,15 @@ async function submitBid(auctionId, newBidAmount, previousHighestBidAmount) {
 }
 
 async function getPresets() {
-  const presetIndex = await gettersContract.methods.getGBMPresetDefault().call();
-  const presets = await gettersContract.methods.getGBMPreset(presetIndex).call();
-  return presets;
+  const presetAmount = await gettersContract.methods.getGBMPresetsAmount(0).call();
+
+  const presetsArray = Promise.all([...Array(parseInt(presetAmount)+1).keys()].map(async (item, index) => await gettersContract.methods.getGBMPreset(index).call()));
+  const presetsNames = Promise.all([...Array(parseInt(presetAmount)+1).keys()].map(async (item, index) => await gettersContract.methods.getGBMPreset_Name(index).call()));
+
+  return {
+    presets: (await presetsArray).slice(1), 
+    names: (await presetsNames).slice(1)
+  }
 }
 
 async function getGBMAdmin() {

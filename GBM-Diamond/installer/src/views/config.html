@@ -18,10 +18,6 @@
                     <label style="margin-right: 5px;">Account: </label>
                     <div id="metamask-account">Not connected</div>
                 </div>
-                <!-- <div class="metamask-text">
-                    <label>Diamond: </label>
-                    <div class="diamond-address"></div>
-                </div> -->
             </div>
             <div class="metamask-toggles"> 
                 <div class="metamask-activate">
@@ -35,17 +31,6 @@
                         <img class="metamask-logo" src="./images/metamask-fox.svg" />
                     </div>
                 </div>
-                <!-- <div class="metamask-activate">
-                    <div>
-                        <label class="switch">
-                            <input type="checkbox">;
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="environment">
-                        Test Mode
-                    </div>
-                </div> -->
             </div>
         </div>
         <div class="nav-bar">
@@ -63,42 +48,7 @@
                 <h1>GBM Admin Panel</h1>
                 <h3 id="diamond-address">Smart Contract:</h3>
                 <h3 id="admin-address">GBM Admin:</h3>
-                <div class="presets">
-                    <div class="preset-selector"></div>
-                    <div class="preset-display">
-                        <div class="preset-id">1 - Default Preset</div>
-                        <div class="separator"></div>
-                        <div class="preset-field">
-                            <div class="description">Auction Duration</div>
-                            <input class="preset-input"></input>
-                        </div>
-                        <div class="preset-field">
-                            <div class="description">Cancellation Period Duration</div>
-                            <input class="preset-input"></input>
-                        </div>
-                        <div class="preset-field">
-                            <div class="description">Hammer Time Duration</div>
-                            <input class="preset-input"></input>
-                        </div>
-                        <div class="preset-field">
-                            <div class="description">Incentive Growth Multiplier</div>
-                            <input class="preset-input"></input>
-                        </div>
-                        <div class="preset-field">
-                            <div class="description">Incentive Max</div>
-                            <input class="preset-input"></input>
-                        </div>
-                        <div class="preset-field">
-                            <div class="description">Incentive Min</div>
-                            <input class="preset-input"></input>
-                        </div>
-                        <div class="preset-field">
-                            <div class="description">Step Min</div>
-                            <input class="preset-input"></input>
-                        </div>
-                        <button class="update-btn" onclick="callUpdatePreset()">Update Preset</button>
-                    </div>
-                </div>
+                <div id="preset-container"></div>
             </div>
         </div>
         <div class="pre-deployment">
@@ -106,52 +56,6 @@
         </div>
         <script type="text/javascript" src="scripts/metamask.js"></script>
         <script type="text/javascript" src="scripts/navbar.js"></script>
-        <script type="text/javascript" src="scripts/auctions.js"></script>
-        <script>
-            window.onload = async function() {
-                await loadContracts();
-                
-                const diamondLabel = document.getElementById('diamond-address');
-                const adminLabel = document.getElementById('admin-address');
-
-                diamondLabel.innerHTML = `Smart Contract: ${localStorage.getItem('diamondAddress')}`;
-                adminLabel.innerHTML = `GBM Admin: ${await getGBMAdmin()}`;
-            
-                await fetchPresets();
-            };
-
-            async function fetchPresets() {
-                const inputs = document.getElementsByClassName('preset-input');
-                const presets = await getPresets();
-            
-                inputs[0].value = parseInt(presets.auctionDuration);
-                inputs[1].value = parseInt(presets.cancellationPeriodDuration);
-                inputs[2].value = parseInt(presets.hammerTimeDuration);
-                inputs[3].value = parseInt(presets.incentiveGrowthMultiplier);
-                inputs[4].value = parseInt(presets.incentiveMax);
-                inputs[5].value = parseInt(presets.incentiveMin);
-                inputs[6].value = parseInt(presets.stepMin);
-            }
-
-            async function callUpdatePreset() {
-                const updateBtn = document.getElementsByClassName('update-btn');
-                updateBtn.innerHTML = "Updating...";
-                updateBtn.disabled = true;
-
-                const inputs = document.getElementsByClassName('preset-input');
-                await updatePreset(
-                        inputs[0].value, // Auction Duration
-                        inputs[2].value, // Hammer Time Duration
-                        inputs[1].value, // Cancellation Period Duration
-                        inputs[6].value, // Step Min
-                        inputs[5].value, // Incentive Min
-                        inputs[4].value, // Incentive Max
-                        inputs[3].value, // Incentive Growth Multiplier
-                    );
-                
-                updateBtn.innerHTML = "Update Preset"
-                updateBtn.disabled = false;
-            }
-        </script>
+        <script type="text/javascript" src="scripts/config.js"></script>
     </body>
 </html>
