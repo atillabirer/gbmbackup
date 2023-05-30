@@ -40,9 +40,8 @@ interface IGBMGettersFacet {
     function getGBMPreset(uint256 index) external view returns(GBM_preset memory);
 
     /// @notice Get the total number of presets registered in the GBM diamond
-    /// @param index The index of the preset you wish to inspect
     /// @return amount the GBM presets amount
-    function getGBMPresetsAmount(uint256 index) external view returns(uint256);
+    function getGBMPresetsAmount() external view returns(uint256);
 
     /// @notice Get a preset's name: 
     /// @param index The index of the preset you wish to inspect
