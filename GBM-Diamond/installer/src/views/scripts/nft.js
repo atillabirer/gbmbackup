@@ -998,7 +998,8 @@ async function startNewAuction(tokenID, tokenContractAddress, gbmPreset, startTi
   /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
   /// @param beneficiary The address of whom should the proceed from the sales goes to.
   */
-  await auctionsContract.methods.safeRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary).send({ from: window.ethereum.selectedAddress });
+  console.log(`auctionsContract.methods.safeRegister721Auction(${tokenID}, ${tokenContractAddress}, ${gbmPreset}, ${startTimestamp}, ${currencyID}, ${beneficiary})`)
+  // await auctionsContract.methods.safeRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary).send({ from: window.ethereum.selectedAddress });
 }
 
 async function sendToEscrow(tokenId) {

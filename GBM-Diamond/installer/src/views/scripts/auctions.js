@@ -2425,3 +2425,7 @@ async function updatePreset(auctionDuration, hammerTimeDuration, cancellationPer
   const presetIndex = await gettersContract.methods.getGBMPresetDefault().call();
   await adminContract.methods.setGBMPreset(presetIndex, auctionDuration, hammerTimeDuration, cancellationPeriodDuration, stepMin, incentiveMin, incentiveMax, incentiveGrowthMultiplier).send({from: window.ethereum.selectedAddress, to: diamondAddress, gasLimit: 300000 });
 }
+
+async function claimToken(saleId) {
+  await biddingContract.methods.claim(saleId).send({from: window.ethereum.selectedAddress})
+}

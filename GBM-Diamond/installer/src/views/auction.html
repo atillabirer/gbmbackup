@@ -171,6 +171,11 @@
                     infoValueContainers[1].innerHTML = `This auction has ended!`;
                     bidInput.disabled = true;
                     bidInput.placeholder = 'This auction has ended.'
+
+                    const bidButton = document.getElementsByClassName('bid-btn')[0];
+                    bidButton.disabled = false;
+                    bidButton.innerHTML = "Claim Token";
+                    bidButton.onclick = () => {claim()}
                 }
             }
 
@@ -206,6 +211,8 @@
 
                 highestBid = auction.highestBidValue;
 
+                document.getElementsByClassName('media-container')[0].style = `background-image: url('../images/whale${auction.tokenID}.png')`
+
                 const labelContainers = document.getElementsByClassName('label');
                 let tsToUse;
 
@@ -240,6 +247,11 @@
                     infoValueContainers[1].innerHTML = `This auction has ended!`;
                     bidInput.placeholder = 'This auction has ended.'
                     bidInput.disabled = true;
+
+                    const bidButton = document.getElementsByClassName('bid-btn')[0];
+                    bidButton.disabled = false;
+                    bidButton.innerHTML = "Claim Token";
+                    bidButton.onclick = () => {claim()}
                 }
             }
 
@@ -268,6 +280,13 @@
                 const saleId = urlParams.get('saleId');
                 console.log(highestBid);
                 submitBid(parseInt(saleId), bidInput, highestBid);
+            }
+
+            async function claim() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const saleId = urlParams.get('saleId');
+                console.log("test");
+                await claimToken(saleId);
             }
         </script>
     </body>
