@@ -67,18 +67,18 @@ export async function performDeploymentStep(step: number) {
             return `Default currency has been set`;
         case 14:
             {
-                if(conf.AutomatedTests)
-                await runTestAuction();
+                if (conf.AutomatedTests)
+                    await runTestAuction();
             }
             return `Successfully performed the automated test auctions`;
         case 15:
             {
-                if(conf.RunTestAuction)
-                await runTestAuctionManual();
+                if (conf.RunTestAuction)
+                    await runTestAuctionManual();
             }
             return `Successfully created a set of test auctions`;
 
-        
+
         default:
             await deployFacet(step - 2);
             return `Deployed ${FacetNames[step - 2]}`
@@ -173,7 +173,7 @@ async function setPresets() {
                 dapreset.stepMin,
                 dapreset.incentiveMin,
                 dapreset.incentiveMax,
-                dapreset.incentiveGrowthMultiplier, 
+                dapreset.incentiveGrowthMultiplier,
                 dapreset.name,
                 {
                     gasPrice: gasPrice,
@@ -405,7 +405,7 @@ async function runTestAuction() {
         wallets[0].address, //beneficiary
         {
             gasPrice: gasPrice,
-    });
+        });
 
 
     //Fetching the latest auctionID :
@@ -669,7 +669,7 @@ async function runTestAuctionManual() {
         wallets[0].address, //beneficiary
         {
             gasPrice: gasPrice,
-    });
+        });
 
 
     //Fetching the latest auctionID :
@@ -719,7 +719,7 @@ async function runTestAuctionManual() {
     timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
     gasPrice = await fetchGasPrice();
     tx = await gBMAuctionRegistrationFacet.safeRegister721Auction(
-        2, //Token ID 
+        3, //Token ID 
         erc721C.address, // tokenContractAddress, 
         0, //gbmPreset
         timestamp, //Start time = ASAP
@@ -727,7 +727,13 @@ async function runTestAuctionManual() {
         wallets[0].address, //beneficiary
         {
             gasPrice: gasPrice,
-    });
+        });
+
+    //Fetching the latest auctionID :
+    bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+    console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
 
     //getSale_GBMPreset_CancellationPeriodDuration
