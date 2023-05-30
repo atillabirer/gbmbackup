@@ -54,6 +54,9 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         address beneficiary) external onlyAdmin() {
 
         require(IERC721(tokenContractAddress).ownerOf(tokenID) == address(this), "Please deposit the token in escrow first");
+        require(!s.erc721tokensAddressAndIDToUnderSale[tokenContractAddress][tokenID], "This token is already under sale");
+        s.erc721tokensAddressAndIDToUnderSale[tokenContractAddress][tokenID] = true;
+
 
         internalRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary);
 

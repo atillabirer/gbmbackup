@@ -205,6 +205,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             //If we were keeping track of escrow, unescrow it
             if(s.erc721tokensAddressAndIDToEscrower[s.saleToTokenAddress[auctionID]][_tokenID] != address(0)){
                 s.erc721tokensAddressAndIDToEscrower[s.saleToTokenAddress[auctionID]][_tokenID] = address(0);
+                s.erc721tokensAddressAndIDToUnderSale[s.saleToTokenAddress[auctionID]][_tokenID] = false;
             }
   
         } else if(s.saleToTokenKind[auctionID] == 0x973bb640){ //ERC 1155  //TODO
