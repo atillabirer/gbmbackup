@@ -756,6 +756,8 @@ async function main() {
     console.log("\x1b[0m");
 }
 
-// if (true) {
-//     main();
-// }
+conf = JSON.parse(require("./libraries/gbm.default.config.ts").conf);
+
+if (conf.AutomatedTests) {
+    main();
+}
