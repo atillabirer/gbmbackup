@@ -44,6 +44,16 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
         require(newBidAmount > 1, "newBidAmount cannot be 0");
 
+        
+        uint256 _presetIndex = s.saleToGBMPreset[auctionID];
+        if(_presetIndex == 0){
+            _presetIndex = s.defaultPreset;
+        }
+
+        //Checking if there was a min BID requirement
+        require(s.GBMPresets[_presetIndex].firstMinBid <= newBidAmount, "You need to bid higher or equal than the minimum bid for this preset");
+
+
         //Check the kind of currency used by the auction:
         uint256 _currencyID = s.saleTocurrencyID[auctionID];   
 
@@ -98,12 +108,6 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
         emit AuctionBid_Placed(auctionID, _bidIndex, msg.sender, newBidAmount, _dueIncentives);
 
-
-        uint256 _presetIndex = s.saleToGBMPreset[auctionID];
-
-        if(_presetIndex == 0){
-            _presetIndex = s.defaultPreset;
-        }
 
         //Extending the auction if bid placed at the end
         if(block.timestamp + s.GBMPresets[_presetIndex].hammerTimeDuration > s.saleToEndTimestamp[auctionID]){

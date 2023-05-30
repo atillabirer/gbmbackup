@@ -34,7 +34,6 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 startTimestamp, 
                                         uint256 currencyID, 
                                         address beneficiary) external onlyAdmin() {
-
         internalRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary);
     }
 
@@ -54,9 +53,6 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         address beneficiary) external onlyAdmin() {
 
         require(IERC721(tokenContractAddress).ownerOf(tokenID) == address(this), "Please deposit the token in escrow first");
-        require(!s.erc721tokensAddressAndIDToUnderSale[tokenContractAddress][tokenID], "This token is already under sale");
-        s.erc721tokensAddressAndIDToUnderSale[tokenContractAddress][tokenID] = true;
-
 
         internalRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary);
 
@@ -89,6 +85,9 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 currencyID, 
                                         address beneficiary
     ) internal{
+
+        require(!s.erc721tokensAddressAndIDToUnderSale[tokenContractAddress][tokenID], "This token is already under sale");
+        s.erc721tokensAddressAndIDToUnderSale[tokenContractAddress][tokenID] = true;
 
         require(currencyID != 0 || s.defaultCurrency != 0, "No currency have been set for the auction being registered");
         require(startTimestamp != 0, "The auction have no starting timestamp specified");
