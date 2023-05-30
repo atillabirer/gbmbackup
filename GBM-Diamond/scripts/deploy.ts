@@ -15,7 +15,7 @@ const FacetNames = [
     "GBMAdminFacet",
     "GBMAuctionBiddingFacet",
     "GBMCurrencyFacet",
-    "GBMEscrowFacet_NoTracking",
+    "GBMEscrowFacet_Tracking",
     "GBMGettersFacet",
     "GBMPrimaryAuctionRegistrationFacet"
 ];
@@ -170,9 +170,11 @@ async function setPresets() {
                 dapreset.stepMin,
                 dapreset.incentiveMin,
                 dapreset.incentiveMax,
-                dapreset.incentiveGrowthMultiplier, {
-                gasPrice: gasPrice,
-            });
+                dapreset.incentiveGrowthMultiplier, 
+                dapreset.name,
+                {
+                    gasPrice: gasPrice,
+                });
 
         }
 
@@ -279,7 +281,7 @@ async function runTestAuction() {
     console.log("ERC-20 token deployed at address: " + erc20C.address);
 
     //Deploying a test ERC721
-    console.log("Creating an ERC-721 token");
+    console.log("Creating an ERC-721 🐱 token");
     gasPrice = await fetchGasPrice();
     const erc721 = await ethers.getContractFactory("ERC721Generic");
     const erc721C = await erc721.deploy("GBM-TEST-721", "GBM721", {
@@ -288,7 +290,7 @@ async function runTestAuction() {
     await erc721C.deployed();
 
     //Deploying a test ERC1155
-    console.log("Creating an ERC-1155 token");
+    console.log("Creating an ERC-1155 🐰 token");
     gasPrice = await fetchGasPrice();
     const erc1155 = await ethers.getContractFactory("ERC1155Generic");
     const erc1155C = await erc1155.deploy("GBM-TEST-1155", "GBM1155", {
@@ -299,16 +301,15 @@ async function runTestAuction() {
     //console.log(erc1155C);
     console.log("ERC-1155 token deployed at address: " + erc1155C.address);
 
-
     //Minting a bunch of 721 
     for (let i = 0; i < 5; i++) {
-        console.log("Minting ERC-721 tokenID " + (tokenIDMintedSofar + 1));
+        console.log("Minting ERC-721 🐱 tokenID " + (tokenIDMintedSofar + 1));
         let tx = await erc721C.mint(
             tokenURIList[tokenIDMintedSofar],
             {
                 gasPrice: gasPrice,
             });
-        console.log("Transfering ERC-721 tokenID " + (tokenIDMintedSofar + 1) + " to the GBM diamond contract");
+        console.log("Transfering ERC-721 🐱 tokenID " + (tokenIDMintedSofar + 1) + " to the GBM diamond contract");
         tx = await erc721C["safeTransferFrom(address,address,uint256)"](
             wallets[0].address,
             diamondAddress,
@@ -324,7 +325,7 @@ async function runTestAuction() {
     //Minting a bunch of 1155 
     for (let i = 0; i < 5; i++) {
 
-        console.log("Minting 10 of ERC-1155 tokenID " + (tokenIDMintedSofar + 1));
+        console.log("Minting 10 of ERC-1155 🐰 tokenID " + (tokenIDMintedSofar + 1));
         let tx = await erc1155C.mint(
             (tokenIDMintedSofar + 1),
             10,
@@ -332,7 +333,7 @@ async function runTestAuction() {
             {
                 gasPrice: gasPrice,
             });
-        console.log("Transfering ERC-1155 tokenID " + (tokenIDMintedSofar + 1) + " to the GBM diamond contract");
+        console.log("Transfering ERC-1155 🐰 tokenID " + (tokenIDMintedSofar + 1) + " to the GBM diamond contract");
         tx = await erc1155C["safeTransferFrom(address,address,uint256,uint256,bytes)"](
             wallets[0].address,
             diamondAddress,
@@ -349,7 +350,7 @@ async function runTestAuction() {
     let timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
 
     //Create a safe GBM auction
-    console.log("Creating test unsafe ERC721 auction....");
+    console.log("Creating test unsafe ERC721 🐱 auction....");
     gasPrice = await fetchGasPrice();
     let tx = await gBMAuctionRegistrationFacet.unsafeRegister721Auction(
         1, //Token ID 
@@ -366,38 +367,29 @@ async function runTestAuction() {
     //Fetching the latest auctionID :
 
     let bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
-    //console.log(res);
-
     let numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
-
     let highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
 
     console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
-    //placing a bid for 10 wei
+    //placing a bid for 100 wei
     tx = await gBMBiddingFacet.bid(
         bidIDRes, //SaleID 
-        10,
+        100,
         0,
         {
             gasLimit: "312345",
             gasPrice: gasPrice,
-            value: 10
+            value: 100
         }
     );
 
-    //console.log(tx)
-
     numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
-
     highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
-
     console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
-
     //Create a safe GBM auction
-    console.log("Creating test safe ERC721 auction....");
-
+    console.log("Creating test safe ERC721 🐱 auction....");
     timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
     gasPrice = await fetchGasPrice();
     tx = await gBMAuctionRegistrationFacet.safeRegister721Auction(
@@ -409,48 +401,41 @@ async function runTestAuction() {
         wallets[0].address, //beneficiary
         {
             gasPrice: gasPrice,
-        });
+    });
 
 
     //Fetching the latest auctionID :
-
     bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
-    //console.log(res);
-
     numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
-
     highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
-
     console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
+    gasPrice = await fetchGasPrice();
     //placing a bid for 10 wei
     tx = await gBMBiddingFacet.bid(
         bidIDRes, //SaleID 
-        10,
+        100,
         0,
         {
             gasLimit: "312345",
             gasPrice: gasPrice,
-            value: 10
+            value: 100
         }
     );
 
-
     numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
-
     highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
-
     console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
-    //placing a bid for 20 wei
+    //placing a bid for 200 wei
     tx = await gBMBiddingFacet.bid(
         bidIDRes, //SaleID 
-        20,
-        10,
+        200,
+        100,
         {
             gasLimit: "312345",
             gasPrice: gasPrice,
-            value: 20
+            value: 200
         }
     );
 
@@ -460,58 +445,71 @@ async function runTestAuction() {
 
     console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
-    console.log("Now starting to wait for the auctions to be claimable.");
-    console.log("⚠️   Make sure that the chain is minting blocks at regular intervals! ⚠️");
 
-    let endTimeStampTarget 
+    console.log();
+
+
+    console.log("Now starting to wait for the auctions to be claimable.");
+    console.log("⚠️   Make sure that the chain is minting blocks at regular intervals or support evm_setTime ⚠️");
+
+    let endTimeStampTarget
     let auctionEndTime;
     let gracePeriod;
     let totalNumberOfSales = await gBMGettersFacet.getTotalNumberOfSales();
     let targetChainTimestamp;
 
-    for(let i =1; i <= totalNumberOfSales; i++){
-
+    for (let i = 1; i <= totalNumberOfSales; i++) {
         let delta = 1;
-        while(delta >=0){
+        while (delta > 0) {
             timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
 
             auctionEndTime = await gBMGettersFacet.getSale_EndTimestamp(i);
-            gracePeriod = await  gBMGettersFacet.getSale_GBMPreset_CancellationPeriodDuration(i);
-            targetChainTimestamp = auctionEndTime.add(gracePeriod);  
-            console.log("AuctionID: "+ i + " auctionEndTime is " + auctionEndTime + " with a grace period of " + gracePeriod + " seconds : Chain target timestamp for claim is " + targetChainTimestamp);
+            gracePeriod = await gBMGettersFacet.getSale_GBMPreset_CancellationPeriodDuration(i);
+            targetChainTimestamp = auctionEndTime.add(gracePeriod);
+            console.log("AuctionID: " + i + " auctionEndTime is " + auctionEndTime + " with a grace period of " + gracePeriod + " seconds : Chain target timestamp for claim is " + targetChainTimestamp);
             console.log("Current chain timestamp is " + timestamp);
 
             delta = parseInt(targetChainTimestamp.sub(timestamp).toString());
 
-            if(delta > 0 && delta < 100){
-                console.log("This is " + delta + "s in the future, waiting for " + (delta)+"s");
-                if(time){
+            if (delta > 0 && delta < 100) {
+                console.log("This is " + delta + "s in the future, waiting for " + (delta) + "s");
+                if (time) {
                     await time.increaseTo(targetChainTimestamp);
-                    await ethers.provider.send("evm_mine",[]);
+                    await ethers.provider.send("evm_mine", []);
                 } else {
                     await new Promise(resolve => setTimeout(resolve, (delta * 1000)));
                 }
-                
-            } else if(delta > 0){
+
+            } else if (delta > 0) {
                 console.log("This is " + delta + "s in the future, waiting for 100s");
-                if(time){
+                if (time) {
                     await time.increaseTo(targetChainTimestamp);
-                    await ethers.provider.send("evm_mine",[]);
+                    await ethers.provider.send("evm_mine", []);
                 } else {
                     await new Promise(resolve => setTimeout(resolve, (100 * 1000)));
                 }
             } else {
-                //Claming the auction
-
-                // TODO
+                console.log("This is " + delta + "s in the past, claiming now");
             }
-     
+
         }
+
+        //We have reach the timer, time to claim
+
+        //Claming the auction
+        console.log("Claming SaleID : " + i);
+        gasPrice = await fetchGasPrice();
+        tx = await gBMBiddingFacet.claim(
+            i, //SaleID 
+            {
+                gasPrice: gasPrice,
+            }
+        );
 
 
     }
 
-    
+
 
 
     //getSale_GBMPreset_CancellationPeriodDuration

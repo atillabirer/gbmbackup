@@ -22,7 +22,8 @@ interface IGBMEventsFacet {
         uint256 stepMin,
         uint256 incentiveMin,
         uint256 incentiveMax,
-        uint256 incentiveGrowthMultiplier
+        uint256 incentiveGrowthMultiplier,
+        string presetName
     );
 
     /// @dev This event emits whenever a default preset is set

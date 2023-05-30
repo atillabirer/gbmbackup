@@ -11,7 +11,18 @@ export const conf:any = JSON.stringify(
             "stepMin": 5000,
             "incentiveMin": 1000,
             "incentiveMax": 10000,
-            "incentiveGrowthMultiplier": 11120
+            "incentiveGrowthMultiplier": 11120,
+            "name": "GBM_Classic"
+        }, {
+            "presetIndex": 2,
+            "auctionDuration": 600,
+            "hammerTimeDuration": 300,
+            "cancellationPeriodDuration": 0,
+            "stepMin": 5000,
+            "incentiveMin": 0,
+            "incentiveMax": 0,
+            "incentiveGrowthMultiplier": 0,
+            "name": "English_Breakfast"
         }
     ],
     "CurrenciesArray": [{

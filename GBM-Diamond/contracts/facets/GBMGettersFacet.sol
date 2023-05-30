@@ -55,8 +55,24 @@ contract GBMGettersFacet is IGBMGettersFacet {
 
     /// @notice Get a preset usable by auctions on the marketplace
     /// @param index The index of the preset you wish to inspect
+    /// @return GBMPreset the gbm preset
     function getGBMPreset(uint256 index) external view returns(GBM_preset memory){
         return s.GBMPresets[index];
+    }
+
+    /// @notice Get the total number of presets registered in the GBM diamond
+    /// @param index The index of the preset you wish to inspect
+    /// @return amount the gbm presets amount
+    function getGBMPresetsAmount(uint256 index) external view returns(uint256){
+        return s.GBMPresetsAmount;
+    }
+
+
+    /// @notice Get a preset's name: 
+    /// @param index The index of the preset you wish to inspect
+    /// @return name the name of the GBM preset
+    function getGBMPreset_Name(uint256 index) external view returns(string memory){
+        return s.GBMPresetName[index];
     }
 
     /// @notice Get a preset's auctionDuration: 
@@ -500,5 +516,13 @@ contract GBMGettersFacet is IGBMGettersFacet {
     function getSmartContractsUsersNativeCurrencyBalance (address smartContract) external view returns(uint256){
         return s.smartContractsUsersNativeCurrencyBalance[smartContract];
     }
+
+    /// @notice Get the claimed status of a sale
+    /// @param saleID The ID of the sale you wish to know the details of
+    /// @return claimed Wether or not a sale have already been settled
+    function getSmartContractsUsersNativeCurrencyBalance (uint256 saleID) external view returns(bool){
+        return s.saleToClaimed[saleID];
+    }
+    
 
 }

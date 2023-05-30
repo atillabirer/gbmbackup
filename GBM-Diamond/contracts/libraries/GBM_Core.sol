@@ -14,7 +14,7 @@ struct GBM_preset{
     uint256 stepMin;                        // The minimal %k increase between two successive bids   
     uint256 incentiveMin;                   // The minimal %k incentive reward from a bid
     uint256 incentiveMax;                   // The maximal %k incentive reward from a bid
-    uint256 incentiveGrowthMultiplier;                  // The growth factor in a GBM auction
+    uint256 incentiveGrowthMultiplier;      // The growth factor in a GBM auction
 }
 
 //Design philosophy : 
@@ -45,6 +45,8 @@ struct GBMStorage {
 
 
     mapping (uint256 => GBM_preset) GBMPresets;    // The list of presets usable by auctions on the marketplace
+    mapping (uint256 => string) GBMPresetName;    // The name of a GBM preset
+    uint256 GBMPresetsAmount;                       // The total number of presets
     uint256 defaultPreset;                         // The default preset used by auctions
 
     uint256 totalNumberOfSales;                      //Total number of sales ran by the contract so far
@@ -55,7 +57,9 @@ struct GBMStorage {
     mapping (uint256 => uint256) saleToTokenId;         // A mapping storing the associated tokenID with a sale
     mapping (uint256 => uint256) saleToTokenAmount;     // A mapping storing the associated tokenAmount offered by a sale
     mapping (uint256 => bytes4) saleToTokenKind;        // A mapping storing the associated tokenKind with a sale
-                                                        //  _tokenKind = 0x73ad2146 if the token is ERC721, 0x973bb640 if the token is ERC1155
+                                                            //  _tokenKind = 0x73ad2146 if the token is ERC721, 0x973bb640 if the token is ERC1155
+    mapping (uint256 => bytes4) saleToTokenFrom;        // A mapping storing where a token from a sale is gonna be transferred from. 
+                                                            //ie : is it in escrow with the GBM smart contract or simply approved by the beneficiary
 
     mapping (uint256 => uint256) saleToGBMPreset;           // A mapping storing the associated GBM preset with a sale
     mapping (uint256 => uint256) saleTocurrencyID;          // A mapping storing the associated main currency with a sale
@@ -77,6 +81,8 @@ struct GBMStorage {
     mapping (address => mapping(uint256 => address)) erc721tokensAddressAndIDToEscrower; //A mapping keeping track of who deposited an ERC721 token in escrow
     mapping (address => mapping(uint256 => mapping(address => uint256))) erc1155tokensAddressAndIDToEscrowerAmount; //A mapping keeping track of how much by whom ERC1155 tokens have been deposited in escrow    
     mapping (address => mapping(uint256 => mapping(address => uint256))) erc1155tokensAddressAndIDToEscrowerUnderSaleAmount; //A mapping keeping track of how much by whom ERC1155 tokens are under sale 
-    mapping (uint256 => uint256) saleToSeller; // A mapping storing who has deposited the token in escrow and created the sale                                            
+    mapping (uint256 => uint256) saleToSeller; // A mapping storing who has deposited the token in escrow and created the sale       
+
+     mapping (uint256 => bool) saleToClaimed; // A mapping storing wether or not a sale have been settled                                          
 }
 
