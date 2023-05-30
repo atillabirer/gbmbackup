@@ -241,12 +241,6 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
     }
 
-    function bytesToAddress(bytes memory bys) private pure returns (address addr) {
-        assembly {
-            addr := mload(add(bys,20))
-        } 
-    }
-
     
     /// @notice Calculating and setting how much payout a bidder will receive if outbid
     /// @dev Only callable internally
