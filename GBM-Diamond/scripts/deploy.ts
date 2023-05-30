@@ -181,6 +181,7 @@ async function setPresets() {
                 dapreset.incentiveMin,
                 dapreset.incentiveMax,
                 dapreset.incentiveGrowthMultiplier,
+                dapreset.firstMinBid,
                 dapreset.name,
                 {
                     gasPrice: gasPrice,

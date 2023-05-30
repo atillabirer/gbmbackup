@@ -23,6 +23,7 @@ interface IGBMEventsFacet {
         uint256 incentiveMin,
         uint256 incentiveMax,
         uint256 incentiveGrowthMultiplier,
+        uint256 firstMinBid,
         string presetName
     );
 
