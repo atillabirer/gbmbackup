@@ -82,6 +82,8 @@ While you are still holding onto that private key, it needs to be added to one m
 
 Replace the hex value in the array (keeping the quotes) with your private key, and save the file. 
 
+Now reset the demo project by focusing on the terminal window and tapping Ctrl+C (even on Mac), then re-running 'npm run build'.
+
 Go to http://localhost:3000 and click on the slider next to the fox logo. This will enable the use of metamask for this page, as well as add the local node instance as an available network. 
 
 ## Deploying the GBM Diamond
