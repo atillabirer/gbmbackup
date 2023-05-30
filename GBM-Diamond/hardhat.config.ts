@@ -11,10 +11,10 @@ const config: HardhatUserConfig = {
       url: "http://127.0.0.1:8545",
       accounts: ["0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead"], // Demo pkey
     },
-    moonbase: {
-      url: "some/url",
-      accounts: ["some/pk"],
-    },
+//     moonbase: {
+//       url: "some/url",
+//       accounts: ["some/pk"],
+//     },
   },
 };
 
