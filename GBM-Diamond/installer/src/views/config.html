@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="styles/config.css" />
+        <link rel="stylesheet" href="styles/navbar.css" />
+        <link rel="stylesheet" href="styles/metamask.css" />
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
+    </head>
+    <body>
+        <div class="metamask-bar">
+            <div class="metamask-toggles">
+                <div class="metamask-activate metamask-text">
+                    <label style="margin-right: 5px;">Account: </label>
+                    <div id="metamask-account">Not connected</div>
+                </div>
+            </div>
+            <div class="metamask-toggles"> 
+                <div class="metamask-activate">
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" id="metamask-enable">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div>
+                        <img class="metamask-logo" src="./images/metamask-fox.svg" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-bar">
+            <div>
+                <img class="gbm-logo" src="./images/gbm-logo.svg" />
+            </div>
+            <div class="nav-links">
+                <a class="deployment-required" hidden href="/auctions">Browse Auctions</a>
+                <a class="deployment-required" hidden href="/tokens">Demo NFTs</a>
+                <a class="deployment-required" hidden href="/admin">Admin Panel</a>
+                <a href="/deployment">GBM Deployment</a>
+            </div>
+        </div>
+        <div class="deployment-required" hidden>
+            <div class="config-page">
+                <h1>GBM Admin Panel</h1>
+                <h3 id="diamond-address">Smart Contract:</h3>
+                <h3 id="admin-address">GBM Admin:</h3>
+                <div id="preset-container"></div>
+            </div>
+        </div>
+        <div class="pre-deployment">
+            Please go through the deployment step first!
+        </div>
+        <script type="text/javascript" src="scripts/metamask.js"></script>
+        <script type="text/javascript" src="scripts/navbar.js"></script>
+        <script type="text/javascript" src="scripts/config.js"></script>
+    </body>
+</html>
