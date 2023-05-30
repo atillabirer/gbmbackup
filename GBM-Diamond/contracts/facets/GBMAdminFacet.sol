@@ -61,7 +61,7 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
         string calldata presetName              // The name of the preset
     ) external onlyAdmin {
 
-        require((s.GBMPresetsAmount+1) <= presetIndex, "Preset doesn't exist or is too far ahead in the index to be added");
+        require((s.GBMPresetsAmount+1) >= presetIndex, "Preset doesn't exist or is too far ahead in the index to be added");
 
         // Setting the preset
         s.GBMPresets[presetIndex] = GBM_preset({
@@ -75,7 +75,6 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
         });
 
         s.GBMPresetName[presetIndex] = presetName;
-
 
         if(presetIndex > s.GBMPresetsAmount){ //id expanding the pseudo array
             s.GBMPresetsAmount++;

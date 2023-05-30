@@ -61,12 +61,10 @@ contract GBMGettersFacet is IGBMGettersFacet {
     }
 
     /// @notice Get the total number of presets registered in the GBM diamond
-    /// @param index The index of the preset you wish to inspect
     /// @return amount the gbm presets amount
-    function getGBMPresetsAmount(uint256 index) external view returns(uint256){
+    function getGBMPresetsAmount() external view returns(uint256){
         return s.GBMPresetsAmount;
     }
-
 
     /// @notice Get a preset's name: 
     /// @param index The index of the preset you wish to inspect
