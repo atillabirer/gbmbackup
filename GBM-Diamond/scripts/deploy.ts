@@ -49,7 +49,7 @@ async function fetchGasPrice() {
 }
 
 export async function performDeploymentStep(step: number) {
-    conf = JSON.parse(require("./libraries/gbm.default.config.ts").conf);
+    conf = JSON.parse(require("../gbm.config.ts").conf);
     //switching colour to black on white
     switch (step) {
         case 0:
@@ -97,7 +97,7 @@ async function deployDiamondCutFacet() {
     });
     await diamondCutFacet.deployed();
     diamondCutFacetAddress = diamondCutFacet.address
-    console.log("DiamondCutFacet deployed:", diamondCutFacet.address,);
+    //console.log("DiamondCutFacet deployed:", diamondCutFacet.address,);
 }
 
 async function deployDiamond() {
@@ -139,7 +139,7 @@ async function cutDiamond() {
 
     const reloadInitFacet = await ethers.getContractAt(FacetNames[0], cut[0].facetAddress);
 
-    console.log(reloadInitFacet.interface)
+    //console.log(reloadInitFacet.interface)
     let functionCall = reloadInitFacet.interface.encodeFunctionData("init", [177013]); //Henshin
     let gasPrice = await fetchGasPrice();
 
@@ -157,7 +157,7 @@ async function cutDiamond() {
 async function setPresets() {
     const gBMAdminFacet = await ethers.getContractAt("GBMAdminFacet", diamondAddress);
 
-    console.log(gBMAdminFacet);
+    //console.log(gBMAdminFacet);
 
     let tx;
     let gasPrice;
@@ -756,6 +756,8 @@ async function main() {
     console.log("\x1b[0m");
 }
 
-// if (true) {
-//     main();
-// }
+conf = JSON.parse(require("../gbm.config.ts").conf);
+
+if (conf.AutomatedTests) {
+    main();
+}
