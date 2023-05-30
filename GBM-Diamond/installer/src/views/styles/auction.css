@@ -87,6 +87,20 @@ body {
     border: none;
     padding: 10px;
     font-size: x-large;
+    cursor: text;
+}
+
+.bid-input:disabled {
+    margin: 14px 0;
+    height: 4rem;
+    width: 100%;
+    background-color: transparent;
+    border-radius: 10px;
+    color: #fff;
+    border: 1px dotted #49BEB7;
+    padding: 10px;
+    font-size: x-large;
+    cursor: not-allowed;
 }
 
 .tooltip {
@@ -106,6 +120,7 @@ body {
 }
 
 .bid-btn { 
+    cursor: pointer;
     margin: 5px 0;
     height: 4rem;
     width: 100%;
@@ -117,7 +132,14 @@ body {
     font-size: x-large;
 }
 
+.bid-btn:disabled { 
+    cursor: not-allowed;
+    background-color: transparent;
+    border: 2px solid #fff;
+}
+
 .share-btn {
+    cursor: not-allowed;
     margin: 5px 0;
     height: 4rem;
     width: 100%;
