@@ -164,6 +164,7 @@
                         case 'TST':
                             document.getElementsByClassName('terminal-text')[0].innerHTML += 'All done!<br/>';
                             step++;
+                            saveDeployerStatus(commands);
                             updateProgress();
                             deployButton.innerHTML = "Deployment complete!"
                             setResetState();
@@ -197,6 +198,8 @@
                         localStorage.setItem("facets", commands[3]);
                         facets = commands[3];
                         break;
+                    case "TST":
+                        localStorage.setItem("erc721contract", commands[2]);
                     default:
                         break;
                 }

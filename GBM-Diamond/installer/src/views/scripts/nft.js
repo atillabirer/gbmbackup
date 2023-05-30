@@ -1,4 +1,4 @@
-const erc721contractAddress = "0x68b1d87f95878fe05b998f19b66f4baba5de1aed"
+const erc721contractAddress = localStorage.getItem('erc721contract');
 
 let erc721Abi = [
   {

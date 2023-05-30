@@ -27,6 +27,7 @@ let facets: any[] = [];
 
 let diamondCutFacetAddress: string;
 let diamondAddress: string;
+let savedERC721Address: string;
 
 export function setDiamondAddress(address: string) { 
     diamondAddress = address 
@@ -68,18 +69,18 @@ export async function performDeploymentStep(step: number) {
             await setCurrency();
             return [`SERVER || MSG || Default currency has been set`, `SERVER || CRC`];
         case 14:
-            {
-                if (conf.AutomatedTests)
-                    await runTestAuction();
-            }
-            return `Successfully performed the automated test auctions`;
-        case 15:
-            {
-                if (conf.RunTestAuction)
+        //     {
+        //         if (conf.AutomatedTests)
+        //             await runTestAuction();
+        //     }
+        //     return `Successfully performed the automated test auctions`;
+        // case 15:
+        //     {
+        //         if (conf.RunTestAuction)
                     await runTestAuctionManual();
-            }
-            return `Successfully created a set of test auctions`;
-            return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST`];
+            // }
+            // return `Successfully created a set of test auctions`;
+            return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
         default:
             await deployFacet(step - 2);
             return [`SERVER || MSG || Deployed ${FacetNames[step - 2]}`, `SERVER || FT || ${JSON.stringify(cut)} || ${JSON.stringify(facets)}`];
@@ -636,7 +637,7 @@ async function runTestAuctionManual() {
             gasPrice: gasPrice,
         });
 
-
+    savedERC721Address = erc721C.address;
     //Fetching the latest auctionID :
 
     let bidIDRes = await gBMGettersFacet.getTotalNumberOfSales();
