@@ -8,41 +8,6 @@ import { GBM_preset } from "../../libraries/GBM_Core.sol";
 /// @author Guillaume Gonnaud
 interface IGBMPrimaryAuctionRegistrationFacet {
     
-    /// @notice Register a 721 auction without checking for token ownership
-    /// @dev Useful for example if you have a custom 721 contract that will mint the token at the end of the auction 
-    /// when the safeTransfer function is called. Throw if not called by the GBM admin.
-    /// @param tokenID The token ID of the ERC721 NFT for sale
-    /// @param tokenContractAddress The address of the smart contract of the NFT for sale
-    /// @param gbmPreset The id of the GBM preset used for this auction. 0 to use the default one.
-    /// @param startTimestamp The timestamp of when the auction should start.
-    /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
-    /// @param beneficiary The address of whom should the proceed from the sales goes to.
-    function unsafeRegister721Auction(uint256 tokenID, 
-                                        address tokenContractAddress, 
-                                        uint256 gbmPreset, 
-                                        uint256 startTimestamp, 
-                                        uint256 currencyID, 
-                                        address beneficiary) external;
-    
-
-
-    // SPDX-License-Identifier: UNLICENSED
-// © Copyright 2023. Patent pending. All rights reserved. Perpetual Altruism Ltd.
-pragma solidity 0.8.19; 
-
-import { IGBMPrimaryAuctionRegistrationFacet } from "../interfaces/facets/IGBMPrimaryAuctionRegistrationFacet.sol";
-import { GBMStorage } from "../libraries/GBM_Core.sol";
-import { IGBMEventsFacet } from "../interfaces/facets/IGBMEventsFacet.sol";
-import { IERC721 } from "../interfaces/IERC721.sol";
-
-contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFacet,IGBMEventsFacet {
-
-    GBMStorage internal s;
-
-    modifier onlyAdmin() {
-        require(msg.sender == s.GBMAdminAccount, "Function only callable by the GBM admin");
-        _;
-    }
 
     /// @notice Register a 721 auction without checking for token ownership
     /// @dev Useful for example if you have a custom 721 contract that will mint the token at the end of the auction,
@@ -63,6 +28,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 currencyID, 
                                         address beneficiary) external;
 
+
     /// @notice Register a 721 auction and checking for token ownership
     /// @dev The default way to register your auctions one by one
     /// @param tokenID The token ID of the ERC721 NFT for sale
@@ -77,6 +43,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 startTimestamp, 
                                         uint256 currencyID, 
                                         address beneficiary) external;
+
 
     /// @notice Register a 1155 auction without checking for token ownership
     /// @dev This allow for cheaper deposit of the 1155 tokens, as you can bypass escrow tracking and settlement. Also allow
@@ -113,6 +80,5 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 startTimestamp, 
                                         uint256 currencyID, 
                                         address beneficiary) external;
-
 
 }
