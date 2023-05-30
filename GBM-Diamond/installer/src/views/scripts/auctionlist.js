@@ -2414,7 +2414,7 @@ function generateAuctionElement(auction, index) {
     console.log(auction);
 
     const auctionInnerHTML = `
-        <div class="auction-token" style="background-image: url('../images/whale${i+1}.png');"></div>
+        <div class="auction-token" style="background-image: url('../images/whale${i}.png');"></div>
         <div class="separator-vertical"></div>
         <div class="auction-description">
             <div id="item-sold" class="auction-field">Sample Collection #${auction.tokenID}</div>
