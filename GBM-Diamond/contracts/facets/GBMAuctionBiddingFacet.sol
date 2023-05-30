@@ -6,6 +6,7 @@ import { IGBMAuctionBiddingFacet } from "../interfaces/facets/IGBMAuctionBidding
 import "../libraries/GBM_Core.sol";
 import { IERC20 } from "../interfaces/IERC20.sol";
 import { IERC721 } from "../interfaces/IERC721.sol";
+import { IERC1155 } from "../interfaces/IERC1155.sol";
 import { IGBMEventsFacet } from "../interfaces/facets/IGBMEventsFacet.sol";
 
 /// @title GBMAuctionBiddingFacet Contract
@@ -129,6 +130,8 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
         uint256 _highestBidIndex = s.saleToNumberOfBids[auctionID];
         address _highestBidder = s.saleToBidders[auctionID][_highestBidIndex];
         uint256 _debt = s.saleToDebt[auctionID];
+        address _beneficiary = s.saleToBeneficiary[auctionID];
+        address _tkc = s.saleToTokenAddress[auctionID];
 
         //Checking that the auction AND the grace period is over
         require(block.timestamp >= s.saleToEndTimestamp[auctionID] + s.GBMPresets[_presetIndex].cancellationPeriodDuration, "This auction cannot be claimed yet");
@@ -177,10 +180,10 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             //Sending money to beneficiary aka seller
             _due = _pot - _debt;
              if(_currAddress == address(0x0)){
-                   sendbaseCurrency(s.saleToBeneficiary[auctionID], _due);
+                   sendbaseCurrency(_beneficiary, _due);
             } else { // Case of an ERC20 token
                 //Transfer the money of the bidder to the GBM smart contract
-                IERC20(_currAddress).transferFrom(address(this), s.GBMAccount, _due);
+                IERC20(_currAddress).transferFrom(address(this), _beneficiary, _due);
             }
         }
 
@@ -191,52 +194,46 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             //Get the owner of the asset
             address _from;
             //A properly implemented ERC721 contract should throw if the owner of a token is 0x0. Hence the raw call.
-            (bool result, bytes memory data ) = s.saleToTokenAddress[auctionID].call(abi.encodeWithSignature("ownerOf(uint256)", s.saleToTokenId[auctionID]));
+            (bool result, bytes memory data ) = _tkc.call(abi.encodeWithSignature("ownerOf(uint256)", s.saleToTokenId[auctionID]));
             if(result){
                 _from = abi.decode(data, (address));
             } // No else. A freshly pushed address is initialized to 0x0
 
             if(_highestBidIndex == 0) //Case of no bids : send NFT to seller
             {
-                _highestBidder = s.saleToBeneficiary[auctionID];
+                _highestBidder = _beneficiary;
             }
 
             if(_from != _highestBidder){ //Prevent doing a stay in the same place move.
                 //We do a proper throwing safeTransfer here. Edge case of rogue highestBidder unable to receive the NFT to be handled by a separate function, not Claim.
-                IERC721(s.saleToTokenAddress[auctionID]).safeTransferFrom(_from, _highestBidder, _tokenID);
+                IERC721(_tkc).safeTransferFrom(_from, _highestBidder, _tokenID);
             }
 
             //If we were keeping track of escrow, unescrow it
-            if(s.erc721tokensAddressAndIDToEscrower[s.saleToTokenAddress[auctionID]][_tokenID] != address(0)){
-                s.erc721tokensAddressAndIDToEscrower[s.saleToTokenAddress[auctionID]][_tokenID] = address(0);
-                s.erc721tokensAddressAndIDToUnderSale[s.saleToTokenAddress[auctionID]][_tokenID] = false;
+            if(s.erc721tokensAddressAndIDToEscrower[_tkc][_tokenID] != address(0)){
+                s.erc721tokensAddressAndIDToEscrower[_tkc][_tokenID] = address(0);
+                s.erc721tokensAddressAndIDToUnderSale[_tkc][_tokenID] = false;
             }
   
-        } else if(s.saleToTokenKind[auctionID] == 0x973bb640){ //ERC 1155  //TODO
-            //Get the owner of the asset
-            address _from;
-            //A properly implemented ERC721 contract should throw if the owner of a token is 0x0. Hence the raw call.
-            (bool result, bytes memory data ) = s.saleToTokenAddress[auctionID].call(abi.encodeWithSignature("ownerOf(uint256)", s.saleToTokenId[auctionID]));
-            if(result){
-                //_from = address(uint160(bytes20(data)));
-               // _from = bytesToAddress(data);
-            } // No else. A freshly pushed address is initialized to 0x0
+        } else if(s.saleToTokenKind[auctionID] == 0x973bb640){ //ERC 1155
+            //In the case of 1155, we always assume the tokens are comming from the diamond contract.
 
             if(_highestBidIndex == 0) //Case of no bids : send NFT to seller
             {
-                _highestBidder = s.saleToBeneficiary[auctionID];
+                _highestBidder = _beneficiary;
             }
 
-            if(_from != _highestBidder){ //Prevent doing a stay in the same place move.
-                //We do a proper throwing safeTransfer here. Edge case of rogue highestBidder unable to receive the NFT to be handled by a separate function, not Claim.
-                IERC721(s.saleToTokenAddress[auctionID]).safeTransferFrom(_from, _highestBidder, _tokenID);
+            //We do a proper throwing safeTransfer here. Edge case of rogue highestBidder unable to receive the NFT to be handled by a separate function, not Claim.
+            IERC1155(_tkc).safeTransferFrom(address(this), _highestBidder, _tokenID, s.saleToTokenAmount[auctionID],"");
+       
+            if(s.erc1155tokensAddressAndIDToEscrowerAmount[_tkc][_tokenID][_beneficiary] != 0){ //If keeping tracks of 1155 deposits, undeposit it
+                s.erc1155tokensAddressAndIDToEscrowerAmount[_tkc][_tokenID][_beneficiary] -= s.saleToTokenAmount[auctionID];
             }
 
-            //If we were keeping track of escrow, unescrow it
-            if(s.erc721tokensAddressAndIDToEscrower[s.saleToTokenAddress[auctionID]][_tokenID] != address(0)){
-                s.erc721tokensAddressAndIDToEscrower[s.saleToTokenAddress[auctionID]][_tokenID] = address(0);
-            }
-  
+            //Remove those tokens from being currently under sale
+            s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[_tkc][_tokenID][_beneficiary] -= s.saleToTokenAmount[auctionID];
+
+
         }
 
         //TODO: Events

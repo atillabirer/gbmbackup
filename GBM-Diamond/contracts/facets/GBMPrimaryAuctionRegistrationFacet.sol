@@ -78,6 +78,31 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
         internalRegister1155AuctionUnsafe(tokenID, tokenContractAddress, amount, gbmPreset, startTimestamp, currencyID, beneficiary);
     }
 
+
+    /// @notice Register a 1155 auction and check for 1155 token ownership
+    /// @dev Make sure that the beneficiary is the wallet address that sent the 1155 tokens in escrow.
+    /// @param tokenID The token ID of the ERC721 NFT for sale
+    /// @param tokenContractAddress The address of the smart contract of the NFT for sale
+    /// @param amount Amount of token to be auctionned off
+    /// @param gbmPreset The id of the GBM preset used for this auction. 0 to use the default one.
+    /// @param startTimestamp The timestamp of when the auction should start.
+    /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
+    /// @param beneficiary The address of whom should the proceed from the sales goes to.
+    function safeRegister1155auction(  uint256 tokenID, 
+                                        address tokenContractAddress, 
+                                        uint256 amount,
+                                        uint256 gbmPreset, 
+                                        uint256 startTimestamp, 
+                                        uint256 currencyID, 
+                                        address beneficiary) external onlyAdmin() {
+
+
+        require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenID][beneficiary] + amount) <= 
+            s.erc1155tokensAddressAndIDToEscrowerAmount[tokenContractAddress][tokenID][beneficiary]
+            , "You cannot put that many 1155 tokens on sale without depositing more first");
+        internalRegister1155AuctionUnsafe(tokenID, tokenContractAddress, amount, gbmPreset, startTimestamp, currencyID, beneficiary);
+    }
+
     function internalRegister721Auction( uint256 tokenID, 
                                         address tokenContractAddress, 
                                         uint256 gbmPreset, 
@@ -169,7 +194,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
         s.saleToTokenAmount[_saleID] = amount;           // A mapping storing the associated tokenAmount offered by a sale
         s.saleToTokenKind[_saleID] = 0x973bb640;    // A mapping storing the associated tokenKind with a sale _tokenKind = 0x73ad2146 if the token is ERC721, 0x973bb640 if the token is ERC1155
 
-
+        s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenID][beneficiary] += amount;
                 
         uint256 _gbmPreset;
         if(_gbmPreset == 0){
