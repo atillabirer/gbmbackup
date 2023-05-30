@@ -49,7 +49,7 @@ async function fetchGasPrice() {
 }
 
 export async function performDeploymentStep(step: number) {
-    conf = JSON.parse(require("./libraries/gbm.default.config.ts").conf);
+    conf = JSON.parse(require("../gbm.config.ts").conf);
     //switching colour to black on white
     switch (step) {
         case 0:
@@ -756,7 +756,7 @@ async function main() {
     console.log("\x1b[0m");
 }
 
-conf = JSON.parse(require("./libraries/gbm.default.config.ts").conf);
+conf = JSON.parse(require("../gbm.config.ts").conf);
 
 if (conf.AutomatedTests) {
     main();
