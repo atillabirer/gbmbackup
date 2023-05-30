@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="styles/auctionlist.css" />
+        <link rel="stylesheet" href="styles/nft.css" />
         <link rel="stylesheet" href="styles/navbar.css" />
         <link rel="stylesheet" href="styles/metamask.css" />
         <script
@@ -18,10 +18,6 @@
                     <label style="margin-right: 5px;">Account: </label>
                     <div id="metamask-account">Not connected</div>
                 </div>
-                <!-- <div class="metamask-text">
-                    <label>Diamond: </label>
-                    <div class="diamond-address"></div>
-                </div> -->
             </div>
             <div class="metamask-toggles"> 
                 <div class="metamask-activate">
@@ -35,17 +31,6 @@
                         <img class="metamask-logo" src="./images/metamask-fox.svg" />
                     </div>
                 </div>
-                <!-- <div class="metamask-activate">
-                    <div>
-                        <label class="switch">
-                            <input type="checkbox">;
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="environment">
-                        Test Mode
-                    </div>
-                </div> -->
             </div>
         </div>
         <div class="nav-bar">
@@ -60,12 +45,9 @@
             </div>
         </div>
         <div class="deployment-required" hidden>
-            <div class="auctions-page">
-                <h1>GBM Auctions List</h1>
-                <div id="new-auction-btn-containers"></div>
-                <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-                <div class="auction-container">
-                </div>
+            <div class="nft-page">
+                <h1>List of Demo Tokens<h1>
+                <div id="token-container"></div>
             </div>
         </div>
         <div class="pre-deployment">
@@ -73,6 +55,6 @@
         </div>
         <script type="text/javascript" src="scripts/metamask.js"></script>
         <script type="text/javascript" src="scripts/navbar.js"></script>
-        <script type="text/javascript" src="scripts/auctionlist.js"></script>
+        <script type="text/javascript" src="scripts/nft.js"></script>
     </body>
 </html>

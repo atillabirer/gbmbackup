@@ -10,6 +10,7 @@ function setUpMetamask() {
   
         const handleAccountsChanged = (accounts) => {
           console.log("Handling 'accountsChanged' event with payload", accounts);
+          window.location.reload();
         };
   
         ethereum.on('connect', handleConnect);

@@ -31,6 +31,10 @@ app.get("/deployment", async (req: Request, res: Response) =>
     res.status(200).sendFile(path.join(__dirname+'/views/deployment.html'))
 );
 
+app.get("/tokens", async (req: Request, res: Response) => 
+    res.status(200).sendFile(path.join(__dirname+'/views/nft.html'))
+);
+
 function setDeploymentStatus(diamondCutAddress: string, diamondAddress: string, stringifiedCut: string, stringifiedFacets: string) {
     setDiamondCutFacetAddress(diamondCutAddress);
     setDiamondAddress(diamondAddress);

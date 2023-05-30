@@ -247,13 +247,7 @@ let gettersAbi = [
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "index",
-          "type": "uint256"
-        }
-      ],
+      "inputs": [],
       "name": "getGBMPresetsAmount",
       "outputs": [
         {
@@ -1928,7 +1922,7 @@ window.onload = async function() {
 };
 
 async function addNewAuctionButtons() {
-    const { names } = await getPresets(0);
+    const { names } = await getPresets();
     const buttonsContainer = document.getElementById('new-auction-btn-containers');
 
     for (i = 0; i < names.length; i++) {
@@ -1961,7 +1955,7 @@ function shortenAddress(address) {
 }
 
 async function getPresets() {
-  const presetAmount = await gettersContract.methods.getGBMPresetsAmount(0).call();
+  const presetAmount = await gettersContract.methods.getGBMPresetsAmount().call();
 
   const presetsArray = Promise.all([...Array(parseInt(presetAmount)+1).keys()].map(async (item, index) => await gettersContract.methods.getGBMPreset(index).call()));
   const presetsNames = Promise.all([...Array(parseInt(presetAmount)+1).keys()].map(async (item, index) => await gettersContract.methods.getGBMPreset_Name(index).call()));
@@ -1983,7 +1977,6 @@ async function getAuctionInfoMinimal(saleID) {
     const gbmPresetIndex = await gettersContract.methods.getSale_GBMPresetIndex(saleID).call();
     console.log(saleID)
     console.log(gbmPresetIndex)
-
 
     return {
       saleKind: await gettersContract.methods.getSale_SaleKind(saleID).call(),
@@ -2020,7 +2013,7 @@ function generateAuctionElement(auction, index) {
     console.log(auction);
 
     const auctionInnerHTML = `
-        <div class="auction-token"></div>
+        <div class="auction-token" style="background-image: url('../images/whale${i+1}.png');"></div>
         <div class="separator-vertical"></div>
         <div class="auction-description">
             <div id="item-sold" class="auction-field">Sample Collection #${auction.tokenID}</div>
@@ -2093,6 +2086,7 @@ function subscribeToNewAuctions(callback) {
     auctionsContract.events.AuctionRegistration_NewAuction({}, function(error, event) {
       // console.log(event);
     }).on('data', function(event) {
+        console.log(event.returnValues);
       callback(event.returnValues)
     }).on('changed', function(event) {
       // console.log(event);
