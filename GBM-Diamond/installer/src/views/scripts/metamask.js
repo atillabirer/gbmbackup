@@ -53,9 +53,41 @@ function enableMetamask(event) {
   ethereum.request({ method: 'eth_requestAccounts' }).then(()=> enablePage()).catch((err) => {
     console.error(err);
   });
+  
+  requestChainAddition();
 }
 
 function enablePage() {
   const accountLabel = document.getElementById('metamask-account');
   accountLabel.innerHTML = window.ethereum.selectedAddress;
+}
+
+async function requestChainAddition() {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: `0x7a69` }],
+    });
+  } catch (err) {
+    // This error code indicates that the chain has not been added to MetaMask
+    if (err.code === 4902) {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainName: 'Local Hardhat',
+            chainId: `0x7a69`,
+            nativeCurrency: {
+              name: 'GO',
+              decimals: 18,
+              symbol: 'GO',
+            },
+            rpcUrls: ['http://localhost:8545'],
+          },
+        ],
+      });
+    } else if (err.code === 4001) {
+      throw new Error('Chain change rejected!');
+    }
+  }
 }
