@@ -35,8 +35,8 @@ Make sure both of the above are installed before going through the steps below.
 3) cd GBM-Diamond
 4) npm install
 5) npm run build
-6) Import account #0 from the output to MetaMask
-7) Add private key of account #0 to hardhat.config.ts  (replace 0xdead[...]dead with the actual private key given to you by hardhat)
+6) Import account #0 from the output to 🦊 MetaMask 🦊              
+7) Add private key of account #0 to [hardhat.config.ts](GBM-Diamond/hardhat.config.ts)  (replace 0xdead[...]dead with the actual private key given to you by hardhat)
 8) Navigate to http://localhost:3000
 9) Click on the Metamask slider at the top right
 10) Go to the GBM Deployment page and click on the 'Deploy Button'
