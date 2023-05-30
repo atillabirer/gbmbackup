@@ -213,8 +213,8 @@
          
             function setResetState() {
                 const deployButton = document.getElementsByClassName("deploy-btn")[0];
-                deployButton.innerHTML = "Reset and Redeploy"
-                deployButton.style.backgroundColor = 'red';
+                deployButton.innerHTML = "Deployed! - Click again for a hard reset"
+                deployButton.style.backgroundColor = 'limegreen';
                 deployButton.style.border = 'none';
                 deployButton.style.cursor = 'pointer';
                 deployButton.onclick = initReset;
