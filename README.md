@@ -1,3 +1,4 @@
+
 # GBM_Dapp
 
 A GBM auction is an Open Ended, Incentivized English auction. More details on how it works here : https://www.gbm.auction      
@@ -19,4 +20,5 @@ In order to modify the deployment parameters, you can edit the gbm.config file o
 ## Feature Roadmap :
 => Solidity codebase audit                
 
-# For developpers wanting to launch the demo, click [here](/GBM-Diamond/README.md)
+# For developpers wanting to launch the demo, click [here](/GBM-Diamond/README.md)             
+          
