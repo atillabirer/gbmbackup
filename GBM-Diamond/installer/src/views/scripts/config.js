@@ -2361,7 +2361,7 @@ async function fetchPresets() {
         </div>
         <div class="preset-field">
             <div class="description">Incentive Min</div>
-            <input class="preset-input preset${i}" value="${presets[i].stepMin}"></input>
+            <input class="preset-input preset${i}" value="${presets[i].incentiveMin}"></input>
         </div>
         <div class="preset-field">
             <div class="description">Step Min</div>
