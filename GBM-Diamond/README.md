@@ -22,7 +22,7 @@ If you're having any issues scroll down to the Troubleshooting section.
 8) Go to the GBM Deployment page and click on the 'Deploy Button'
 
 To end the demo at any point tap Ctrl + C while focused on your terminal window. 
-## 1 Cloning the project
+## Cloning the project
 
 The first step of course is to grab your own copy of the project - either cloning through git or a ZIP download works. Once that's done you will need to navigate to the project directory through the terminal. If you're not familiar with the basic commands, then follow the following steps depending on your operating system: 
 
