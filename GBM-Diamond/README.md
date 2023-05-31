@@ -75,10 +75,13 @@ Another solution would be to go to MetaMask and click on Account > Settings > Ad
 
 ## Deploying to persistent testnet/mainnet      
        
-Make sure your [gbm.config](GBM-Diamond/gbm.config) file is properly setup (like disabling the creation of test auctions, correct address for ERC20 tokens, presets added already, etc...)             
-Once done, addd your target network to [hardhat.config.ts](GBM-Diamond/hardhat.config.ts) and set it as the default network.        
-Use npm run build as usual.         
-
+Make sure your [gbm.config](GBM-Diamond/gbm.config) file is properly setup               
+-disabling the creation of test auctions                    
+-correct address for ERC20 tokens, presets added already                  
+-etc...              
+Once done, addd your target network to [hardhat.config.ts](GBM-Diamond/hardhat.config.ts) and set it as the default network.         
+Use npm run build as usual.          
+            
 # Running automated tests 
 
 Edit [hardhat.config.ts](GBM-Diamond/hardhat.config.ts) and make "hardhat" as the default network then:
