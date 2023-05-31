@@ -28,12 +28,6 @@ function setUpMetamask() {
       }
 }
 
-const metamaskTrigger = document.getElementById('metamask-enable');
-metamaskTrigger.onchange = enableMetamask;
-
-setUpMetamask();  
-isConnected();
-      
 async function isConnected() {
    const accounts = await ethereum.request({method: 'eth_accounts'});       
    if (accounts.length) {
@@ -41,6 +35,14 @@ async function isConnected() {
         console.error(err);
       });
       metamaskTrigger.checked = true;
+      const initWeb3 = new Web3(window.ethereum);
+      const chainIdInUse = await initWeb3.eth.getChainId();
+      if (chainIdInUse === 31337) {
+        const nonceCheck = initWeb3.eth.getTransactionCount(window.ethereum.selectedAddress).then().catch((error) => {
+          localStorage.clear();
+          localStorage.setItem('metamaskNonce', error.message.match(/\d+/g)[1] );
+        })      
+      }
    } else {
       metamaskTrigger.checked = false;
       console.log("Metamask is not connected");
@@ -91,3 +93,10 @@ async function requestChainAddition() {
     }
   }
 }
+
+const metamaskTrigger = document.getElementById('metamask-enable');
+metamaskTrigger.onchange = enableMetamask;
+
+setUpMetamask();  
+isConnected();
+
