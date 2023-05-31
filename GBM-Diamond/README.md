@@ -57,7 +57,7 @@ You should be able to bid on auctions with several metamask accounts (as long as
 
 Every time you stop/restart the test environement 
 ```    
-ctrlc+c 
+ctrl+c 
 //followed by 
 npm run build
 ```    
