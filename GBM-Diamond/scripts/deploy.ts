@@ -9,6 +9,8 @@ let hardhatHelpers = require("@nomicfoundation/hardhat-network-helpers");  // <<
 var conf: any;
 conf = JSON.parse(require("../gbm.config.ts").conf);
 
+let automatedTesting:boolean = false;
+
 const FacetNames = [
     "DiamondInitFacet",
     "DiamondLoupeFacet",
@@ -71,7 +73,7 @@ export async function performDeploymentStep(step: number) {
             return [`SERVER || MSG || Default currency has been set`, `SERVER || CRC`];
         case 14:
             {
-                if (conf.AutomatedTests) {
+                if (automatedTesting) {
                     await runTestAuction();
                     return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
                 } else 
@@ -90,41 +92,37 @@ export async function performDeploymentStep(step: number) {
 }
 
 
-export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAdddress: string) {
-    if (_ConnectedMetamaskWalletAdddress) {
-        await hardhatHelpers.setBalance(_ConnectedMetamaskWalletAdddress, 100 ** 18);
-        await hardhatHelpers.impersonateAccount(_ConnectedMetamaskWalletAdddress);
+export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAddress: string) {
+    if (_ConnectedMetamaskWalletAddress) {
+        await hardhatHelpers.setBalance(_ConnectedMetamaskWalletAddress, 100 ** 18);
+        await hardhatHelpers.impersonateAccount(_ConnectedMetamaskWalletAddress);
     }
 
     let wallets = await ethers.getSigners()
     await hardhatHelpers.setBalance(wallets[0].address, 100 ** 18);
 }
 
-export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAdddress: string, _nonceToSet: number) {
+export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAddress: string, _nonceToSet: number) {
     const gBMAdminFacet = await ethers.getContractAt("GBMAdminFacet", diamondAddress);
 
     //Transferring the admin rights fully to the metamask wallets
     let res = await gBMAdminFacet.getGBMAdmin();
-    console.log("Change requested from the current GBMAdmin Address: " + res + " to be the address: " + _ConnectedMetamaskWalletAdddress);
+    console.log("Change requested from the current GBMAdmin Address: " + res + " to be the address: " + _ConnectedMetamaskWalletAddress);
     let gasPrice = await fetchGasPrice();
-    console.log("Changing the GGBM admin");
-    let tx = await gBMAdminFacet.setGBMAdmin(_ConnectedMetamaskWalletAdddress, {
+    console.log("Changing the GBM admin");
+    let tx = await gBMAdminFacet.setGBMAdmin(_ConnectedMetamaskWalletAddress, {
         gasPrice: gasPrice,
     });
 
-    console.log("Changing the Diamond owner");
-    const diamondC = await ethers.getContractAt("Diamond", diamondAddress);
-    diamondC.setContractOwner(_ConnectedMetamaskWalletAdddress);
-
     //Stopping impersonating the remote account
-    tx = await hardhatHelpers.stopImpersonatingAccount(_ConnectedMetamaskWalletAdddress, { gasPrice: gasPrice, });
+    tx = await hardhatHelpers.stopImpersonatingAccount(_ConnectedMetamaskWalletAddress, { gasPrice: gasPrice, });
 
     if (_nonceToSet != 0) {
-        await hardhatHelpers.setNonce(_ConnectedMetamaskWalletAdddress, _nonceToSet);
+        await hardhatHelpers.setNonce(_ConnectedMetamaskWalletAddress, _nonceToSet);
     }
 }
 
-export async function HardhatNetworksetBlockNumber(_blockNumber: number) {
+export async function HardhatNetworkSetBlockNumber(_blockNumber: number) {
     await hardhatHelpers.mineUpTo(_blockNumber);
 }
 
@@ -862,8 +860,10 @@ async function runTestAuctionManual() {
     console.log("Auctions ready to be tested manually\n\**********************************************\x1b[0m");
 }
 
-export async function main() {
+export async function main(testingEnabled:boolean) {
 
+
+    automatedTesting = testingEnabled;
     console.log("\x1b[30m\x1b[47m");
 
     for (let i = 0; i < 15; i++) {
