@@ -83,3 +83,11 @@ Similarly, shutting down the node annoyingly enough doesn't report the action to
 - Stop and restart the current process in the terminal
 - Account > Settings > Advanced > Clear Activity Tab Data in MetaMask
 - In the GBM Deployment Window, click on the 'Reset and Redeploy' button
+
+
+# Running automated tests 
+
+```          
+cd GBM-Diamond        
+npx hardhat run scripts/runtests.ts    
+```              
