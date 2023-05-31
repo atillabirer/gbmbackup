@@ -34,6 +34,9 @@
                     <div>
                         <img class="metamask-logo" src="./images/metamask-fox.svg" />
                     </div>
+                    <div id="refresh-btn">
+                        🔄
+                    </div>
                 </div>
                 <!-- <div class="metamask-activate">
                     <div>
@@ -128,7 +131,7 @@
             </div>
         </div>
         <div class="btn-container">
-            <button class="deploy-btn" onclick="connectToDeployer()">Deploy Diamond</button>
+            <button class="deploy-btn" disabled onclick="connectToDeployer()">Please connect to Metamask!</button>
         </div>
         <script type="text/javascript" src="scripts/metamask.js"></script>
         <script type="text/javascript" src="scripts/navbar.js"></script>
@@ -149,6 +152,11 @@
                 deployButton.innerHTML = "Deploying..."
 
                 const webSocket = new WebSocket('ws://localhost:443/');
+                
+                webSocket.onopen = (event) => {
+                    webSocket.send(`PRE-DEPLOYMENT || ${window.ethereum.selectedAddress}`);
+                }
+
                 webSocket.onmessage = (event) => {
                     let deployOrder = ["DCF", "DD", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "CUT", "PRST", "CRC", "TST"]
                     
@@ -168,6 +176,8 @@
                             updateProgress();
                             deployButton.innerHTML = "Deployment complete!"
                             setResetState();
+                            webSocket.send(`POST-DEPLOYMENT || ${window.ethereum.selectedAddress} || ${localStorage.getItem('metamaskNonce') ?? '0'}`)
+                            localStorage.removeItem("metamaskNonce");
                             flipVisibility();
                             webSocket.close();
                             break;

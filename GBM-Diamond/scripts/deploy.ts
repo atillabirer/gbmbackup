@@ -4,9 +4,12 @@ const { getSelectors, FacetCutAction } = require("./libraries/diamond.ts");
 import { ethers } from "hardhat";
 import config from "../hardhat.config";
 
-import { time } from "@nomicfoundation/hardhat-network-helpers";  // << Required for time dependendant test
+let hardhatHelpers = require("@nomicfoundation/hardhat-network-helpers");  // << Required for time dependendant test
 
 var conf: any;
+conf = JSON.parse(require("../gbm.config.ts").conf);
+
+let automatedTesting:boolean = false;
 
 const FacetNames = [
     "DiamondInitFacet",
@@ -69,22 +72,58 @@ export async function performDeploymentStep(step: number) {
             await setCurrency();
             return [`SERVER || MSG || Default currency has been set`, `SERVER || CRC`];
         case 14:
-        //     {
-        //         if (conf.AutomatedTests)
-        //             await runTestAuction();
-        //     }
-        //     return `Successfully performed the automated test auctions`;
-        // case 15:
-        //     {
-        //         if (conf.RunTestAuction)
+            {
+                if (automatedTesting) {
+                    await runTestAuction();
+                    return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
+                } else 
+
+                if (conf.RunTestAuction) {
                     await runTestAuctionManual();
-            // }
-            // return `Successfully created a set of test auctions`;
-            return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
+                    return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
+                }
+                else return [`SERVER || MSG || No test werere configugred to be ran`, `SERVER || TST || ${savedERC721Address}`];
+            }
+
         default:
             await deployFacet(step - 2);
             return [`SERVER || MSG || Deployed ${FacetNames[step - 2]}`, `SERVER || FT || ${JSON.stringify(cut)} || ${JSON.stringify(facets)}`];
     }
+}
+
+
+export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAddress: string) {
+    if (_ConnectedMetamaskWalletAddress) {
+        await hardhatHelpers.setBalance(_ConnectedMetamaskWalletAddress, 10 ** 24);
+        await hardhatHelpers.impersonateAccount(_ConnectedMetamaskWalletAddress);
+    }
+
+    let wallets = await ethers.getSigners()
+    await hardhatHelpers.setBalance(wallets[0].address, 10 ** 24);
+}
+
+export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAddress: string, _nonceToSet: number) {
+    const gBMAdminFacet = await ethers.getContractAt("GBMAdminFacet", diamondAddress);
+
+    //Transferring the admin rights fully to the metamask wallets
+    let res = await gBMAdminFacet.getGBMAdmin();
+    console.log("Change requested from the current GBMAdmin Address: " + res + " to be the address: " + _ConnectedMetamaskWalletAddress);
+    let gasPrice = await fetchGasPrice();
+    console.log("Changing the GBM admin");
+    let tx = await gBMAdminFacet.setGBMAdmin(_ConnectedMetamaskWalletAddress, {
+        gasPrice: gasPrice,
+    });
+
+    //Stopping impersonating the remote account
+    tx = await hardhatHelpers.stopImpersonatingAccount(_ConnectedMetamaskWalletAddress, { gasPrice: gasPrice, });
+
+    if (_nonceToSet != 0) {
+        await hardhatHelpers.setNonce(_ConnectedMetamaskWalletAddress, _nonceToSet);
+    }
+}
+
+export async function HardhatNetworkSetBlockNumber(_blockNumber: number) {
+    await hardhatHelpers.mineUpTo(_blockNumber);
 }
 
 async function deployDiamondCutFacet() {
@@ -521,8 +560,8 @@ async function runTestAuction() {
 
             if (delta > 0 && delta < 100) {
                 console.log("This is " + delta + "s in the future, waiting for " + (delta) + "s");
-                if (time) {
-                    await time.increaseTo(targetChainTimestamp);
+                if (hardhatHelpers) {
+                    await hardhatHelpers.time.increaseTo(targetChainTimestamp);
                     await ethers.provider.send("evm_mine", []);
                 } else {
                     await new Promise(resolve => setTimeout(resolve, (delta * 1000)));
@@ -530,8 +569,8 @@ async function runTestAuction() {
 
             } else if (delta > 0) {
                 console.log("This is " + delta + "s in the future, waiting for 100s");
-                if (time) {
-                    await time.increaseTo(targetChainTimestamp);
+                if (hardhatHelpers.time) {
+                    await hardhatHelpers.time.increaseTo(targetChainTimestamp);
                     await ethers.provider.send("evm_mine", []);
                 } else {
                     await new Promise(resolve => setTimeout(resolve, (100 * 1000)));
@@ -553,7 +592,6 @@ async function runTestAuction() {
                 gasPrice: gasPrice,
             }
         );
-
 
     }
 
@@ -822,18 +860,15 @@ async function runTestAuctionManual() {
     console.log("Auctions ready to be tested manually\n\**********************************************\x1b[0m");
 }
 
-async function main() {
+export async function main(testingEnabled:boolean) {
 
+
+    automatedTesting = testingEnabled;
     console.log("\x1b[30m\x1b[47m");
 
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 15; i++) {
+        console.log("performDeploymentStep(" + i + ")");
         await performDeploymentStep(i);
     }
     console.log("\x1b[0m");
-}
-
-conf = JSON.parse(require("../gbm.config.ts").conf);
-
-if (conf.AutomatedTests) {
-    main();
 }

@@ -1,6 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import path from "path";
-import { performDeploymentStep, setDiamondAddress, setDiamondCutFacetAddress, addToPreviousCuts, addToPreviousFacets } from "../../scripts/deploy";
+import { performDeploymentStep, setDiamondAddress, setDiamondCutFacetAddress, addToPreviousCuts, addToPreviousFacets, HardhatNetworkSetup_Before, HardhatNetworkSetup_After } from "../../scripts/deploy";
 import { WebSocketServer } from "ws";
 
 const sockServer = new WebSocketServer({ port: 443 });
@@ -48,8 +48,6 @@ function setDeploymentStatus(diamondCutAddress: string, diamondAddress: string, 
 
 sockServer.on('connection', ws => {
     let step = 0;
-    ws.send("SERVER || ACK");
-
     /*
         Can extend the onClose to control a cancellation token that fully
         stops whatever hardhat is doing.
@@ -59,6 +57,16 @@ sockServer.on('connection', ws => {
     ws.on('message', async function (data) {
         let receivedMsg = `${data}`;
         let commands = receivedMsg.split(" || ");
+        if (commands[0] === 'PRE-DEPLOYMENT') {
+            await HardhatNetworkSetup_Before(commands[1]);
+            ws.send("SERVER || ACK");
+            return;
+        }
+        if (commands[0] === 'POST-DEPLOYMENT') {
+            console.log(commands);
+            await HardhatNetworkSetup_After(commands[1], parseInt(commands[2]));
+            return;
+        }
         if (commands[0] === 'SERVER') return;
         setDeploymentStatus(commands[3], commands[4], commands[5], commands[6])
         let returnedMsgs = await performDeploymentStep(parseInt(commands[2]));

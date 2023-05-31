@@ -1,41 +1,43 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="styles/auction.css" />
-        <link rel="stylesheet" href="styles/navbar.css" />
-        <link rel="stylesheet" href="styles/metamask.css" />
-        <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+
+<head>
+    <link rel="stylesheet" href="styles/auction.css" />
+    <link rel="stylesheet" href="styles/navbar.css" />
+    <link rel="stylesheet" href="styles/metamask.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
         integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-      ></script>
-    </head>
-    <body  style="background-color: #085F63;">
-        <div class="metamask-bar">
-            <div class="metamask-toggles">
-                <div class="metamask-activate metamask-text">
-                    <label style="margin-right: 5px;">Account: </label>
-                    <div id="metamask-account">Not connected</div>
-                </div>
-                <!-- <div class="metamask-text">
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body style="background-color: #085F63;">
+    <div class="metamask-bar">
+        <div class="metamask-toggles">
+            <div class="metamask-activate metamask-text">
+                <label style="margin-right: 5px;">Account: </label>
+                <div id="metamask-account">Not connected</div>
+            </div>
+            <!-- <div class="metamask-text">
                     <label>Diamond: </label>
                     <div class="diamond-address"></div>
                 </div> -->
-            </div>
-            <div class="metamask-toggles"> 
-                <div class="metamask-activate">
-                    <div>
-                        <label class="switch">
-                            <input type="checkbox" id="metamask-enable">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div>
-                        <img class="metamask-logo" src="./images/metamask-fox.svg" />
-                    </div>
+        </div>
+        <div class="metamask-toggles">
+            <div class="metamask-activate">
+                <div>
+                    <label class="switch">
+                        <input type="checkbox" id="metamask-enable">
+                        <span class="slider round"></span>
+                    </label>
                 </div>
-                <!-- <div class="metamask-activate">
+                <div>
+                    <img class="metamask-logo" src="./images/metamask-fox.svg" />
+                </div>
+                <div id="refresh-btn">
+                    🔄
+                </div>
+            </div>
+            <!-- <div class="metamask-activate">
                     <div>
                         <label class="switch">
                             <input type="checkbox">;
@@ -46,220 +48,257 @@
                         Test Mode
                     </div>
                 </div> -->
+        </div>
+    </div>
+    <div class="nav-bar">
+        <div>
+            <img class="gbm-logo" src="./images/gbm-logo.svg" />
+        </div>
+        <div class="nav-links">
+            <a href="/auctions">Browse Auctions</a>
+            <a href="/tokens">Demo NFTs</a>
+            <a href="/admin">Admin Panel</a>
+            <a href="/deployment">GBM Deployment</a>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="loading-container">
+            <div class="loading-text">Fetching auction</div>
+            <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
             </div>
         </div>
-        <div class="nav-bar">
-            <div>
-                <img class="gbm-logo" src="./images/gbm-logo.svg" />
-            </div>
-            <div class="nav-links">
-                <a href="/auctions">Browse Auctions</a>
-                <a href="/tokens">Demo NFTs</a>
-                <a href="/admin">Admin Panel</a>
-                <a href="/deployment">GBM Deployment</a>
-            </div>
-        </div>
-        <div class="page-content">
-            <div class="loading-container">
-                <div class="loading-text">Fetching auction</div>
-                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            </div>
-            <div class="auction-container">
-                <div class="column-container media-container"></div>
-                <div class="column-container info-container">
-                    <div class="collection-and-id"></div>
-                    <div class="token-name">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
-                    <div class="auction-status">
-                        <div class="status-container current-bid">
-                            <div class="label">Current bid</div>
-                            <div class="info-value"></div>
-                        </div>
-                        <div class="status-container end-timestamp">
-                            <div class="label">Ends in</div>
-                            <div class="info-value">-</div>
-                        </div>
+        <div class="auction-container">
+            <div class="column-container media-container"></div>
+            <div class="column-container info-container">
+                <div class="collection-and-id"></div>
+                <div class="token-name">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+                <div class="auction-status">
+                    <div class="status-container current-bid">
+                        <div class="label">Current bid</div>
+                        <div class="info-value"></div>
                     </div>
-                    <div class="minimum-bid tooltip">Minimum bid: $111.65</div>
-                    <input class="bid-input" disabled type="text" placeholder="Input your bid here" />
-                    <div class="incentive tooltip"><img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn 0 (0%) if outbid.</div>
-                    <div class="btn-container">
-                        <button class="bid-btn" onclick="placeBid()" disabled>Place bid</button>
-                        <button class="share-btn">Share</button>
+                    <div class="status-container end-timestamp">
+                        <div class="label">Ends in</div>
+                        <div class="info-value">-</div>
                     </div>
-                    <div class="bid-history-container">
-                        <div class="bid-history"></div>
-                        <div class="bids">
-                        </div>
+                </div>
+                <div class="minimum-bid tooltip">Minimum bid: $111.65</div>
+                <input class="bid-input" disabled type="text" placeholder="Input your bid here" />
+                <div class="incentive tooltip"><img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn 0
+                    (0%) if outbid.</div>
+                <div class="btn-container">
+                    <button class="bid-btn" onclick="placeBid()" disabled>Place bid</button>
+                    <button class="share-btn">Share</button>
+                </div>
+                <div class="bid-history-container">
+                    <div class="bid-history"></div>
+                    <div class="bids">
                     </div>
                 </div>
             </div>
         </div>
-        <script type="text/javascript" src="scripts/metamask.js"></script>
-        <script type="text/javascript" src="scripts/auctions.js"></script>
-        <script>
-            let highestBid = 0;
-            let countdown;
-            let currencyName;
-            let stepMin;
-            let minimumBid = 0.01;
-            let incentiveMax = 0;
+    </div>
+    <script type="text/javascript" src="scripts/metamask.js"></script>
+    <script type="text/javascript" src="scripts/auctions.js"></script>
+    <script>
+        let highestBid = 0;
+        let countdown;
+        let currencyName;
+        let stepMin;
+        let minimumBid = 0.01;
+        let incentiveMax = 0;
 
-            const bidInput = document.getElementsByClassName("bid-input")[0];
-            bidInput.addEventListener('input', updatePotentialIncentive);
+        const bidInput = document.getElementsByClassName("bid-input")[0];
+        bidInput.addEventListener('input', updatePotentialIncentive);
 
-            window.onload = async function() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const saleId = urlParams.get('saleId');
+        window.onload = async function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const saleId = urlParams.get('saleId');
 
-                await loadContracts();
-                const auction = await getAuctionInfo(saleId);
-                generateAuctionElements(auction);
-                const loader = document.getElementsByClassName("loading-container");
-                const container = document.getElementsByClassName("auction-container");
-                loader[0].style.visibility = 'collapse';
-                container[0].style.visibility = 'visible';
-                subscribeToNewBids(updateHighestBid, updateCountdown)
-                const bidsNo = await getNumberOfBids(saleId);
-                const previousBids = await loadBids(saleId, bidsNo);
-                for (i = 0; i < previousBids.length; i++) {
-                    if (i === 0) {
-                        document.getElementsByClassName("bid-history")[0].innerHTML = 'Bid History';
-                    }
-                    generateBidHistoryElement(previousBids[i]);
+            await loadContracts();
+            const auction = await getAuctionInfo(saleId);
+            generateAuctionElements(auction);
+            const loader = document.getElementsByClassName("loading-container");
+            const container = document.getElementsByClassName("auction-container");
+            loader[0].style.visibility = 'collapse';
+            container[0].style.visibility = 'visible';
+            subscribeToNewBids(updateHighestBid, updateCountdown)
+            const bidsNo = await getNumberOfBids(saleId);
+            const previousBids = await loadBids(saleId, bidsNo);
+            for (i = 0; i < previousBids.length; i++) {
+                if (i === 0) {
+                    document.getElementsByClassName("bid-history")[0].innerHTML = 'Bid History';
                 }
-            };
-
-            function timecalc(x, v) {
-                return Math.floor(x / v);
+                generateBidHistoryElement(previousBids[i]);
             }
+        };
 
-            function updateHighestBid(newBidValue) {
-                const infoValueContainers = document.getElementsByClassName('info-value');
-                infoValueContainers[0].innerHTML = `${newBidValue} ${currencyName}`
-                highestBid = newBidValue;
-                
-                minimumBid = parseFloat(newBidValue)*((parseFloat(stepMin)/100000) + 1)
-                const minimumBidContainer = document.getElementsByClassName('minimum-bid');
-                minimumBidContainer[0].innerHTML = `Minimum bid: ${minimumBid} ${currencyName}`
+        function timecalc(x, v) {
+            return Math.floor(x / v);
+        }
+
+        function updateHighestBid(newBidValue) {
+            const infoValueContainers = document.getElementsByClassName('info-value');
+            infoValueContainers[0].innerHTML = `${newBidValue} ${currencyName}`
+            highestBid = newBidValue;
+
+            minimumBid = parseFloat(newBidValue) * ((parseFloat(stepMin) / 100000) + 1)
+            const minimumBidContainer = document.getElementsByClassName('minimum-bid');
+            minimumBidContainer[0].innerHTML = `Minimum bid: ${minimumBid} ${currencyName}`
+        }
+
+        function updateCountdown(updatedTimestamp) {
+            clearInterval(countdown);
+
+            const infoValueContainers = document.getElementsByClassName('info-value');
+            var timestamp = updatedTimestamp * 1000 - Date.now();
+            timestamp /= 1000;
+            bidInput.disabled = false;
+            bidInput.placeholder = 'Input your bid here'
+            if (timestamp > 0) {
+                countdown = setInterval(function () {
+                    timestamp--;
+                    var days = timecalc(timestamp, 24 * 60 * 60),
+                        hours = timecalc(timestamp, 60 * 60) % 24,
+                        minutes = timecalc(timestamp, 60) % 60,
+                        seconds = timecalc(timestamp, 1) % 60;
+                    infoValueContainers[1].innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+
+                    if (timecalc(timestamp, 1) < 1) {
+                        labelContainers[1].innerHTML = "Ends in";
+                        updateCountdown(auction.endTimestamp);
+                    }
+                }, 1000);
+            } else {
+                infoValueContainers[1].innerHTML = `This auction has ended!`;
+                bidInput.disabled = true;
+                bidInput.placeholder = 'This auction has ended.'
+
+                const bidButton = document.getElementsByClassName('bid-btn')[0];
+                bidButton.disabled = false;
+                bidButton.innerHTML = "Claim Token";
+                bidButton.onclick = () => { claim() }
             }
+        }
 
-            function updateCountdown(updatedTimestamp) {
-                clearInterval(countdown);
 
-                const infoValueContainers = document.getElementsByClassName('info-value');
-                var timestamp = updatedTimestamp*1000 - Date.now();
-                timestamp /= 1000;
+        let _localPageAuction = {};
+        function updatePotentialIncentive(e) {
+            const incentiveContainer = document.getElementsByClassName('incentive');
+            const bidButton = document.getElementsByClassName('bid-btn')[0];
+            const currentBidInput = parseFloat(e.target.value || 0)
+            let decimals = new web3.utils.BN('100000');
+            let _newbid = new web3.utils.BN(web3.utils.toWei("" + currentBidInput, 'ether'));
+
+            try {
+                const incentivePercentage = incentiveCalculator.calculateIncentivesPercentReturnFromBidAndPreset(
+                    decimals, //_bidDecimals
+                    new web3.utils.BN(_localPageAuction.gbmPreset.incentiveMin), //_incentiveMin
+                    new web3.utils.BN(_localPageAuction.gbmPreset.incentiveMax), //_incentiveMax
+                    new web3.utils.BN(_localPageAuction.gbmPreset.stepMin), //_stepMin
+                    new web3.utils.BN(_localPageAuction.gbmPreset.incentiveGrowthMultiplier), //_bidMultiplier
+                    new web3.utils.BN(_localPageAuction.highestBidValueRaw), //_previousBid
+                    _newbid, //_newBid
+                );
+
+                const earnableIncentives = web3.utils.fromWei(incentiveCalculator.calculateIncentivesRawFromBidAndPreset(
+                    decimals, //_bidDecimals
+                    new web3.utils.BN(_localPageAuction.gbmPreset.incentiveMin), //_incentiveMin
+                    new web3.utils.BN(_localPageAuction.gbmPreset.incentiveMax), //_incentiveMax
+                    new web3.utils.BN(_localPageAuction.gbmPreset.stepMin), //_stepMin
+                    new web3.utils.BN(_localPageAuction.gbmPreset.incentiveGrowthMultiplier), //_bidMultiplier
+                    new web3.utils.BN(_localPageAuction.highestBidValueRaw), //_previousBid
+                    _newbid, //_newBid
+                ));
+
+
+
+                const incentiveContainer = document.getElementsByClassName('incentive');
+                incentiveContainer[0].innerHTML = `<img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn ${earnableIncentives} (${incentivePercentage}%) if outbid.`;
+                bidButton.disabled = currentBidInput <= minimumBid;
+            } catch {
+                incentiveContainer[0].innerHTML = `<img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn 0 (0%) if outbid.`
+                bidButton.disabled = true;
+            }
+        }
+
+        function generateAuctionElements(auction) {
+            _localPageAuction = auction;
+            incentiveMax = auction.gbmPreset.incentiveMax;
+            stepMin = auction.gbmPreset.stepMin;
+            currencyName = auction.highestBidCurrencyName;
+            const collectionContainer = document.getElementsByClassName('collection-and-id');
+            collectionContainer[0].innerHTML = `Sample Collection #${auction.tokenID}`;
+
+            const infoValueContainers = document.getElementsByClassName('info-value');
+            infoValueContainers[0].innerHTML = `${auction.highestBidValue} ${auction.highestBidCurrencyName}`
+
+            minimumBid = parseFloat(auction.highestBidValue) !== 0 ? (auction.highestBidValue) * ((parseFloat(stepMin) / 100000) + 1) : 0.01;
+            const minimumBidContainer = document.getElementsByClassName('minimum-bid');
+            minimumBidContainer[0].innerHTML = `Minimum bid: ${minimumBid} ${auction.highestBidCurrencyName}`
+
+            highestBid = auction.highestBidValue;
+
+            document.getElementsByClassName('media-container')[0].style = `background-image: url('../images/whale${auction.tokenID}.png')`
+
+            const labelContainers = document.getElementsByClassName('label');
+            let tsToUse;
+
+            if (auction.startTimestamp * 1000 - Date.now() > 0) {
+                tsToUse = auction.startTimestamp;
+                labelContainers[1].innerHTML = "Starts in"
+                bidInput.placeholder = 'This auction has yet to start...'
+            } else {
+                tsToUse = auction.endTimestamp;
+                labelContainers[1].innerHTML = "Ends in"
                 bidInput.disabled = false;
                 bidInput.placeholder = 'Input your bid here'
-                if (timestamp > 0) {
-                    countdown = setInterval(function() {
-                        timestamp --;
-                        var days    = timecalc(timestamp, 24 * 60 * 60),
-                            hours   = timecalc(timestamp,      60 * 60) % 24,
-                            minutes = timecalc(timestamp,           60) % 60,
-                            seconds = timecalc(timestamp,            1) % 60;
-                        infoValueContainers[1].innerHTML = `${hours}h ${minutes}m ${seconds}s`;
-
-                        if (timecalc(timestamp, 1) < 1) {
-                            labelContainers[1].innerHTML = "Ends in";
-                            updateCountdown(auction.endTimestamp);
-                        }
-                    }, 1000);
-                } else {
-                    infoValueContainers[1].innerHTML = `This auction has ended!`;
-                    bidInput.disabled = true;
-                    bidInput.placeholder = 'This auction has ended.'
-
-                    const bidButton = document.getElementsByClassName('bid-btn')[0];
-                    bidButton.disabled = false;
-                    bidButton.innerHTML = "Claim Token";
-                    bidButton.onclick = () => {claim()}
-                }
             }
 
-            function updatePotentialIncentive(e) {
-                const incentiveContainer = document.getElementsByClassName('incentive');
+            var timestamp = tsToUse * 1000 - Date.now();
+            timestamp /= 1000;
+            if (timestamp > 0) {
+                countdown = setInterval(function () {
+                    timestamp--;
+                    var days = timecalc(timestamp, 24 * 60 * 60),
+                        hours = timecalc(timestamp, 60 * 60) % 24,
+                        minutes = timecalc(timestamp, 60) % 60,
+                        seconds = timecalc(timestamp, 1) % 60;
+                    infoValueContainers[1].innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+
+                    if (timecalc(timestamp, 1) < 1) {
+                        labelContainers[1].innerHTML = "Ends in";
+                        updateCountdown(auction.endTimestamp);
+                    }
+                }, 1000);
+            } else {
+                infoValueContainers[1].innerHTML = `This auction has ended!`;
+                bidInput.placeholder = 'This auction has ended.'
+                bidInput.disabled = true;
+
                 const bidButton = document.getElementsByClassName('bid-btn')[0];
-                try {
-                    const incentivePercentage = parseFloat(incentiveMax)/100000;
-                    const incentiveContainer = document.getElementsByClassName('incentive');
-                    const currentBidInput = parseFloat(e.target.value || 0)
-                    incentiveContainer[0].innerHTML = `<img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn ${currentBidInput*incentivePercentage} (${incentivePercentage*100}%) if outbid.`;
-                    bidButton.disabled = currentBidInput <= minimumBid;
-                } catch {
-                    incentiveContainer[0].innerHTML = `<img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn 0 (0%) if outbid.`
-                    bidButton.disabled = true;
-                }
+                bidButton.disabled = false;
+                bidButton.innerHTML = "Claim Token";
+                bidButton.onclick = () => { claim() }
             }
+        }
 
-            function generateAuctionElements(auction) {
-                incentiveMax = auction.gbmPreset.incentiveMax;
-                stepMin = auction.gbmPreset.stepMin;
-                currencyName = auction.highestBidCurrencyName;
-                const collectionContainer = document.getElementsByClassName('collection-and-id');
-                collectionContainer[0].innerHTML = `Sample Collection #${auction.tokenID}`;
+        function generateBidHistoryElement(bid) {
+            const bidsContainer = document.getElementsByClassName("bids");
+            const bidEl = document.createElement('div');
+            bidEl.classList.add("previous-bid");
 
-                const infoValueContainers = document.getElementsByClassName('info-value');
-                infoValueContainers[0].innerHTML = `${auction.highestBidValue} ${auction.highestBidCurrencyName}`
-
-                minimumBid =  parseFloat(auction.highestBidValue) !== 0 ? (auction.highestBidValue)*((parseFloat(stepMin)/100000) + 1) : 0.01;
-                const minimumBidContainer = document.getElementsByClassName('minimum-bid');
-                minimumBidContainer[0].innerHTML = `Minimum bid: ${minimumBid} ${auction.highestBidCurrencyName}`
-
-                highestBid = auction.highestBidValue;
-
-                document.getElementsByClassName('media-container')[0].style = `background-image: url('../images/whale${auction.tokenID}.png')`
-
-                const labelContainers = document.getElementsByClassName('label');
-                let tsToUse;
-
-                if (auction.startTimestamp*1000 - Date.now() > 0) {
-                    tsToUse = auction.startTimestamp;
-                    labelContainers[1].innerHTML = "Starts in"
-                    bidInput.placeholder = 'This auction has yet to start...'
-                } else {
-                    tsToUse = auction.endTimestamp;
-                    labelContainers[1].innerHTML = "Ends in"
-                    bidInput.disabled = false;
-                    bidInput.placeholder = 'Input your bid here'
-                }
-
-                var timestamp = tsToUse*1000 - Date.now();
-                timestamp /= 1000;
-                if (timestamp > 0) {
-                    countdown = setInterval(function() {
-                        timestamp --;
-                        var days    = timecalc(timestamp, 24 * 60 * 60),
-                            hours   = timecalc(timestamp,      60 * 60) % 24,
-                            minutes = timecalc(timestamp,           60) % 60,
-                            seconds = timecalc(timestamp,            1) % 60;
-                        infoValueContainers[1].innerHTML = `${hours}h ${minutes}m ${seconds}s`;
-
-                        if (timecalc(timestamp, 1) < 1) {
-                            labelContainers[1].innerHTML = "Ends in";
-                            updateCountdown(auction.endTimestamp);
-                        }
-                    }, 1000);
-                } else {
-                    infoValueContainers[1].innerHTML = `This auction has ended!`;
-                    bidInput.placeholder = 'This auction has ended.'
-                    bidInput.disabled = true;
-
-                    const bidButton = document.getElementsByClassName('bid-btn')[0];
-                    bidButton.disabled = false;
-                    bidButton.innerHTML = "Claim Token";
-                    bidButton.onclick = () => {claim()}
-                }
-            }
-
-            function generateBidHistoryElement(bid) {
-                const bidsContainer = document.getElementsByClassName("bids");
-                const bidEl = document.createElement('div');
-                bidEl.classList.add("previous-bid");
-
-                const bidInnerHTML = `
+            const bidInnerHTML = `
                     <div class="previous-bid-row1">
-                        <div class="previous-bidder">${bid.bidBidder.substring(0,4)}...${bid.bidBidder.substring(bid.bidBidder.length - 3)}</div>
+                        <div class="previous-bidder">${bid.bidBidder.substring(0, 4)}...${bid.bidBidder.substring(bid.bidBidder.length - 3)}</div>
                         <div class="previous-bid-value">${bid.bidValue} ${bid.bidCurrencyName}</div>
                     </div>
                     <div class="previous-bid-row2">
@@ -267,22 +306,108 @@
                     </div>
                 `
 
-                bidEl.innerHTML = bidInnerHTML;
-                bidsContainer[0].appendChild(bidEl);
-            }
+            bidEl.innerHTML = bidInnerHTML;
+            bidsContainer[0].appendChild(bidEl);
+        }
 
-            function placeBid() {
-                const bidInput = document.getElementsByClassName('bid-input')[0].value;
-                const urlParams = new URLSearchParams(window.location.search);
-                const saleId = urlParams.get('saleId');
-                submitBid(parseInt(saleId), bidInput, highestBid);
-            }
+        function placeBid() {
+            const bidInput = document.getElementsByClassName('bid-input')[0].value;
+            const urlParams = new URLSearchParams(window.location.search);
+            const saleId = urlParams.get('saleId');
+            submitBid(parseInt(saleId), bidInput, highestBid);
+        }
 
-            async function claim() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const saleId = urlParams.get('saleId');
-                await claimToken(saleId);
-            }
-        </script>
-    </body>
+        async function claim() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const saleId = urlParams.get('saleId');
+            await claimToken(saleId);
+        }
+
+
+        const incentiveCalculator = {
+            calculateIncentivesRawFromBidAndPreset: function (
+                _bidDecimals, //etherjsBigNumber
+                _incentiveMin, //etherjsBigNumber
+                _incentiveMax, //etherjsBigNumber
+                _stepMin, //etherjsBigNumber
+                _bidMultiplier, //etherjsBigNumber
+                _previousBid, //etherjsBigNumber
+                _newBid, //etherjsBigNumber
+            ) {
+                try {
+                    // returns the raw incentive amount earned
+                    let baseBid = _previousBid.mul(_bidDecimals.add(_stepMin)).div(_bidDecimals);
+
+                    if (baseBid.eq(new web3.utils.BN("0"))) {
+                        baseBid = new web3.utils.BN("1");
+                    }
+
+                    const a = _newBid.sub(baseBid);
+                    const b = _bidDecimals.mul(_bidMultiplier).mul(a);
+                    const c = b.div(baseBid);
+                    const d = _incentiveMin.mul(_bidDecimals);
+                    const e = c.add(d);
+
+                    let decimaledRatio = e;
+
+                    if (decimaledRatio.gt(_incentiveMax.mul(_bidDecimals))) {
+                        decimaledRatio = _incentiveMax.mul(_bidDecimals);
+                    }
+
+                    if (decimaledRatio.lt(new web3.utils.BN("0"))) {
+                        decimaledRatio = new web3.utils.BN("0");
+                    }
+
+                    return decimaledRatio.mul(_newBid).div(_bidDecimals.mul(_bidDecimals));
+                } catch {
+                    return new web3.utils.BN("0");
+                }
+            },
+            calculateIncentivesPercentReturnFromBidAndPreset: function (
+                _bidDecimals, //etherjsBigNumber
+                _incentiveMin, //etherjsBigNumber
+                _incentiveMax, //etherjsBigNumber
+                _stepMin, //etherjsBigNumber
+                _bidMultiplier, //etherjsBigNumber
+                _previousBid, //etherjsBigNumber
+                _newBid, //etherjsBigNumber
+            ) {
+                try {
+                    // returns the raw incentive amount earned
+                    let baseBid = _previousBid.mul(_bidDecimals.add(_stepMin)).div(_bidDecimals);
+
+                    if (baseBid.eq(new web3.utils.BN("0"))) {
+                        baseBid = new web3.utils.BN("1");
+                    }
+
+                    const a = _newBid.sub(baseBid);
+                    const b = _bidDecimals.mul(_bidMultiplier).mul(a);
+                    const c = b.div(baseBid);
+                    const d = _incentiveMin.mul(_bidDecimals);
+                    const e = c.add(d);
+
+                    let decimaledRatio = e;
+
+                    if (decimaledRatio.gt(_incentiveMax.mul(_bidDecimals))) {
+                        decimaledRatio = _incentiveMax.mul(_bidDecimals);
+                    }
+
+                    if (decimaledRatio.lt(new web3.utils.BN("0"))) {
+                        decimaledRatio = new web3.utils.BN("0");
+                    }
+
+                    return (
+                        ((decimaledRatio.toNumber() * 1.0) / _bidDecimals.toNumber() / _bidDecimals.toNumber()) *
+                        100.0
+                    );
+                } catch {
+                    return new web3.utils.BN("0");
+                }
+            },
+        };
+
+
+    </script>
+</body>
+
 </html>

@@ -80,10 +80,10 @@ h1 {
     margin: 5px 0;
     height: 4rem;
     width: 75%;
-    background-color: #49BEB7;
+    background-color: transparent;
     border-radius: 50px;
     color: #fff;
-    border: none;
+    border: 2px solid white;
     padding: 10px;
     font-size: x-large;
     cursor: pointer;

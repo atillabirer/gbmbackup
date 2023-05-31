@@ -6,15 +6,14 @@ const config: HardhatUserConfig = {
   defaultNetwork: "actualHardhat",
   networks: {
     hardhat: {
-    },
-    actualHardhat: {
-      url: "http://127.0.0.1:8545",
-      accounts: ["0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead"], // <============== REPLACE THE PRIVATE KEY WITH THE ONE GIVEN TO YOU BY HARDHAT FOR DEMO
-    },
-//     moonbase: {
-//       url: "some/url",
-//       accounts: ["some/pk"],
-//     },
+      mining: {
+        auto: true,
+        interval: [3000, 6000]
+      }
+    }, 
+    actualHardhat:{
+      url: "http://127.0.0.1:8545"
+    }
   },
 };
 

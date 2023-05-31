@@ -2382,6 +2382,7 @@ async function loadBids(saleId, noOfBids) {
 // getGBMPreset(uint256)
 
 async function getAuctionInfo(saleID) {
+  let _highBidValueRaw = await gbmContracts.methods.getSale_HighestBid_Value(saleID).call();
     return {
         saleKind: await gbmContracts.methods.getSale_SaleKind(saleID).call(),
         tokenAddress: await gbmContracts.methods.getSale_TokenAddress(saleID).call(),
@@ -2396,7 +2397,8 @@ async function getAuctionInfo(saleID) {
         endTimestamp: await gbmContracts.methods.getSale_EndTimestamp(saleID).call(),
         beneficiary: await gbmContracts.methods.getSale_Beneficiary(saleID).call(),
         debt: await gbmContracts.methods.getSale_Debt(saleID).call(),
-        highestBidValue: web3.utils.fromWei(await gbmContracts.methods.getSale_HighestBid_Value(saleID).call()),
+        highestBidValue: web3.utils.fromWei(_highBidValueRaw),
+        highestBidValueRaw : _highBidValueRaw,
         highestBidBidder: await gbmContracts.methods.getSale_HighestBid_Bidder(saleID).call(),
         highestBidIncentive: await gbmContracts.methods.getSale_HighestBid_Incentive(saleID).call(),
         highestBidCurrencyIndex: await gbmContracts.methods.getSale_HighestBid_CurrencyIndex(saleID).call(),
@@ -2476,3 +2478,4 @@ async function updatePreset(auctionDuration, hammerTimeDuration, cancellationPer
 async function claimToken(saleId) {
   await gbmContracts.methods.claim(saleId).send({from: window.ethereum.selectedAddress})
 }
+

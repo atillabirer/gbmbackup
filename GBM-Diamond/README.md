@@ -17,11 +17,9 @@ If you're having any issues scroll down to the Troubleshooting section.
 3) cd GBM-Diamond
 4) npm install
 5) npm run build
-6) Import account #0 from the output to 🦊 MetaMask 🦊              
-7) Add private key of account #0 to [hardhat.config.ts](GBM-Diamond/hardhat.config.ts)  (replace 0xdead[...]dead with the actual private key given to you by hardhat)
-8) Navigate to http://localhost:3000
-9) Click on the Metamask slider at the top right
-10) Go to the GBM Deployment page and click on the 'Deploy Button'
+6) Navigate to http://localhost:3000
+7) Click on the Metamask slider at the top right
+8) Go to the GBM Deployment page and click on the 'Deploy Button'
 
 To end the demo at any point tap Ctrl + C while focused on your terminal window. 
 ## Cloning the project
@@ -47,39 +45,49 @@ This might take a few minutes, but when done, follow it up with the line below:
 > npm run build
 
 You should now have both a Demo application running at port 3000 of your computer (accessible at http://localhost:3000) as well as your own test blockchain node. 
-## Setting up MetaMask
 
-MetaMask should prompt you for the creation of a wallet when set up for the first time, so I'm assuming you're already past that step. There's two things that will need to be done in advance here: 
-
-- Set up Metamask to use a demo account. 
-- Set up Metamask to listen to our test node
-
-Let's start with the former. You should have noticed that your terminal likely went a bit crazy and started printing out a ton of hexadecimal values - That is the Hardhat plugin creating the node under the hood, and assigning 20 accounts that can be used to play around with it. Our target is the very first one, so copy the Private Key value under Account #0.
-
-With that value in our clipboard, go to the MetaMask plugin on your browser of choice. Click on the abstract color collage that's diametrically opposed to the fox logo to access the Accounts menu, and click on 'Import account'. Paste the value from your clipboard to the empty field and click on Import to finalize the demo account creation. MetaMask will also switch to this account right away. 
-
-While you are still holding onto that private key, it needs to be added to one more place. In our project directory, open the file called hardhat.config.ts with your text editor of choice (VSCode recommended) and look at line 12:
-
-> accounts: ["0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead"], // Demo pkey
-
-Replace the hex value in the array (keeping the quotes) with your private key, and save the file. 
-
-Now reset the demo project by focusing on the terminal window and tapping Ctrl+C (even on Mac), then re-running 'npm run build'.
-
-Go to http://localhost:3000 and click on the slider next to the fox logo. This will enable the use of metamask for this page, as well as add the local node instance as an available network. 
 
 ## Deploying the GBM Diamond
 
-Navigate to the GBM Deployment page, and click on the 'Deploy' button at the bottom. You should start getting a few logs from the deployment process and it should soon be complete. You will see that a few more tabs have opened up at the top of the page, so feel free to play around with them and see what happens. 
+Navigate to the GBM Deployment page, and click on the 'Deploy' button at the bottom. You should start getting a few logs from the deployment process and it should soon be complete. You will see that a few more tabs have opened up at the top of the page, so feel free to play around with them and see what happens.
+You should be able to bid on auctions with several metamask accounts (as long as you send yourself the currency), claim the NFT's at the end of an auction, start new auctions, etc...           
+
+
+## Running more tests
+
+Every time you stop/restart the test environement 
+```    
+ctrl+c 
+//followed by 
+npm run build
+```    
+you need to also flush your metamask cache and then redeploy your GBM diamond. To do so, please click the refresh arrows next to the metamask icon on the page, and then head to the deployment page to redeploy the diamond.      
+
 
 ## Troubleshooting
  
 A lot of the issues you might come across can be best described as "Hardhat and MetaMask don't play well with each other". You might have an issue fetching information right after a deployment due to MetaMask not syncing with Hardhat in time, but refreshing the page after a few seconds should solve that. If that doesn't solve the issue, check the console logs of your browser.
 
+An another issue is metamask extremeley conservative caching, meaning that if you restart your hardhat server, metamask is still gonna think you are running the old tests. To fix this issue and force a metamask cache flush, switch accounts/networks in metamask.
+
 Another solution would be to go to MetaMask and click on Account > Settings > Advanced > Clear Activity Tab Data, to reset your transaction nonce and keep the two plugins synchronized (this does not affect your other accounts).
 
-Similarly, shutting down the node annoyingly enough doesn't report the action to MetaMask. So assuming you wanted to relaunch everything from scratch you'd need to follow the steps below:
 
-- Stop and restart the current process in the terminal
-- Account > Settings > Advanced > Clear Activity Tab Data in MetaMask
-- In the GBM Deployment Window, click on the 'Reset and Redeploy' button
+## Deploying to persistent testnet/mainnet      
+       
+Make sure your [gbm.config](gbm.config) file is properly setup               
+-disabling the creation of test auctions                     
+-Currencies added (the first currency in the array is gonna be the default)          
+-GBM presets setup (the first preset in the array is gonna be the default)             
+-etc...              
+Once done, addd your target network to [hardhat.config.ts](hardhat.config.ts) and set it as the default network.         
+Use npm run build as usual.          
+            
+# Running automated tests 
+
+Edit [hardhat.config.ts](hardhat.config.ts) and make "hardhat" as the default network then:
+
+```          
+cd GBM-Diamond        
+npx hardhat run scripts/runtests.ts    
+```              

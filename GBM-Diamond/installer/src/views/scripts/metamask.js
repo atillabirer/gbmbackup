@@ -28,12 +28,6 @@ function setUpMetamask() {
       }
 }
 
-const metamaskTrigger = document.getElementById('metamask-enable');
-metamaskTrigger.onchange = enableMetamask;
-
-setUpMetamask();  
-isConnected();
-      
 async function isConnected() {
    const accounts = await ethereum.request({method: 'eth_accounts'});       
    if (accounts.length) {
@@ -41,6 +35,30 @@ async function isConnected() {
         console.error(err);
       });
       metamaskTrigger.checked = true;
+      const initWeb3 = new Web3(window.ethereum);
+      const chainIdInUse = await initWeb3.eth.getChainId();
+      
+      /* 
+      Dirty Check
+      */
+
+      const depButton = document.getElementsByClassName('deploy-btn');
+      if (depButton.length > 0) {
+        depButton[0].innerHTML = "Deploy Diamond";
+        depButton[0].disabled = false;
+        depButton[0].style.backgroundColor = "#49BEB7";
+        depButton[0].style.border = "none";
+      }
+
+      // END
+
+      if (chainIdInUse === 31337 && localStorage.getItem("metamaskNonce") === null) {
+        const nonceCheck = initWeb3.eth.getTransactionCount(window.ethereum.selectedAddress).then().catch((error) => {
+          localStorage.clear();
+          localStorage.setItem('metamaskNonce', error.message.match(/\d+/g)[1] );
+          window.location.reload();
+        })      
+      }
    } else {
       metamaskTrigger.checked = false;
       console.log("Metamask is not connected");
@@ -54,7 +72,7 @@ function enableMetamask(event) {
     console.error(err);
   });
   
-  requestChainAddition();
+  requestChainAddition("0x7a69");
 }
 
 function enablePage() {
@@ -62,11 +80,11 @@ function enablePage() {
   accountLabel.innerHTML = window.ethereum.selectedAddress;
 }
 
-async function requestChainAddition() {
+async function requestChainAddition(chain) {
   try {
     await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: `0x7a69` }],
+      params: [{ chainId: chain }],
     });
   } catch (err) {
     // This error code indicates that the chain has not been added to MetaMask
@@ -91,3 +109,21 @@ async function requestChainAddition() {
     }
   }
 }
+
+async function chainZigZag() {
+  localStorage.clear();
+  await requestChainAddition("0x1");
+  await requestChainAddition("0x7a69");
+  window.location.reload();
+}
+
+const metamaskTrigger = document.getElementById('metamask-enable');
+metamaskTrigger.onchange = enableMetamask;
+
+const forceBtn = document.getElementById('refresh-btn');
+forceBtn.onclick = chainZigZag;
+
+
+setUpMetamask();  
+isConnected();
+
