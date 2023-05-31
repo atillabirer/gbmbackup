@@ -2379,6 +2379,7 @@ async function loadAuctions(noOfAuctions) {
 
 async function getAuctionInfoMinimal(saleID) {
     const gbmPresetIndex = await gbmContracts.methods.getSale_GBMPresetIndex(saleID).call();
+    let _highBidValueRaw = await gbmContracts.methods.getSale_HighestBid_Value(saleID).call();
 
     return {
       saleKind: await gbmContracts.methods.getSale_SaleKind(saleID).call(),
@@ -2389,7 +2390,8 @@ async function getAuctionInfoMinimal(saleID) {
       currencyAddress: await gbmContracts.methods.getSale_Currency_Address(saleID).call(),
       startTimestamp: await gbmContracts.methods.getSale_StartTimestamp(saleID).call(),
       endTimestamp: await gbmContracts.methods.getSale_EndTimestamp(saleID).call(),
-      highestBidValue: web3.utils.fromWei(await gbmContracts.methods.getSale_HighestBid_Value(saleID).call()),
+      highestBidValue: web3.utils.fromWei(_highBidValueRaw),
+      highestBidValueRaw : _highBidValueRaw,
       highestBidBidder: await gbmContracts.methods.getSale_HighestBid_Bidder(saleID).call(),
       gbmPreset: await gbmContracts.methods.getSale_GBMPreset(saleID).call(), // can break this down further
       gbmPresetName: await gbmContracts.methods.getGBMPreset_Name(gbmPresetIndex).call(),
