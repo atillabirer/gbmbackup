@@ -114,6 +114,7 @@ async function chainZigZag() {
   localStorage.clear();
   await requestChainAddition("0x1");
   await requestChainAddition("0x7a69");
+  window.location.reload();
 }
 
 const metamaskTrigger = document.getElementById('metamask-enable');
