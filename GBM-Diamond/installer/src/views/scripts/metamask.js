@@ -45,7 +45,7 @@ async function isConnected() {
       const depButton = document.getElementsByClassName('deploy-btn');
       if (depButton.length > 0) {
         depButton[0].innerHTML = "Deploy Diamond";
-        depButton[0].disable = false;
+        depButton[0].disabled = false;
         depButton[0].style.backgroundColor = "#49BEB7";
         depButton[0].style.border = "none";
       }
