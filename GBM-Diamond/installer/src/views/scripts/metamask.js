@@ -37,6 +37,21 @@ async function isConnected() {
       metamaskTrigger.checked = true;
       const initWeb3 = new Web3(window.ethereum);
       const chainIdInUse = await initWeb3.eth.getChainId();
+      
+      /* 
+      Dirty Check
+      */
+
+      const depButton = document.getElementsByClassName('deploy-btn');
+      if (depButton.length > 0) {
+        depButton[0].innerHTML = "Deploy Diamond";
+        depButton[0].disable = false;
+        depButton[0].style.backgroundColor = "#49BEB7";
+        depButton[0].style.border = "none";
+      }
+
+      // END
+
       if (chainIdInUse === 31337 && localStorage.getItem("metamaskNonce") === null) {
         const nonceCheck = initWeb3.eth.getTransactionCount(window.ethereum.selectedAddress).then().catch((error) => {
           localStorage.clear();
@@ -96,6 +111,7 @@ async function requestChainAddition(chain) {
 }
 
 async function chainZigZag() {
+  localStorage.clear();
   await requestChainAddition("0x1");
   await requestChainAddition("0x7a69");
 }
