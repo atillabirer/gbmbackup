@@ -1,9 +1,9 @@
-# GBM_Diamond
+# GBM_Dapp
 
 A GBM auction is an Open Ended, Incentivized English auction. More details on how it works here : https://www.gbm.auction      
 
-This codebase include ready to use smart contracts in order for you to deploy your own marketplaces on any EVM enabled Chains. You will be owning all the contracts deployed with full admin rights on all of those, as well as being able to control fees, presets, currencies, etc... 
-A demo Frontend is included so that you can iterate on top of it when integrating to your own marketplace. You can also use this frontend as a basis for a completely new marketplace.
+This codebase allows our clients (you) to deploy and configure their fully-owned-by-you GBM dapp in a matter of minutes.
+A demo Frontend is included so that you can iterate on top of it when integrating to your own marketplace. You can also use this frontend as a basis for a completely new marketplace.   
 
 In order to modify the deployment parameters, you can edit the gbm.config file options yourself or soon, use the step by step option picker as a part of the deployment process.
 
