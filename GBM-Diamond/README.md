@@ -87,6 +87,8 @@ Similarly, shutting down the node annoyingly enough doesn't report the action to
 
 # Running automated tests 
 
+Edit [hardhat.config.ts](GBM-Diamond/hardhat.config.ts) and make "hardhat" as the default network then:
+
 ```          
 cd GBM-Diamond        
 npx hardhat run scripts/runtests.ts    
