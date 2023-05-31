@@ -55,7 +55,13 @@ You should be able to bid on auctions with several metamask accounts (as long as
 
 ## Running more tests
 
-Every time you stop/restart the test environement (ctrlc+c followed by npc run build), you need to also flush your metamask cache and then redeploy your GBM diamond. To do so, please click the refresh arrows next to the metamask icon on the page, and then head to the deployment page to redeploy the diamond.      
+Every time you stop/restart the test environement 
+```    
+ctrlc+c 
+//followed by 
+npm run build
+```    
+you need to also flush your metamask cache and then redeploy your GBM diamond. To do so, please click the refresh arrows next to the metamask icon on the page, and then head to the deployment page to redeploy the diamond.      
 
 
 ## Troubleshooting
@@ -67,6 +73,9 @@ An another issue is metamask extremeley conservative caching, meaning that if yo
 Another solution would be to go to MetaMask and click on Account > Settings > Advanced > Clear Activity Tab Data, to reset your transaction nonce and keep the two plugins synchronized (this does not affect your other accounts).
 
 
+## Deploying to persistent testnet/mainnet      
+       
+Simply add the network to [hardhat.config.ts](GBM-Diamond/hardhat.config.ts) and set it as the default network. Make sure your GBM configuration file is also up to your tastes.            
 
 # Running automated tests 
 
