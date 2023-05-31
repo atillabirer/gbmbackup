@@ -109,14 +109,10 @@ export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAddress:
     let res = await gBMAdminFacet.getGBMAdmin();
     console.log("Change requested from the current GBMAdmin Address: " + res + " to be the address: " + _ConnectedMetamaskWalletAddress);
     let gasPrice = await fetchGasPrice();
-    console.log("Changing the GGBM admin");
+    console.log("Changing the GBM admin");
     let tx = await gBMAdminFacet.setGBMAdmin(_ConnectedMetamaskWalletAddress, {
         gasPrice: gasPrice,
     });
-
-    console.log("Changing the Diamond owner");
-    const diamondC = await ethers.getContractAt("Diamond", diamondAddress);
-    diamondC.setContractOwner(_ConnectedMetamaskWalletAddress);
 
     //Stopping impersonating the remote account
     tx = await hardhatHelpers.stopImpersonatingAccount(_ConnectedMetamaskWalletAddress, { gasPrice: gasPrice, });
