@@ -4,7 +4,7 @@ const { getSelectors, FacetCutAction } = require("./libraries/diamond.ts");
 import { ethers } from "hardhat";
 import config from "../hardhat.config";
 
-import { time } from "@nomicfoundation/hardhat-network-helpers";  // << Required for time dependendant test
+let hardhatHelpers = require("@nomicfoundation/hardhat-network-helpers");  // << Required for time dependendant test
 
 var conf: any;
 
@@ -85,6 +85,45 @@ export async function performDeploymentStep(step: number) {
             await deployFacet(step - 2);
             return [`SERVER || MSG || Deployed ${FacetNames[step - 2]}`, `SERVER || FT || ${JSON.stringify(cut)} || ${JSON.stringify(facets)}`];
     }
+}
+
+
+export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAdddress:string){
+    if(_ConnectedMetamaskWalletAdddress){
+        await hardhatHelpers.setBalance(_ConnectedMetamaskWalletAdddress, 100 ** 18);
+        await hardhatHelpers.impersonateAccount(_ConnectedMetamaskWalletAdddress);
+    }
+
+    let wallets = await ethers.getSigners()
+    await hardhatHelpers.setBalance(wallets[0].address, 100 ** 18);
+}
+
+export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAdddress:string, _nonceToSet:number){
+    const gBMAdminFacet = await ethers.getContractAt("GBMAdminFacet", diamondAddress);
+
+    //Transferring the admin rights fully to the metamask wallets
+    let res = await gBMAdminFacet.getGBMAdmin();
+    console.log("Change requested from the current GBMAdmin Address: " + res + " to be the address: " + _ConnectedMetamaskWalletAdddress);
+    let gasPrice = await fetchGasPrice();
+    console.log("Changing the GGBM admin");
+    let tx = await gBMAdminFacet.setGBMAdmin(_ConnectedMetamaskWalletAdddress, {
+        gasPrice: gasPrice,
+    });
+
+    console.log("Changing the Diamond owner");
+    const diamondC = await ethers.getContractAt("Diamond", diamondAddress);
+    diamondC.setContractOwner(_ConnectedMetamaskWalletAdddress);
+
+    //Stopping impersonating the remote account
+    tx = await hardhatHelpers.stopImpersonatingAccount(_ConnectedMetamaskWalletAdddress, { gasPrice: gasPrice,});
+
+    if(_nonceToSet != 0){
+        await hardhatHelpers.setNonce(_ConnectedMetamaskWalletAdddress, _nonceToSet);
+    }
+}
+
+export async function HardhatNetworksetBlockNumber(_blockNumber:number){
+    await hardhatHelpers.mineUpTo(_blockNumber);
 }
 
 async function deployDiamondCutFacet() {
@@ -521,8 +560,8 @@ async function runTestAuction() {
 
             if (delta > 0 && delta < 100) {
                 console.log("This is " + delta + "s in the future, waiting for " + (delta) + "s");
-                if (time) {
-                    await time.increaseTo(targetChainTimestamp);
+                if (hardhatHelpers) {
+                    await hardhatHelpers.time.increaseTo(targetChainTimestamp);
                     await ethers.provider.send("evm_mine", []);
                 } else {
                     await new Promise(resolve => setTimeout(resolve, (delta * 1000)));
@@ -530,8 +569,8 @@ async function runTestAuction() {
 
             } else if (delta > 0) {
                 console.log("This is " + delta + "s in the future, waiting for 100s");
-                if (time) {
-                    await time.increaseTo(targetChainTimestamp);
+                if (hardhatHelpers.time) {
+                    await hardhatHelpers.time.increaseTo(targetChainTimestamp);
                     await ethers.provider.send("evm_mine", []);
                 } else {
                     await new Promise(resolve => setTimeout(resolve, (100 * 1000)));
@@ -553,7 +592,6 @@ async function runTestAuction() {
                 gasPrice: gasPrice,
             }
         );
-
 
     }
 
