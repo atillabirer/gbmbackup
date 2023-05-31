@@ -37,11 +37,12 @@ async function isConnected() {
       metamaskTrigger.checked = true;
       const initWeb3 = new Web3(window.ethereum);
       const chainIdInUse = await initWeb3.eth.getChainId();
-      if (chainIdInUse === 31337) {
-        const nonceCheck = initWeb3.eth.getTransactionCount(window.ethereum.selectedAddress).then().catch((error) => {
-          localStorage.clear();
-          localStorage.setItem('metamaskNonce', error.message.match(/\d+/g)[1] );
-        })      
+      if (chainIdInUse === 31337 && localStorage.getItem("metamaskNonce") === null) {
+        // const nonceCheck = initWeb3.eth.getTransactionCount(window.ethereum.selectedAddress).then().catch((error) => {
+        //   localStorage.clear();
+        //   localStorage.setItem('metamaskNonce', error.message.match(/\d+/g)[1] );
+        //   window.location.reload();
+        // })      
       }
    } else {
       metamaskTrigger.checked = false;

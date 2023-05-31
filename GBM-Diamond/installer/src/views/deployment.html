@@ -149,6 +149,11 @@
                 deployButton.innerHTML = "Deploying..."
 
                 const webSocket = new WebSocket('ws://localhost:443/');
+                
+                webSocket.onopen = (event) => {
+                    webSocket.send(`PRE-DEPLOYMENT || ${window.ethereum.selectedAddress}`);
+                }
+
                 webSocket.onmessage = (event) => {
                     let deployOrder = ["DCF", "DD", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "CUT", "PRST", "CRC", "TST"]
                     
@@ -168,6 +173,8 @@
                             updateProgress();
                             deployButton.innerHTML = "Deployment complete!"
                             setResetState();
+                            webSocket.send(`POST-DEPLOYMENT || ${window.ethereum.selectedAddress} || ${localStorage.getItem('metamaskNonce') ?? '0'}`)
+                            localStorage.removeItem("metamaskNonce");
                             flipVisibility();
                             webSocket.close();
                             break;
