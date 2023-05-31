@@ -57,7 +57,7 @@ function enableMetamask(event) {
     console.error(err);
   });
   
-  requestChainAddition();
+  requestChainAddition("0x7a69");
 }
 
 function enablePage() {
@@ -65,11 +65,11 @@ function enablePage() {
   accountLabel.innerHTML = window.ethereum.selectedAddress;
 }
 
-async function requestChainAddition() {
+async function requestChainAddition(chain) {
   try {
     await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: `0x7a69` }],
+      params: [{ chainId: chain }],
     });
   } catch (err) {
     // This error code indicates that the chain has not been added to MetaMask
@@ -95,8 +95,17 @@ async function requestChainAddition() {
   }
 }
 
+async function chainZigZag() {
+  await requestChainAddition("0x1");
+  await requestChainAddition("0x7a69");
+}
+
 const metamaskTrigger = document.getElementById('metamask-enable');
 metamaskTrigger.onchange = enableMetamask;
+
+const forceBtn = document.getElementById('refresh-btn');
+forceBtn.onclick = chainZigZag;
+
 
 setUpMetamask();  
 isConnected();

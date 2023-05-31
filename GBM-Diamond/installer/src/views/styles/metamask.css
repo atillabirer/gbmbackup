@@ -112,3 +112,9 @@
   .slider.round:before {
     border-radius: 50%;
   } 
+
+  #refresh-btn {
+    cursor: pointer;
+    margin: 0px 10px;
+    font-size: x-large;
+  }
