@@ -94,12 +94,12 @@ export async function performDeploymentStep(step: number) {
 
 export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAddress: string) {
     if (_ConnectedMetamaskWalletAddress) {
-        await hardhatHelpers.setBalance(_ConnectedMetamaskWalletAddress, 100 ** 18);
+        await hardhatHelpers.setBalance(_ConnectedMetamaskWalletAddress, 10 ** 24);
         await hardhatHelpers.impersonateAccount(_ConnectedMetamaskWalletAddress);
     }
 
     let wallets = await ethers.getSigners()
-    await hardhatHelpers.setBalance(wallets[0].address, 100 ** 18);
+    await hardhatHelpers.setBalance(wallets[0].address, 10 ** 24);
 }
 
 export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAddress: string, _nonceToSet: number) {
