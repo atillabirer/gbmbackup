@@ -7,6 +7,7 @@ import config from "../hardhat.config";
 let hardhatHelpers = require("@nomicfoundation/hardhat-network-helpers");  // << Required for time dependendant test
 
 var conf: any;
+conf = JSON.parse(require("../gbm.config.ts").conf);
 
 const FacetNames = [
     "DiamondInitFacet",
@@ -69,18 +70,19 @@ export async function performDeploymentStep(step: number) {
             await setCurrency();
             return [`SERVER || MSG || Default currency has been set`, `SERVER || CRC`];
         case 14:
-        //     {
-        //         if (conf.AutomatedTests)
-        //             await runTestAuction();
-        //     }
-        //     return `Successfully performed the automated test auctions`;
-        // case 15:
-        //     {
-        //         if (conf.RunTestAuction)
+            {
+                if (conf.AutomatedTests) {
+                    await runTestAuction();
+                    return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
+                } else 
+
+                if (conf.RunTestAuction) {
                     await runTestAuctionManual();
-            // }
-            // return `Successfully created a set of test auctions`;
-            return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
+                    return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
+                }
+                else return [`SERVER || MSG || No test werere configugred to be ran`, `SERVER || TST || ${savedERC721Address}`];
+            }
+
         default:
             await deployFacet(step - 2);
             return [`SERVER || MSG || Deployed ${FacetNames[step - 2]}`, `SERVER || FT || ${JSON.stringify(cut)} || ${JSON.stringify(facets)}`];
@@ -88,8 +90,8 @@ export async function performDeploymentStep(step: number) {
 }
 
 
-export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAdddress:string){
-    if(_ConnectedMetamaskWalletAdddress){
+export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAdddress: string) {
+    if (_ConnectedMetamaskWalletAdddress) {
         await hardhatHelpers.setBalance(_ConnectedMetamaskWalletAdddress, 100 ** 18);
         await hardhatHelpers.impersonateAccount(_ConnectedMetamaskWalletAdddress);
     }
@@ -98,7 +100,7 @@ export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAdddres
     await hardhatHelpers.setBalance(wallets[0].address, 100 ** 18);
 }
 
-export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAdddress:string, _nonceToSet:number){
+export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAdddress: string, _nonceToSet: number) {
     const gBMAdminFacet = await ethers.getContractAt("GBMAdminFacet", diamondAddress);
 
     //Transferring the admin rights fully to the metamask wallets
@@ -115,14 +117,14 @@ export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAdddress
     diamondC.setContractOwner(_ConnectedMetamaskWalletAdddress);
 
     //Stopping impersonating the remote account
-    tx = await hardhatHelpers.stopImpersonatingAccount(_ConnectedMetamaskWalletAdddress, { gasPrice: gasPrice,});
+    tx = await hardhatHelpers.stopImpersonatingAccount(_ConnectedMetamaskWalletAdddress, { gasPrice: gasPrice, });
 
-    if(_nonceToSet != 0){
+    if (_nonceToSet != 0) {
         await hardhatHelpers.setNonce(_ConnectedMetamaskWalletAdddress, _nonceToSet);
     }
 }
 
-export async function HardhatNetworksetBlockNumber(_blockNumber:number){
+export async function HardhatNetworksetBlockNumber(_blockNumber: number) {
     await hardhatHelpers.mineUpTo(_blockNumber);
 }
 
@@ -860,18 +862,13 @@ async function runTestAuctionManual() {
     console.log("Auctions ready to be tested manually\n\**********************************************\x1b[0m");
 }
 
-async function main() {
+export async function main() {
 
     console.log("\x1b[30m\x1b[47m");
 
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 15; i++) {
+        console.log("performDeploymentStep(" + i + ")");
         await performDeploymentStep(i);
     }
     console.log("\x1b[0m");
-}
-
-conf = JSON.parse(require("../gbm.config.ts").conf);
-
-if (conf.AutomatedTests) {
-    main();
 }

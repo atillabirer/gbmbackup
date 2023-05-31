@@ -1,6 +1,6 @@
 export const conf:any = JSON.stringify(
     {
-    "RunTestAuction": true, //Set to true if you want to create an empty set of test auctions with self deployed smart contracts.
+    "RunTestAuction": false, //Set to true if you want to create an empty set of test auctions with self deployed smart contracts.
     "AutomatedTests": false, //Set to true if you want to run automated tests of the codebase. /!\ Will skip your node to the future
     "UseSameAddressForDeployerAndGbmAdmin": true,  //set to true if the gbm administrator is also the smart contract deployer/diamond administrator
     "GBMAdminOverrideAddress": "0x0000000000000000000000000000000000000000", // Address of the GBM admin if the above value is false
