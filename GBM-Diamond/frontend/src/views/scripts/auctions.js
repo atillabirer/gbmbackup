@@ -15,18 +15,30 @@ Array.from(document.getElementsByClassName("filter-btn")).forEach((_element, ind
 });
 
 async function onScriptLoad() {
-    const auctionNo = await getNumberOfAuctions();
-    const auctions = await loadAuctions(auctionNo);
-    const loader = document.getElementsByClassName('loading-container');
-    loader[0].style.display = 'none';
-    for (i = 0; i < auctions.length; i++) {
-        generateAuctionElement(auctions[i], i);
-    }
-    updateCounters();
-    toggleAuctions(0);
-    reverseChildren(document.getElementsByClassName("auction-grid-rows-container")[0]);
-    subscribeToNewAuctions(retrieveNewAuction);
+    console.log('fire')
+    await loadGBMAuctions();
 };
+
+async function loadGBMAuctions() {
+    try {
+        const auctionNo = await getNumberOfAuctions();
+        const auctions = await loadAuctions(auctionNo);
+        const loader = document.getElementsByClassName('loading-container');
+        loader[0].style.display = 'none';
+        for (i = 0; i < auctions.length; i++) {
+            generateAuctionElement(auctions[i], i);
+        }
+        updateCounters();
+        toggleAuctions(0);
+        reverseChildren(document.getElementsByClassName("auction-grid-rows-container")[0]);
+        subscribeToNewAuctions(retrieveNewAuction);
+    } catch {
+        console.log("Can't reach diamond yet!")
+        setTimeout(async () => {
+            await loadGBMAuctions()
+        }, 2000);
+    }
+}
 
 function updateCounters() {
     document.getElementById("live-number").innerHTML = Array.from(document.getElementsByClassName("auction-live")).length;
@@ -189,7 +201,7 @@ function startElementCountdownTimer(_auction, _index) {
                 seconds = timecalc(timestamp, 1) % 60;
                 timer.innerHTML = `${messagePrefix} in ${hours}h ${minutes}m ${seconds}s`;
 
-            if (timecalc(timestamp, 1) < 1) {
+            if (timecalc(timestamp, 2) < 1) {
                 if (auctionStatus !== "auction-upcoming") 
                     bidBtn.style.display = 'none';
                 clearInterval(countdowns[_index]);

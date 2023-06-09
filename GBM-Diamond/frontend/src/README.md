@@ -18,7 +18,7 @@
 
 ### Browse Auctions
 
-- [ ] Keep loading / pinging after deployment until it works
+- [x] Keep loading / pinging after deployment until it works
 - [ ] Toggle from Upcoming to Live has a second of a negative timer
 - [ ] Adjust the new auction listener to the new view
 - [ ] Add bid event listener logic
