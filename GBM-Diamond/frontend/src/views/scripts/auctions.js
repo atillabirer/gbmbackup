@@ -199,9 +199,9 @@ function startElementCountdownTimer(_auction, _index) {
                 hours = timecalc(timestamp, 60 * 60) % 24,
                 minutes = timecalc(timestamp, 60) % 60,
                 seconds = timecalc(timestamp, 1) % 60;
-                timer.innerHTML = `${messagePrefix} in ${hours}h ${minutes}m ${seconds}s`;
+                if (timestamp >=0) timer.innerHTML = `${messagePrefix} in ${hours}h ${minutes}m ${seconds}s`;
 
-            if (timecalc(timestamp, 2) < 1) {
+            if (timecalc(timestamp, 1) < 1) {
                 if (auctionStatus !== "auction-upcoming") 
                     bidBtn.style.display = 'none';
                 clearInterval(countdowns[_index]);
