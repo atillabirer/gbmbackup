@@ -5,9 +5,15 @@ import { WebSocketServer } from "ws";
 
 const sockServer = new WebSocketServer({ port: 443 });
 
+
+var favicon = require('serve-favicon');
+
+
 const app: Application = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname+'/views')));
+app.use(favicon(path.join(__dirname,'views','images','favicon.png')));
+
 
 const PORT = 3000;
 
