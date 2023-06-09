@@ -77,8 +77,12 @@ let hardhatHelpers = require("@nomicfoundation/hardhat-network-helpers");  // <<
 var conf: any;
 conf = JSON.parse(require("../gbm.config.ts").conf);
 
-let deployerStatus:any = {};
+let wallets = await ethers.getSigners()
+let signer = wallets[0]; //This signer object is gonna use to create every contract factory in a JIT fashion
+
+let deployerStatus:any = {}; //The current status of the deployment
 deployerStatus.commandHistory = [];
+deployerStatus.deployedFacets = {};
 
 export function setDeployerStatus(_deployerStatus: string) {
     deployerStatus = JSON.parse(_deployerStatus);
@@ -86,4 +90,46 @@ export function setDeployerStatus(_deployerStatus: string) {
 
 export function getDeployerStatus(){
     return JSON.stringify(deployerStatus);
+}
+
+
+export async function performDeploymentStep(step: string) {
+    console.log("" + step + "?");
+
+    switch(step.substring(0,3)){
+        case "f_d":
+            return [("" + step), (deployerStatus.deployedFacets[step.substring(4)])];
+
+        
+    }
+}
+
+
+async function doStep_f_d(arg:string){
+    let gasPrice = await fetchGasPrice();
+    const Facet = await ethers.getContractFactory(arg.substring(4), signer);
+    const facet = await Facet.deploy({
+        gasPrice: gasPrice
+    });
+    await facet.deployed();
+    deployerStatus.commandHistory.push(arg);
+    deployerStatus.deployedFacets[arg.substring(4)] = facet.address;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function fetchGasPrice() {
+    return 20000000000;
 }
