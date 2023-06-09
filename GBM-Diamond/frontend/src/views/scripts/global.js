@@ -2594,6 +2594,8 @@ function addNavBarAndMetamask() {
     </div>
   `;
 
+  addTitleAndFavicon();
+
   addCSS('gbm');
   addCSS('navbar');
   addCSS(window.location.pathname.substring(1) === "" ? "deployment" : window.location.pathname.substring(1));
@@ -2602,6 +2604,18 @@ function addNavBarAndMetamask() {
 
   metamaskTrigger = document.getElementById('metamask-enable');
   metamaskTrigger.onclick = enableMetamask;
+}
+
+function addTitleAndFavicon() {
+  var favicon = document.createElement('link')
+  favicon.type = "image/png";
+  favicon.rel = "icon";
+  favicon.href = "./images/favicon.png"
+  document.head.appendChild(favicon);
+
+  var pageTitle = document.createElement('title');
+  pageTitle.innerHTML = "GBM dApp";
+  document.head.appendChild(pageTitle)
 }
 
 function addCSS(filename) {
