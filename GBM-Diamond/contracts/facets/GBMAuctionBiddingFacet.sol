@@ -196,7 +196,8 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             require(
                 block.timestamp >=
                     s.saleToEndTimestamp[auctionID] +
-                        s.GBMPresets[_presetIndex].cancellationPeriodDuration,
+                        s.GBMPresets[_presetIndex].cancellationPeriodDuration
+                    || (msg.sender == _beneficiary && block.timestamp >= s.saleToEndTimestamp[auctionID]),
                 "This auction cannot be claimed yet"
             );
         }
