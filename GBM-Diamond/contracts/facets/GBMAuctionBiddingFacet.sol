@@ -507,7 +507,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
         uint256 auctionID,
         uint256 newBidValue,
         uint256 oldBidValue
-    ) internal view returns (uint256) {
+    ) virtual internal view returns (uint256) {
         uint256 _presetIndex = s.saleToGBMPreset[auctionID];
 
         if (_presetIndex == 0) {
