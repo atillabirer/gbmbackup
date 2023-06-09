@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
+    </head>
+    <body>
+        <div class="page-content">
+            <div class="page-title">GBM Admin Panel</div>
+            <div class="metamask-missing">
+                <p class="gbm-header">Please connect your MetaMask wallet.</p>
+            </div>
+            <div class="metamask-found" hidden>
+                <div class="config-page">
+                    <h3 id="diamond-address">Smart Contract:</h3>
+                    <h3 id="admin-address">GBM Admin:</h3>
+                    <div id="preset-container"></div>
+                    <div class="preset">
+                        <div class="preset-id">Add new Preset</div>
+                        <div class="separator"></div>
+                        <div class="configuration-spread">
+                            <div class="configuration-left">
+                                <div class="configuration-field">
+                                    <div class="description">Preset Name</div>
+                                    <input class="configuration-input" value="Default Preset"></input>
+                                </div>
+                                <div class="configuration-field">
+                                    <div class="description">Auction Duration</div>
+                                    <input class="configuration-input" value="600"></input>
+                                </div>
+                                <div class="configuration-field">
+                                    <div class="description">Cancellation Period Duration</div>
+                                    <input class="configuration-input" value="300"></input>
+                                </div>
+                                <div class="configuration-field">
+                                    <div class="description">Hammer Time Duration</div>
+                                    <input class="configuration-input" value="300"></input>
+                                </div>
+                            </div>
+                            <div class="configuration-right">
+                                <div class="configuration-field">
+                                    <div class="description">Incentive Growth Multiplier</div>
+                                    <input class="configuration-input" value="1000"></input>
+                                </div>
+                                <div class="configuration-field">
+                                    <div class="description">Incentive Max</div>
+                                    <input class="configuration-input" value="10000"></input>
+                                </div>
+                                <div class="configuration-field">
+                                    <div class="description">Incentive Min</div>
+                                    <input class="configuration-input" value="11120"></input>
+                                </div>
+                                <div class="configuration-field">
+                                    <div class="description">Step Min</div>
+                                    <input class="configuration-input" value="10000"></input>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-new-btn" onclick="addPreset()">Create preset</button>`;
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="scripts/global.js"></script>
+    </body>
+</html>

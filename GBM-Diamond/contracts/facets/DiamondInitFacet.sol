@@ -18,20 +18,30 @@ import "../libraries/GBM_Core.sol";
 contract DiamondInitFacet {
     GBMStorage internal s;
 
-    function init(uint256 _conf) external {
+    function init(uint256 /*_conf */) external {
         LibDiamond.enforceIsContractOwner();
 
-        //TODO : Move it to getters and setters
+        //GBM admin (the account allowed to create presets, sales, etc)
         s.GBMAdminAccount = msg.sender;
-        s.isLicensePaidOnChain = true;
-        s.GBMFeePercentKage = 2000;
 
+        // GBM licensing setup
+        s.GBMAccount = 0xA7427d0D45e8dd969049872F9cDE383716A39B23;
+        s.isLicensePaidOnChain = true;
+        s.GBMFeePercentKage = 2000; //2%%
+
+        //Marketplace fees setup
+        s.marketPlaceRoyalty = msg.sender; //replace here with your own marketplace wallet address if it's not the deployer
+        s.mPlaceDirectFeePercentKage = 5000;  // marketplace take 5% of direct sales
+        s.mPlaceEnglishFeePercentKage = 5000;  // marketplace take 5% of english auctions
+        s.mPlaceGBMFeePercentKage = 3000; // 3% of GBM sales
+   
         // adding ERC165 data, implementation in DiamondLoupeFacet
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true; // Introspection
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true; // Ownable
+
     }
 
 }

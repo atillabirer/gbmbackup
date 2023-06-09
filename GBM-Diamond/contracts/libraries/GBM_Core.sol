@@ -52,7 +52,7 @@ struct GBMStorage {
 
     uint256 totalNumberOfSales;                      //Total number of sales ran by the contract so far
 
-    mapping (uint256 => bytes4) saleToSaleKind;        // A mapping storing which kind of sale is hapenning. 0x0 = GBM sale.
+    mapping (uint256 => bytes4) saleToSaleKind;        // A mapping storing which kind of sale is hapenning. 0x0 = GBM sale. 0x1 = token sale
 
     mapping (uint256 => address) saleToTokenAddress;    // A mapping storing the associated tokenAddress with a sale
     mapping (uint256 => uint256) saleToTokenId;         // A mapping storing the associated tokenID with a sale
@@ -74,17 +74,21 @@ struct GBMStorage {
     mapping (uint256 => mapping(uint256 => uint256)) saleToBidCurrencies;  // A mapping storing the currency in which the bids happenned. 0 = default currency of the auction.
     mapping (uint256 => mapping(uint256 => uint256)) saleToBidIncentives; // A mapping to store how much money each bidder will receive as incentive
     mapping (uint256 => uint256) saleToNumberOfBids;                    // A mapping storing the number of bids per auction. 0 = no bids.
+    mapping (uint256 => uint256) saleToPrice;                           // A mapping storing either the floor price of a GBM or the price of a direct sale  
 
 
-    //For security reason, only non-smart contracts can receive instant incentives and proceeds in native currency. Smart contracts have to withdraw().
+    //For security reason, only non-smart address can receive instant incentives and proceeds in native currency. Smart contracts have to withdraw().
     mapping (address => uint256) smartContractsUsersNativeCurrencyBalance; 
 
     mapping (address => mapping(uint256 => address)) erc721tokensAddressAndIDToEscrower; //A mapping keeping track of who deposited an ERC721 token in escrow
     mapping (address => mapping(uint256 => bool)) erc721tokensAddressAndIDToUnderSale; //A mapping keeping track of which ERC721 tokens are under sale 
     mapping (address => mapping(uint256 => mapping(address => uint256))) erc1155tokensAddressAndIDToEscrowerAmount; //A mapping keeping track of how much by whom ERC1155 tokens have been deposited in escrow    
     mapping (address => mapping(uint256 => mapping(address => uint256))) erc1155tokensAddressAndIDToEscrowerUnderSaleAmount; //A mapping keeping track of how much by whom ERC1155 tokens are under sale 
-    mapping (uint256 => uint256) saleToSeller; // A mapping storing who has deposited the token in escrow and created the sale       
+    mapping (address => mapping(uint256 => mapping(address => uint256))) erc1155tokensAddressAndIDToOwnerUnderSaleAmount; //A mapping keeping track of how much by whom ERC1155 tokens are under sale and not in escrow 
+    mapping (uint256 => address) saleToSender; // A mapping storing where the token must come from at direct sale settlement for 1155    
 
-     mapping (uint256 => bool) saleToClaimed; // A mapping storing wether or not a sale have been settled                                          
+    mapping (uint256 => bool) saleToClaimed; // A mapping storing wether or not a sale have been settled    
+
+    mapping (address => bool) secondarySaleNFTContractWhitelist; // A mapping storing which NFTs contract can be put up for sale on the secondary market
 }
 

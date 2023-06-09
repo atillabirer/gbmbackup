@@ -7,7 +7,7 @@ import { GBMStorage } from "../libraries/GBM_Core.sol";
 import { IGBMEventsFacet } from "../interfaces/facets/IGBMEventsFacet.sol";
 import { IERC721 } from "../interfaces/IERC721.sol";
 
-contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFacet,IGBMEventsFacet {
+contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFacet, IGBMEventsFacet {
 
     GBMStorage internal s;
 
@@ -16,26 +16,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
         _;
     }
 
-    /// @notice Register a 721 auction without checking for token ownership
-    /// @dev Useful for example if you have a custom 721 contract that will mint the token at the end of the auction,
-    /// when the safeTransfer function is called, or simply if the GBM contract is approved to manipulate the auctionned
-    /// token and the seller can be trusted to not move the token once the auction has started. Throw if not called by the GBM admin.
-    /// /!\ Auction settlement always try to get the owner of the token before transferring it. If doing minting settlement, please
-    /// implement your 721 in a way that unminted token ownerOf() do not throw and instead return address(0).
-    /// @param tokenID The token ID of the ERC721 NFT for sale
-    /// @param tokenContractAddress The address of the smart contract of the NFT for sale
-    /// @param gbmPreset The id of the GBM preset used for this auction. 0 to use the default one.
-    /// @param startTimestamp The timestamp of when the auction should start.
-    /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
-    /// @param beneficiary The address of whom should the proceed from the sales goes to.
-    function unsafeRegister721Auction(  uint256 tokenID, 
-                                        address tokenContractAddress, 
-                                        uint256 gbmPreset, 
-                                        uint256 startTimestamp, 
-                                        uint256 currencyID, 
-                                        address beneficiary) external onlyAdmin() {
-        internalRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary);
-    }
+
 
     /// @notice Register a 721 auction and checking for token ownership
     /// @dev The default way to register your auctions one by one
@@ -54,28 +35,86 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
 
         require(IERC721(tokenContractAddress).ownerOf(tokenID) == address(this), "Please deposit the token in escrow first");
 
-        internalRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary);
+        internalRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, 0, 0);
 
     }
 
-    /// @notice Register a 1155 auction without checking for token ownership
-    /// @dev This allow for cheaper deposit of the 1155 tokens, as you can bypass escrow tracking and settlement. Also allow
-    /// JIT minting at auction settlement, just like for the unsafe 721 auction registration
+    /// @notice Register a 721 auction and checking for token ownership
+    /// @dev The default way to register your auctions one by one
     /// @param tokenID The token ID of the ERC721 NFT for sale
     /// @param tokenContractAddress The address of the smart contract of the NFT for sale
-    /// @param amount Amount of token to be auctionned off
     /// @param gbmPreset The id of the GBM preset used for this auction. 0 to use the default one.
     /// @param startTimestamp The timestamp of when the auction should start.
     /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
     /// @param beneficiary The address of whom should the proceed from the sales goes to.
-    function unsafeRegister1155auction(  uint256 tokenID, 
+    /// @param endTimestamp When shall the last bid should be accepted
+    /// @param startingBid How much at the minimum should the first bid be
+    /// @param endTimestamp When shall the last bid should be accepted
+    /// @param startingBid How much at the minimum should the first bid be
+    function safeRegister721Auction_Custom( uint256 tokenID, 
                                         address tokenContractAddress, 
-                                        uint256 amount,
+                                        uint256 gbmPreset, 
+                                        uint256 startTimestamp, 
+                                        uint256 currencyID, 
+                                        address beneficiary,
+                                        uint256 endTimestamp,
+                                        uint256 startingBid
+                                        ) external onlyAdmin() {
+
+        require(IERC721(tokenContractAddress).ownerOf(tokenID) == address(this), "Please deposit the token in escrow first");
+
+        internalRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, endTimestamp, startingBid);
+
+    }
+
+    /// @notice Register a 721 auction and checking for token ownership
+    /// @dev The default way to register your auctions one by one
+    /// @param tokenIDs And arrau of the token ID of the ERC721 NFT for sale
+    /// @param tokenContractAddress The address of the smart contract of the NFT for sale
+    /// @param gbmPreset The id of the GBM preset used for this auction. 0 to use the default one.
+    /// @param startTimestamp The timestamp of when the auction should start.
+    /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
+    /// @param beneficiary The address of whom should the proceed from the sales goes to.
+    function safeRegister721AuctionBatch(uint256[] calldata tokenIDs, 
+                                        address tokenContractAddress, 
                                         uint256 gbmPreset, 
                                         uint256 startTimestamp, 
                                         uint256 currencyID, 
                                         address beneficiary) external onlyAdmin() {
-        internalRegister1155AuctionUnsafe(tokenID, tokenContractAddress, amount, gbmPreset, startTimestamp, currencyID, beneficiary);
+
+        for(uint256 i = 0; i < tokenIDs.length; i++){
+            require(IERC721(tokenContractAddress).ownerOf(tokenIDs[i]) == address(this), "Please deposit the token in escrow first");
+
+            internalRegister721Auction(tokenIDs[i], tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, 0, 0);
+        }
+    }
+
+
+    /// @notice Register a 721 auction and checking for token ownership
+    /// @dev The default way to register your auctions one by one
+    /// @param tokenIDs And arrau of the token ID of the ERC721 NFT for sale
+    /// @param tokenContractAddress The address of the smart contract of the NFT for sale
+    /// @param gbmPreset The id of the GBM preset used for this auction. 0 to use the default one.
+    /// @param startTimestamp The timestamp of when the auction should start.
+    /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
+    /// @param beneficiary The address of whom should the proceed from the sales goes to.
+    /// @param endTimestamp When shall the last bid should be accepted
+    /// @param startingBid How much at the minimum should the first bid be
+    function safeRegister721AuctionBatch_Custom(uint256[] calldata tokenIDs, 
+                                        address tokenContractAddress, 
+                                        uint256 gbmPreset, 
+                                        uint256 startTimestamp, 
+                                        uint256 currencyID, 
+                                        address beneficiary,
+                                        uint256 endTimestamp,
+                                        uint256 startingBid
+                                        ) external onlyAdmin() {
+
+        for(uint256 i = 0; i < tokenIDs.length; i++){
+            require(IERC721(tokenContractAddress).ownerOf(tokenIDs[i]) == address(this), "Please deposit the token in escrow first");
+
+            internalRegister721Auction(tokenIDs[i], tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, endTimestamp, startingBid);
+        }
     }
 
 
@@ -100,15 +139,106 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
         require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenID][beneficiary] + amount) <= 
             s.erc1155tokensAddressAndIDToEscrowerAmount[tokenContractAddress][tokenID][beneficiary]
             , "You cannot put that many 1155 tokens on sale without depositing more first");
-        internalRegister1155AuctionUnsafe(tokenID, tokenContractAddress, amount, gbmPreset, startTimestamp, currencyID, beneficiary);
+        internalRegister1155AuctionUnsafe(tokenID, tokenContractAddress, amount, gbmPreset, startTimestamp, currencyID, beneficiary, 0, 0);
     }
+
+    /// @notice Register a 1155 auction and check for 1155 token ownership
+    /// @dev Make sure that the beneficiary is the wallet address that sent the 1155 tokens in escrow.
+    /// @param tokenID The token ID of the ERC721 NFT for sale
+    /// @param tokenContractAddress The address of the smart contract of the NFT for sale
+    /// @param amount Amount of token to be auctionned off
+    /// @param gbmPreset The id of the GBM preset used for this auction. 0 to use the default one.
+    /// @param startTimestamp The timestamp of when the auction should start.
+    /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
+    /// @param beneficiary The address of whom should the proceed from the sales goes to.
+    /// @param endTimestamp When shall the last bid should be accepted
+    /// @param startingBid How much at the minimum should the first bid be
+    function safeRegister1155auction_Custom(  uint256 tokenID, 
+                                        address tokenContractAddress, 
+                                        uint256 amount,
+                                        uint256 gbmPreset, 
+                                        uint256 startTimestamp, 
+                                        uint256 currencyID, 
+                                        address beneficiary,
+                                        uint256 endTimestamp,
+                                        uint256 startingBid
+                                    ) external onlyAdmin() {
+
+
+        require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenID][beneficiary] + amount) <= 
+            s.erc1155tokensAddressAndIDToEscrowerAmount[tokenContractAddress][tokenID][beneficiary]
+            , "You cannot put that many 1155 tokens on sale without depositing more first");
+        internalRegister1155AuctionUnsafe(tokenID, tokenContractAddress, amount, gbmPreset, startTimestamp, currencyID, beneficiary, endTimestamp, startingBid);
+    }
+
+
+    /// @notice Register a 1155 auction and check for 1155 token ownership
+    /// @dev Make sure that the beneficiary is the wallet address that sent the 1155 tokens in escrow.
+    /// @param tokenIDs The token ID of the ERC721 NFT for sale
+    /// @param amounts Amount of token to be auctionned off
+    /// @param tokenContractAddress The address of the smart contract of the NFT for sale
+    /// @param gbmPreset The id of the GBM preset used for this auction. 0 to use the default one.
+    /// @param startTimestamp The timestamp of when the auction should start.
+    /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
+    /// @param beneficiary The address of whom should the proceed from the sales goes to.
+    function safeRegister1155auctionBatch(  uint256[] calldata tokenIDs, 
+                                        uint256[] calldata amounts,
+                                        address tokenContractAddress, 
+                                        uint256 gbmPreset, 
+                                        uint256 startTimestamp, 
+                                        uint256 currencyID, 
+                                        address beneficiary) external onlyAdmin() {
+
+        for(uint256 i = 0; i < tokenIDs.length; i++){
+                require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenIDs[i]][beneficiary] + amounts[i]) <= 
+                    s.erc1155tokensAddressAndIDToEscrowerAmount[tokenContractAddress][tokenIDs[i]][beneficiary]
+                    , "You cannot put that many 1155 tokens on sale without depositing more first");
+                internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, 0 , 0);
+        }
+
+    }
+
+
+    /// @notice Register a 1155 auction and check for 1155 token ownership
+    /// @dev Make sure that the beneficiary is the wallet address that sent the 1155 tokens in escrow.
+    /// @param tokenIDs The token ID of the ERC721 NFT for sale
+    /// @param amounts Amount of token to be auctionned off
+    /// @param tokenContractAddress The address of the smart contract of the NFT for sale
+    /// @param gbmPreset The id of the GBM preset used for this auction. 0 to use the default one.
+    /// @param startTimestamp The timestamp of when the auction should start.
+    /// @param currencyID The ID of the currency this auction accept. 0 to use the default one.
+    /// @param beneficiary The address of whom should the proceed from the sales goes to.
+    /// @param endTimestamp When shall the last bid should be accepted
+    /// @param startingBid How much at the minimum should the first bid be
+    function safeRegister1155auctionBatch_Custom(  uint256[] calldata tokenIDs, 
+                                        uint256[] calldata amounts,
+                                        address tokenContractAddress, 
+                                        uint256 gbmPreset, 
+                                        uint256 startTimestamp, 
+                                        uint256 currencyID, 
+                                        address beneficiary,
+                                        uint256 endTimestamp,
+                                        uint256 startingBid
+                                    ) external onlyAdmin() {
+
+        for(uint256 i = 0; i < tokenIDs.length; i++){
+                require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenIDs[i]][beneficiary] + amounts[i]) <= 
+                    s.erc1155tokensAddressAndIDToEscrowerAmount[tokenContractAddress][tokenIDs[i]][beneficiary]
+                    , "You cannot put that many 1155 tokens on sale without depositing more first");
+                internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, endTimestamp , startingBid);
+        }
+
+    }
+
 
     function internalRegister721Auction( uint256 tokenID, 
                                         address tokenContractAddress, 
                                         uint256 gbmPreset, 
                                         uint256 startTimestamp, 
                                         uint256 currencyID, 
-                                        address beneficiary
+                                        address beneficiary,
+                                        uint256 endTimeStamp,
+                                        uint256 startingBid
     ) internal{
 
         require(!s.erc721tokensAddressAndIDToUnderSale[tokenContractAddress][tokenID], "This token is already under sale");
@@ -125,8 +255,6 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
         s.saleToTokenId[_saleID] = tokenID;         // A mapping storing the associated tokenID with a sale
         s.saleToTokenAmount[_saleID] = 1;           // A mapping storing the associated tokenAmount offered by a sale
         s.saleToTokenKind[_saleID] = 0x73ad2146;    // A mapping storing the associated tokenKind with a sale _tokenKind = 0x73ad2146 if the token is ERC721, 0x973bb640 if the token is ERC1155
-
-
         
         uint256 _gbmPreset;
         if(gbmPreset == 0){
@@ -139,7 +267,19 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
         s.saleTocurrencyID[_saleID] = currencyID;                                                   // A mapping storing the associated main currency with a sale
         s.saleToStartTimestamp[_saleID] = startTimestamp;                                           // A mapping storing the associated StartTimestamp with a sale
 
-        s.saleToEndTimestamp[_saleID] = startTimestamp + s.GBMPresets[_gbmPreset].auctionDuration;   // A mapping storing the associated EndTimestamp with a sale
+        if(endTimeStamp == 0){
+            s.saleToEndTimestamp[_saleID] = startTimestamp + s.GBMPresets[_gbmPreset].auctionDuration;   // A mapping storing the associated EndTimestamp with a sale
+        } else {
+            s.saleToEndTimestamp[_saleID] = endTimeStamp;
+        }
+
+        uint256 _startPrice = startingBid;
+        if(_startPrice == 0){ 
+           _startPrice = s.GBMPresets[_gbmPreset].firstMinBid;
+        } else {
+            s.saleToPrice[_saleID] = startingBid;
+        }
+       
         s.saleToBeneficiary[_saleID] = beneficiary;                                                 // A mapping storing the associated Beneficiary (ie : the seller) with a sale
 
         /*
@@ -157,6 +297,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                 address beneficiary                     // Who is the seller that is gonna receive the profits of the sale
             );
         */
+
         emit AuctionRegistration_NewAuction(
             _saleID,
             tokenContractAddress,
@@ -167,7 +308,8 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
             currencyID,
             startTimestamp,
             s.saleToEndTimestamp[_saleID],
-            beneficiary
+            beneficiary,
+            _startPrice
         );                      
 
                                                             
@@ -179,7 +321,9 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 gbmPreset, 
                                         uint256 startTimestamp, 
                                         uint256 currencyID, 
-                                        address beneficiary
+                                        address beneficiary,
+                                        uint256 endTimeStamp,
+                                        uint256 startingBid
     ) internal{
 
         require(currencyID != 0 || s.defaultCurrency != 0, "No currency have been set for the auction being registered");
@@ -203,8 +347,22 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
 
         s.saleToGBMPreset[_saleID] = gbmPreset;                                                     // A mapping storing the associated GBM preset with a sale
         s.saleTocurrencyID[_saleID] = currencyID;                                                   // A mapping storing the associated main currency with a sale
-        s.saleToStartTimestamp[_saleID] = startTimestamp;                                           // A mapping storing the associated StartTimestamp with a sale
-        s.saleToEndTimestamp[_saleID] = startTimestamp + s.GBMPresets[_gbmPreset].auctionDuration;   // A mapping storing the associated EndTimestamp with a sale
+        s.saleToStartTimestamp[_saleID] = startTimestamp;  
+                                                 // A mapping storing the associated StartTimestamp with a sale
+        if(endTimeStamp == 0){
+            s.saleToEndTimestamp[_saleID] = startTimestamp + s.GBMPresets[_gbmPreset].auctionDuration;   // A mapping storing the associated EndTimestamp with a sale
+        } else {
+            s.saleToEndTimestamp[_saleID] = endTimeStamp;
+        }
+
+        uint256 _startPrice = startingBid;
+        if(_startPrice == 0){ 
+           _startPrice = s.GBMPresets[_gbmPreset].firstMinBid;
+        } else {
+            s.saleToPrice[_saleID] = startingBid;
+        }
+  
+       
         s.saleToBeneficiary[_saleID] = beneficiary;                                                 // A mapping storing the associated Beneficiary (ie : the seller) with a sale
 
         /*
@@ -232,7 +390,8 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
             currencyID,
             startTimestamp,
             s.saleToEndTimestamp[_saleID],
-            beneficiary
+            beneficiary,
+            _startPrice
         );                      
                                                             
     }

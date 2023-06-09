@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
+    </head>
+    <body>
+        <div class="page-content">
+            <div class="metamask-missing">
+                <p class="gbm-header">Please connect your MetaMask wallet.</p>
+            </div>
+            <div class="metamask-found" hidden>
+                <div class="loading-container">
+                    <div class="loading-text">Fetching auction</div>
+                    <div class="lds-roller">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="auction-container">
+                    <div class="column-container media-container"></div>
+                    <div class="column-container info-container">
+                        <div class="collection-and-id"></div>
+                        <div class="token-name">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+                        <div class="auction-status">
+                            <div class="status-container current-bid">
+                                <div class="label">Current bid</div>
+                                <div class="info-value"></div>
+                            </div>
+                            <div class="status-container end-timestamp">
+                                <div class="label">Ends in</div>
+                                <div class="info-value">-</div>
+                            </div>
+                        </div>
+                        <div class="minimum-bid tooltip">Minimum bid: $111.65</div>
+                        <input class="bid-input" disabled type="text" placeholder="Input your bid here" />
+                        <div class="incentive tooltip"><img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn 0
+                            (0%) if outbid.</div>
+                        <div class="btn-container">
+                            <button class="bid-btn" onclick="placeBid()" disabled>Place bid</button>
+                            <button class="share-btn" onclick="copyToClipboard()">Share</button>
+                        </div>
+                        <div class="bid-history-container">
+                            <div class="bid-history"></div>
+                            <div class="bids">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="scripts/global.js"></script>
+    </body>
+</html>

@@ -1,0 +1,100 @@
+/*
+  Global
+*/
+
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #085F63;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  flex-direction: column;
+  margin: 2rem 8rem;
+}
+
+.nav-bar {
+  display: block;
+  justify-content: space-around;
+  padding-bottom: 4rem;
+}
+
+.nav-top-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 2rem 0;
+}
+
+.nav-logo {
+  display: block;
+}
+
+.gbm-logo {
+  display: block;
+  margin: 0 auto;
+  height: 3rem;
+}
+
+.metamask-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.metamask-container button {
+  margin-left: 0.75rem;
+}
+
+.dc-btn {
+  font-size: medium;
+  color: #fff;
+  height: 2.5rem;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  border-radius: 50px;
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+#active-metamask-account {
+  color: #49BEB7;
+  font-weight: 700;
+  font-size: large;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: row;
+}
+
+.nav-links a {
+  font-size: large;
+  font-weight: bold;
+  text-decoration: none;
+  padding-right: 3.5rem;
+}
+
+.link-leave {
+  color: #fff; 
+  cursor: pointer;
+}
+
+.link-stay {
+  color: #49BEB7;
+}
+
+.page-title {
+  font-size: 64px;
+  font-weight: 700;
+  color: #fff;
+  padding-bottom: 3rem;
+  letter-spacing: -0.03em;
+}
+
+input::-webkit-input-placeholder {
+  color: #B7B7B7;
+} 

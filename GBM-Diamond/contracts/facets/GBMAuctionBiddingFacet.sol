@@ -21,6 +21,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
         s.reentrancySemaphore = false;
     }
 
+
     /// @notice Place a bid on a live GBM Auction
     /// @dev The currency being used is the default currency of the auction
     /// @param auctionID The auctionID the bid is placed upon
@@ -31,31 +32,24 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
         uint256 newBidAmount,
         uint256 previousHighestBidAmount
     ) external payable reentrancyProtector {
+
+        require(s.saleToSaleKind[auctionID] == 0x00000000, "You can only bid() on auctions");
+
         uint256 _previousBidIndex = s.saleToNumberOfBids[auctionID];
 
-        require(
-            s.saleToStartTimestamp[auctionID] != 0,
-            "Auction doesn't exist"
-        );
+        require(s.saleToStartTimestamp[auctionID] != 0, "Auction doesn't exist");
 
         //Checking that the previousHighestBidAmount matches
-        require(
-            previousHighestBidAmount ==
-                s.saleToBidValues[auctionID][_previousBidIndex],
-            "The previous highest bid do not match"
-        );
+        require(previousHighestBidAmount ==s.saleToBidValues[auctionID][_previousBidIndex],
+            "The previous highest bid do not match");
 
         //Checking that the auction has started
-        require(
-            s.saleToStartTimestamp[auctionID] < block.timestamp,
-            "The auction has not started yet"
-        );
+        require( s.saleToStartTimestamp[auctionID] < block.timestamp,
+            "The auction has not started yet"  );
 
         //Checking that the auction has not ended
-        require(
-            s.saleToEndTimestamp[auctionID] > block.timestamp,
-            "The auction has already ended"
-        );
+        require( s.saleToEndTimestamp[auctionID] > block.timestamp,
+            "The auction has already ended");
 
         require(newBidAmount > 1, "newBidAmount cannot be 0");
 
@@ -65,10 +59,11 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
         }
 
         //Checking if there was a min BID requirement
-        require(
-            s.GBMPresets[_presetIndex].firstMinBid <= newBidAmount,
-            "You need to bid higher or equal than the minimum bid for this preset"
-        );
+        require(s.GBMPresets[_presetIndex].firstMinBid <= newBidAmount,
+            "You need to bid higher or equal than the minimum preset bid for this preset");
+        
+        require(s.saleToPrice[auctionID] <= newBidAmount,
+            "You need to bid higher or equal than the minimum bid for this auction");
 
         //Check the kind of currency used by the auction:
         uint256 _currencyID = s.saleTocurrencyID[auctionID];
@@ -90,11 +85,7 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
         } else {
             // Case of an ERC20 token
             //Transfer the money of the bidder to the GBM smart contract
-            IERC20(_currAddress).transferFrom(
-                msg.sender,
-                address(this),
-                newBidAmount
-            );
+            IERC20(_currAddress).transferFrom( msg.sender, address(this), newBidAmount);
         }
 
         //Get the current bidIndex and bidamount/incentives
@@ -169,9 +160,13 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
         }
     }
 
+
     /// @notice Attribute the token and payment to a finished GBM auction
     /// @param auctionID The saleID of the auction you wish to settle
     function claim(uint256 auctionID) external {
+
+        require(s.saleToSaleKind[auctionID] == 0x00000000, "You can only claim auctions");
+
         require(
             !s.saleToClaimed[auctionID],
             "This auction has already been settled"
@@ -234,8 +229,8 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
         //Checking for at least a bid
         if (_highestBidIndex != 0) {
-            uint256 _debt = s.saleToDebt[auctionID];
 
+            uint256 _debt = s.saleToDebt[auctionID];
             uint256 _pot = s.saleToBidValues[auctionID][_highestBidIndex];
             uint256 _due;
 
@@ -264,21 +259,27 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
                 }
             }
 
-            //Sending money to marketplace share
-            _due = (_pot * s.mPlaceGBMFeePercentKage) / DECIMALSK;
+            if(s.saleToBidIncentives[auctionID][1] == 0){ //English auction case
+                _due = (_pot * s.mPlaceEnglishFeePercentKage) / DECIMALSK;
+            } else { 
+                //Sending money to marketplace share
+                _due = (_pot * s.mPlaceGBMFeePercentKage) / DECIMALSK;
+            }
             _debt += _due;
-
+ 
             //Case of a native currency : Eth, Matic, etc...
             if (_currAddress == address(0x0)) {
-                sendbaseCurrency(s.marketPlaceRoyalty, _due);
+
+                (bool succ, ) = s.marketPlaceRoyalty.call{value: _due}("");
+                require(
+                    succ,
+                    "Transfer failed to your marketplace fee account. Wut ?"
+                );
+
             } else {
                 // Case of an ERC20 token
                 //Transfer the money of the bidder to the GBM smart contract
-                IERC20(_currAddress).transferFrom(
-                    address(this),
-                    s.marketPlaceRoyalty,
-                    _due
-                );
+                IERC20(_currAddress).transferFrom(address(this), s.marketPlaceRoyalty, _due);
             }
 
             //Sending money to beneficiary aka seller
@@ -288,15 +289,162 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             } else {
                 // Case of an ERC20 token
                 //Transfer the money of the bidder to the GBM smart contract
-                IERC20(_currAddress).transferFrom(
-                    address(this),
-                    _beneficiary,
-                    _due
-                );
+                IERC20(_currAddress).transferFrom(address(this), _beneficiary,_due);
             }
         }
 
         //Transfering the auctionned asset
+
+        //Case ERC721
+        if (s.saleToTokenKind[auctionID] == 0x73ad2146) {
+            //Get the owner of the asset
+            address _from;
+            //A properly implemented ERC721 contract should throw if the owner of a token is 0x0. Hence the raw call.
+            (bool result, bytes memory data) = _tkc.call(abi.encodeWithSignature("ownerOf(uint256)",s.saleToTokenId[auctionID]));
+
+            if (result) {
+                _from = abi.decode(data, (address));
+            } // No else. A freshly pushed address is initialized to 0x0
+
+            if (_highestBidIndex == 0) //Case of no bids : send NFT to seller
+            {
+                _highestBidder = _beneficiary;
+            }
+
+            if (_from != _highestBidder) {
+                //Prevent doing a stay in the same place move.
+                //We do a proper throwing safeTransfer here. Edge case of rogue highestBidder unable to receive the NFT to be handled by a separate function, not Claim.
+                IERC721(_tkc).safeTransferFrom(_from, _highestBidder, _tokenID);
+            }
+
+            //If we were keeping track of escrow, unescrow it
+            if (s.erc721tokensAddressAndIDToEscrower[_tkc][_tokenID] != address(0)) {
+                s.erc721tokensAddressAndIDToEscrower[_tkc][_tokenID] = address(0);
+                s.erc721tokensAddressAndIDToUnderSale[_tkc][_tokenID] = false;
+            }
+        } else if (s.saleToTokenKind[auctionID] == 0x973bb640) {
+            //ERC 1155
+            //In the case of 1155, we always assume the tokens are coming from the diamond contract.
+
+            if (_highestBidIndex == 0) //Case of no bids : send NFT to seller
+            {
+                _highestBidder = _beneficiary;
+            }
+
+            //We do a proper throwing safeTransfer here. Edge case of rogue highestBidder unable to receive the NFT to be handled by a separate function, not Claim.
+            IERC1155(_tkc).safeTransferFrom(address(this), _highestBidder, _tokenID, s.saleToTokenAmount[auctionID], "");
+
+            if (s.erc1155tokensAddressAndIDToEscrowerAmount[_tkc][_tokenID][_beneficiary] != 0) {
+                //If keeping tracks of 1155 deposits, undeposit it
+                s.erc1155tokensAddressAndIDToEscrowerAmount[_tkc][_tokenID][_beneficiary] -= s.saleToTokenAmount[auctionID];
+            }
+
+            //Remove those tokens from being currently under sale
+            s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[_tkc][_tokenID][_beneficiary] -= s.saleToTokenAmount[auctionID];
+        }
+        //TODO : Royalty checks
+    }
+
+
+    /// @notice During the grace period, a Seller can decide to pay for the incentives to everyone and get back the
+    /// nft that was put up for sale
+    /// Will throw if called before the auction end, after the grace period end or not called by the _beneficiary (seller)
+    /// @param auctionID The saleID of the auction you wish to cancel
+    function cancelAuction(
+        uint256 auctionID
+    ) external payable reentrancyProtector {
+        require(
+            !s.saleToClaimed[auctionID],
+            "This auction has already been settled"
+        );
+        s.saleToClaimed[auctionID] = true;
+
+        require(s.saleToSaleKind[auctionID] == 0x00000000, "You can only cancelAuction() auctions");
+
+        address _beneficiary = s.saleToBeneficiary[auctionID];
+
+        require(msg.sender == _beneficiary,"Only the seller can cancel the auction");
+
+        address _tkc = s.saleToTokenAddress[auctionID];
+        uint256 _tokenID = s.saleToTokenId[auctionID];
+        uint256 _highestBidIndex = s.saleToNumberOfBids[auctionID];
+        address _highestBidder = s.saleToBidders[auctionID][_highestBidIndex];
+
+        uint256 _presetIndex = s.saleToGBMPreset[auctionID];
+        if (_presetIndex == 0) {
+            _presetIndex = s.defaultPreset;
+        }
+
+        //Checking that the auction AND the grace period is over
+        require(block.timestamp >= s.saleToEndTimestamp[auctionID],
+            "This auction cannot be cancelled yet"
+        );
+
+        require(block.timestamp <=  s.saleToEndTimestamp[auctionID] + s.GBMPresets[_presetIndex].cancellationPeriodDuration,
+                "This auction cannot be cancelled anymore"
+        );
+
+        //Checking for at least a bid
+        if (_highestBidIndex != 0) {
+            //Fetch the address of the currency used by the auction
+            uint256 _currencyID = s.saleTocurrencyID[auctionID];
+
+            //If the auction doesn't have a registered currency, then use the default currency for the contract
+            if (_currencyID == 0) {
+                _currencyID = s.defaultCurrency;
+            }
+
+            address _currAddress = s.currencyAddress[_currencyID];
+            uint256 _prevBidAmount = s.saleToBidValues[auctionID][_highestBidIndex];
+            uint256 _dueIncentives = s.saleToBidIncentives[auctionID][_highestBidIndex];
+            uint256 _debt = s.saleToDebt[auctionID];
+
+            _debt += _dueIncentives; //The seller need to settle the existing incentives paid out so far + the highest bidder one
+
+            //Case of a native currency : Eth, Matic, etc...
+            if (_currAddress == address(0x0)) {
+                require(
+                    msg.value == _debt,
+                    "The amount of currency sent with the cancellation do not match the debt"
+                );
+            } else {
+                // Case of an ERC20 token
+                //Transfer the money of the bidder to the GBM smart contract
+                IERC20(_currAddress).transferFrom(
+                    msg.sender,
+                    address(this),
+                    _debt
+                );
+            }
+
+            //Emitting the fact that the previous bid is cancelled
+            emit AuctionBid_Displaced(
+                auctionID,
+                _highestBidIndex,
+                _highestBidder,
+                _prevBidAmount,
+                _dueIncentives
+            );
+
+            //Refunding the bids + the incentives
+            if (_currAddress == address(0x0)) {
+                //Sending the money in case of base currency
+                sendbaseCurrency(
+                    _highestBidder,
+                    _prevBidAmount + _dueIncentives
+                );
+            } else {
+                //Sending the money in case of of ERC20 tokens
+                IERC20(_currAddress).transferFrom(
+                    address(this),
+                    _highestBidder,
+                    _prevBidAmount + _dueIncentives
+                );
+            }
+
+            //Recording the increased debt
+            s.saleToDebt[auctionID] += _debt;
+        }
 
         //Case ERC721
         if (s.saleToTokenKind[auctionID] == 0x73ad2146) {
@@ -315,10 +463,10 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
             if (_highestBidIndex == 0) //Case of no bids : send NFT to seller
             {
-                _highestBidder = _beneficiary;
+                _beneficiary = _beneficiary;
             }
 
-            if (_from != _highestBidder) {
+            if (_from != _beneficiary) {
                 //Prevent doing a stay in the same place move.
                 //We do a proper throwing safeTransfer here. Edge case of rogue highestBidder unable to receive the NFT to be handled by a separate function, not Claim.
                 IERC721(_tkc).safeTransferFrom(_from, _highestBidder, _tokenID);
@@ -336,42 +484,21 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             }
         } else if (s.saleToTokenKind[auctionID] == 0x973bb640) {
             //ERC 1155
-            //In the case of 1155, we always assume the tokens are comming from the diamond contract.
-
-            if (_highestBidIndex == 0) //Case of no bids : send NFT to seller
-            {
-                _highestBidder = _beneficiary;
-            }
+            //In the case of 1155, we always assume the tokens are coming from the diamond contract.
 
             //We do a proper throwing safeTransfer here. Edge case of rogue highestBidder unable to receive the NFT to be handled by a separate function, not Claim.
-            IERC1155(_tkc).safeTransferFrom(
-                address(this),
-                _highestBidder,
-                _tokenID,
-                s.saleToTokenAmount[auctionID],
-                ""
-            );
+            IERC1155(_tkc).safeTransferFrom(address(this), _beneficiary, _tokenID, s.saleToTokenAmount[auctionID], "");
 
-            if (
-                s.erc1155tokensAddressAndIDToEscrowerAmount[_tkc][_tokenID][
-                    _beneficiary
-                ] != 0
-            ) {
+            if (s.erc1155tokensAddressAndIDToEscrowerAmount[_tkc][_tokenID][_beneficiary] != 0) {
                 //If keeping tracks of 1155 deposits, undeposit it
-                s.erc1155tokensAddressAndIDToEscrowerAmount[_tkc][_tokenID][
-                    _beneficiary
-                ] -= s.saleToTokenAmount[auctionID];
+                s.erc1155tokensAddressAndIDToEscrowerAmount[_tkc][_tokenID][_beneficiary] -= s.saleToTokenAmount[auctionID];
             }
 
             //Remove those tokens from being currently under sale
-            s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[_tkc][
-                _tokenID
-            ][_beneficiary] -= s.saleToTokenAmount[auctionID];
+            s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[_tkc][_tokenID][_beneficiary] -= s.saleToTokenAmount[auctionID];
         }
-
-        //TODO: Events
-        //TODO : Royalty checks
     }
+
 
     /// @notice Calculating and setting how much payout a bidder will receive if outbid
     /// @dev Only callable internally

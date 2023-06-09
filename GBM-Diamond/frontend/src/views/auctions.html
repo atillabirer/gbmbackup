@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
+    </head>
+    <body>
+        <div class="page-content">
+            <div class="page-title">Browse Auctions</div>
+            <div class="metamask-missing">
+                <p class="gbm-header">Please connect your MetaMask wallet.</p>
+            </div>
+            <div class="metamask-found" hidden>
+                <div class="auction-filters-container">
+                    <button class="gbm-btn filter-btn active">
+                        <div>Live auctions</div>
+                        <div class="filter-button-number">
+                          <div id="live-number">0</div>
+                        </div>
+                    </button>
+                    <button class="gbm-btn filter-btn">
+                        <div>Upcoming auctions</div>
+                        <div class="filter-button-number">
+                          <div id="upcoming-number">0</div>
+                        </div>
+                    </button>
+                </div>
+                <div class="auctions-container">
+                    <div class="auction-wrapper">
+                      <div class="auction-grid-row auction-grid-item title">
+                        <div class="auction-item-flex">
+                          <div class="auction-item-title">Item</div>
+                        </div>
+                        <div class="auction-item-flex">
+                          <div class="auction-item-title">Current Bid</div>
+                        </div>
+                        <div class="auction-item-flex">
+                          <div class="auction-item-title">Status</div>
+                        </div>
+                      </div>
+                      <div class="loading-container">
+                        <div class="loading-text">Fetching auctions...</div>
+                        <div class="lds-roller">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                      <div class="auction-grid-rows-container">
+                      </div>
+                      <!-- <div class="center-align">
+                        <a href="#" class="load-more">Load More</a>
+                      </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="scripts/global.js"></script>
+    </body>
+</html>

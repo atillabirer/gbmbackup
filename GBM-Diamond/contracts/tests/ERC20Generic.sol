@@ -22,8 +22,8 @@ contract ERC20Generic is IERC20, IERC165  {
     /// @dev Please change the values in here if you want more specific values, or make the constructor takes arguments
     constructor()
     {
-        name = "Generic ERC20";
-        symbol = "GEN20";
+        name = "fake USD";
+        symbol = "fUSD";
         decimals = 18; //Same as ETH
         
         supportedInterfaces[0x01ffc9a7] = true; //ERC165

@@ -14,6 +14,9 @@ import { IGBMEventsFacet } from "./facets/IGBMEventsFacet.sol";
 import { IGBMGettersFacet } from "./facets/IGBMGettersFacet.sol";
 import { IGBMAuctionBiddingFacet } from "./facets/IGBMAuctionBiddingFacet.sol";
 import { IGBMPrimaryAuctionRegistrationFacet } from "./facets/IGBMPrimaryAuctionRegistrationFacet.sol";
+import { IGBMSecondaryAuctionRegistrationFacet } from "./facets/IGBMSecondaryAuctionRegistrationFacet.sol";
+import { IGBMDirectSalePrimaryFacet } from "./facets/IGBMDirectSalePrimaryFacet.sol";
+
 
 
 /// @title GBM_Interface
@@ -30,4 +33,6 @@ interface GBM_Interface is  IGBMEventsFacet,
                             IGBMCurrencyFacet,
                             IGBMGettersFacet,
                             IGBMAuctionBiddingFacet,
-                            IGBMPrimaryAuctionRegistrationFacet {}
+                            IGBMPrimaryAuctionRegistrationFacet, 
+                            IGBMSecondaryAuctionRegistrationFacet,
+                            IGBMDirectSalePrimaryFacet {}

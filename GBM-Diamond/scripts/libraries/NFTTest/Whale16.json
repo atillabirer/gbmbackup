@@ -1,0 +1,18 @@
+{
+    "description": "GBM Whale, An NFT used for testing purposes",
+    "creator": "Nokhal",
+    "image": "https://ipfs.io/ipfs/QmUvCvm5B4qM7r724BvNz9BEXSjexvqjLhTBRhS42r3FfE?filename=GBM%20Whale%20%2316.png",
+    "attributes": [{
+            "trait_type": "License",
+            "value": "No Commercial Use"
+		}
+    ],
+    "properties": {
+        "category": "image",
+        "files": [{
+                "uri": "https://ipfs.io/ipfs/QmUvCvm5B4qM7r724BvNz9BEXSjexvqjLhTBRhS42r3FfE?filename=GBM%20Whale%20%2316.png",
+                "type": "image"
+            }
+        ]
+    }
+}

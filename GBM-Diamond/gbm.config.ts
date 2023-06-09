@@ -29,8 +29,9 @@ export const conf:any = JSON.stringify(
     ],
     "CurrenciesArray": [{
         "CurrencyIndex": 1,
-        "CurrencyName": "BaseCurrency",                                  // To be used by your frontend, not used otherwise
+        "CurrencyName": "fETH",                                  // To be used by your frontend, not used otherwise
         "CurrencyAddress": "0x0000000000000000000000000000000000000000", //Address 0x0 for the base currency, ERC20 token address if not
     }]
 });
 
+4

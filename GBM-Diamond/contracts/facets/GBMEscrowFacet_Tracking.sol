@@ -4,12 +4,21 @@ pragma solidity 0.8.19;
 
 import { IERC721TokenReceiver } from "../interfaces/IERC721TokenReceiver.sol";
 import { IERC1155TokenReceiver } from "../interfaces/IERC1155TokenReceiver.sol";
+import { IERC721 } from "../interfaces/IERC721.sol";
+import { IERC1155 } from "../interfaces/IERC1155.sol";
 import { GBMStorage } from "../libraries/GBM_Core.sol";
 import { IGBMEventsFacet } from "../interfaces/facets/IGBMEventsFacet.sol";
 
 /// @title GBMEscrowFacet Contract
 /// @author Guillaume Gonnaud
 contract GBMEscrowFacet_Tracking is IGBMEventsFacet, IERC721TokenReceiver, IERC1155TokenReceiver {
+
+    modifier reentrancyProtector() {
+        require(!s.reentrancySemaphore, "No Double Dip, kthxbye");
+        s.reentrancySemaphore = true;
+        _;
+        s.reentrancySemaphore = false;
+    }
 
     GBMStorage internal s;
 
@@ -31,6 +40,18 @@ contract GBMEscrowFacet_Tracking is IGBMEventsFacet, IERC721TokenReceiver, IERC1
         }
 
         return bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"));
+    }
+
+
+    function withdrawEscrowed721(address nftContract, uint256 tokenID) reentrancyProtector() external {
+        require(s.erc721tokensAddressAndIDToEscrower[nftContract][tokenID] == msg.sender, "You did not deposit this token in escrow");
+        require(!s.erc721tokensAddressAndIDToUnderSale[nftContract][tokenID], "This token is currently under sale");
+
+        s.erc721tokensAddressAndIDToEscrower[nftContract][tokenID] = address(0x0);
+
+        //Prevent doing a stay in the same place move.
+        IERC721(nftContract).safeTransferFrom(address(this), msg.sender, tokenID);
+
     }    
 
 }

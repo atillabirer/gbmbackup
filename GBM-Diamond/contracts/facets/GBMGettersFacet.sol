@@ -31,7 +31,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
 
     /// @notice get the address to which the GBM License fee is being paid
     /// @return GBMAccount
-    function getGBMAccount() external view returns(address){
+    function getGBMFeesAccount() external view returns(address){
         return s.GBMAccount;
     }
 
@@ -397,7 +397,6 @@ contract GBMGettersFacet is IGBMGettersFacet {
     function getSale_Bid_CurrencyIndex(uint256 saleID, uint256 bidIndex) external view returns(uint256){
         return s.saleToBidCurrencies[saleID][bidIndex];
     }
-
     
     /// @notice Get the sale's bid currency address
     /// @param saleID The ID of the sale you wish to know the details of
@@ -465,7 +464,6 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToBidCurrencies[saleID][_bidindex];
     }
 
-    
     /// @notice Get the sale's highest bid currency address
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return currencyAddress The currency address of the currency the bid was made in. 0 is base currency (ETH/MATIC/GLMR)

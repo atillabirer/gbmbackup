@@ -9,17 +9,21 @@ import { IGBMEventsFacet } from "../interfaces/facets/IGBMEventsFacet.sol";
 
 /// @title GBMEscrowFacet Contract
 /// @author Guillaume Gonnaud
+/// @notice This facet should only ever be deployed in the context of a no secondary market auction house with unsafe registration also deployed.
+/// It will save a bit of gas if putting the tokens in escrow. purpose built lazy minting is nonetheless recommended instead.
 contract GBMEscrowFacet_NoTracking is IGBMEventsFacet, IERC721TokenReceiver, IERC1155TokenReceiver {
+
 
     function onERC721Received(address /* _operator */, address /* _from */, uint256 /* _tokenID */, bytes calldata /* _data */) external pure returns(bytes4) {
         return bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
     }
 
+
     function onERC1155Received(address /* _operator */, address /* _from */, uint256 /* _id */, uint256 /* _value */, bytes calldata /* _data */) external pure returns(bytes4) {
         return bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"));
     }
 
-   
+
     function onERC1155BatchReceived(address /* _operator */, address /* _from */, uint256[] calldata /* _ids */, uint256[] calldata /* _values */, bytes calldata /* _data */) external pure returns(bytes4) {
         return bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"));
     }    

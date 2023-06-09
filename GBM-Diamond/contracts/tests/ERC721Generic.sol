@@ -264,7 +264,7 @@ contract ERC721Generic is IERC721, IERC165 {
         return(royaltyReceiver[0], royalty);
     }
 
-      /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
+    /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
     ///  3986. The URI may point to a JSON file that conforms to the "ERC721
     ///  Metadata JSON Schema".

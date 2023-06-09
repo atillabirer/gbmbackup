@@ -20,7 +20,8 @@ const FacetNames = [
     "GBMCurrencyFacet",
     "GBMEscrowFacet_Tracking",
     "GBMGettersFacet",
-    "GBMPrimaryAuctionRegistrationFacet"
+    "GBMPrimaryAndSecondaryAuctionRegistrationFacet",
+    "GBMDirectSalePrimaryAndSecondaryFacet"
 ];
 
 let deployOrder = ["DCF", "DD", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "FT", "CUT", "PRST", "CRC", "TST"]
@@ -48,12 +49,16 @@ export function addToPreviousFacets(prevFacets: any) {
     facets = prevFacets;
 }
 
+export function passNewConf(newConf: any) {
+    conf = newConf;
+}
+
 async function fetchGasPrice() {
     return 20000000000;
 }
 
 export async function performDeploymentStep(step: number) {
-    conf = JSON.parse(require("../gbm.config.ts").conf);
+    // conf = JSON.parse(require("../gbm.config.ts").conf);
     //switching colour to black on white
     switch (step) {
         case 0:
@@ -62,16 +67,16 @@ export async function performDeploymentStep(step: number) {
         case 1:
             await deployDiamond();
             return [`SERVER || MSG || Diamond deployed at: ${diamondAddress}`, `SERVER || DD || ${diamondAddress}`];
-        case 11:
+        case 12:
             await cutDiamond();
             return [`SERVER || MSG || Diamond has been cut with new facets`, `SERVER || CUT`];
-        case 12:
+        case 13:
             await setPresets();
             return [`SERVER || MSG || GBM Presets registered`, `SERVER || PRST`];
-        case 13:
+        case 14:
             await setCurrency();
             return [`SERVER || MSG || Default currency has been set`, `SERVER || CRC`];
-        case 14:
+        case 15:
             {
                 if (automatedTesting) {
                     await runTestAuction();
@@ -91,6 +96,8 @@ export async function performDeploymentStep(step: number) {
     }
 }
 
+let globConnectedMetamaskWalletAddress:string;
+
 
 export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAddress: string) {
     if (_ConnectedMetamaskWalletAddress) {
@@ -100,6 +107,7 @@ export async function HardhatNetworkSetup_Before(_ConnectedMetamaskWalletAddress
 
     let wallets = await ethers.getSigners()
     await hardhatHelpers.setBalance(wallets[0].address, 10 ** 24);
+    globConnectedMetamaskWalletAddress = _ConnectedMetamaskWalletAddress;
 }
 
 export async function HardhatNetworkSetup_After(_ConnectedMetamaskWalletAddress: string, _nonceToSet: number) {
@@ -316,6 +324,7 @@ async function runTestAuction() {
     const gBMAuctionRegistrationFacet = await ethers.getContractAt("GBMPrimaryAuctionRegistrationFacet", diamondAddress);
     const gBMGettersFacet = await ethers.getContractAt("GBMGettersFacet", diamondAddress);
     const gBMBiddingFacet = await ethers.getContractAt("GBMAuctionBiddingFacet", diamondAddress);
+    const gBMDoItAll = await ethers.getContractAt("GBM_Interface", diamondAddress);
 
     let wallets = await ethers.getSigners()
 
@@ -329,7 +338,43 @@ async function runTestAuction() {
     await erc20C.deployed();
 
     //console.log(erc20C);
-    console.log("ERC-20 token deployed at address: " + erc20C.address);
+    console.log("ERC-20 💲 token deployed at address: " + erc20C.address);
+
+
+
+    gasPrice = await fetchGasPrice();
+    //Registering the ERC20 token into GBM diamond
+    let txa =  await gBMDoItAll.setCurrencyAddress(
+        2,
+        erc20C.address,
+        {
+            gasPrice: gasPrice,
+        });
+    
+    txa =  await gBMDoItAll.setCurrencyName(
+        2,
+       "fUSD",
+        {
+            gasPrice: gasPrice,
+    });
+
+    console.log("Added ERC-20 💲 token to currency index 2");
+
+    // Summoning Jpow
+    txa =  await erc20C.mint(
+        "10000000000000000000000",
+        {
+            gasPrice: gasPrice,
+        });
+    
+    //Allowing the market to spend all our money
+    txa =  await erc20C.approve(
+        diamondAddress,
+        "10000000000000000000000",
+        {
+            gasPrice: gasPrice,
+        });
+
 
     //Deploying a test ERC721
     console.log("Creating an ERC-721 🐱 token");
@@ -401,9 +446,9 @@ async function runTestAuction() {
     let timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
 
     //Create a safe GBM auction
-    console.log("Creating test unsafe ERC721 🐱 auction....");
+    console.log("Creating test safe ERC721 🐱 auction....");
     gasPrice = await fetchGasPrice();
-    let tx = await gBMAuctionRegistrationFacet.unsafeRegister721Auction(
+    let tx = await gBMAuctionRegistrationFacet.safeRegister721Auction(
         1, //Token ID 
         erc721C.address, // tokenContractAddress, 
         0, //gbmPreset
@@ -496,16 +541,16 @@ async function runTestAuction() {
 
 
 
-    //Create an unsafe GBM auction
-    console.log("Creating test unsafe ERC1155 🐰 auction....");
+    //Create a safe GBM auction using ERC20
+    console.log("Creating test safe ERC1155+ERC20 🐰💲 auction....");
     gasPrice = await fetchGasPrice();
-    tx = await gBMAuctionRegistrationFacet.unsafeRegister1155auction(
+    tx = await gBMAuctionRegistrationFacet.safeRegister1155auction(
         6, //Token ID 
         erc1155C.address, // tokenContractAddress, 
         6, //Amount
         0, //gbmPreset
         timestamp, //Start time = ASAP
-        0, //currencyID
+        2, //currencyID
         wallets[0].address, //beneficiary
         {
             gasPrice: gasPrice,
@@ -515,6 +560,26 @@ async function runTestAuction() {
     numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
     highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
     console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    //placing a bid for 100 fUSD
+    tx = await gBMBiddingFacet.bid(
+        bidIDRes, //SaleID 
+        "100000000000000000000",
+        0,
+        {
+            gasLimit: "312345",
+            gasPrice: gasPrice,
+        }
+    );
+
+    
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+
+    console.log("Bid 💲 placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    
 
     //Create a safe GBM auction
     console.log("Creating test safe ERC1155 🐰 auction....");
@@ -603,7 +668,18 @@ async function runTestAuction() {
 
 async function runTestAuctionManual() {
 
-    console.log("\x1b[34m\x1b[47mStarting the Manual tests")
+    console.log("\x1b[34m\x1b[47mStarting the Manual tests");
+
+    
+    let wallets = await ethers.getSigners();
+    let metamaske:any;
+    if (globConnectedMetamaskWalletAddress) {
+        await hardhatHelpers.setBalance(globConnectedMetamaskWalletAddress, 10 ** 24);
+        await hardhatHelpers.impersonateAccount(globConnectedMetamaskWalletAddress);
+        metamaske = await ethers.getSigner(globConnectedMetamaskWalletAddress);;
+    } else {
+        metamaske = wallets[0];
+    }
 
     let tokenURIList = require("./libraries/NFTTestList.json").nftarray;
     let tokenIDMintedSofar = 0;
@@ -612,12 +688,11 @@ async function runTestAuctionManual() {
     const gBMGettersFacet = await ethers.getContractAt("GBMGettersFacet", diamondAddress);
     const gBMBiddingFacet = await ethers.getContractAt("GBMAuctionBiddingFacet", diamondAddress);
 
-    let wallets = await ethers.getSigners()
 
     //Deploying a fake ERC20
     console.log("Creating an ERC-20 token");
     let gasPrice = await fetchGasPrice();
-    const erc20 = await ethers.getContractFactory("ERC20Generic");
+    const erc20 = await ethers.getContractFactory("ERC20Generic", metamaske);
     const erc20C = await erc20.deploy({
         gasPrice: gasPrice
     });
@@ -626,10 +701,10 @@ async function runTestAuctionManual() {
     //console.log(erc20C);
     console.log("ERC-20 token deployed at address: " + erc20C.address);
 
-    //Deploying a test ERC721
+    //Deploying a test ERC721 contract
     console.log("Creating an ERC-721 🐱 token");
     gasPrice = await fetchGasPrice();
-    const erc721 = await ethers.getContractFactory("ERC721Generic");
+    const erc721 = await ethers.getContractFactory("ERC721Generic",  metamaske);
     const erc721C = await erc721.deploy("GBM-TEST-721", "GBM721", {
         gasPrice: gasPrice
     });
@@ -638,7 +713,7 @@ async function runTestAuctionManual() {
     //Deploying a test ERC1155
     console.log("Creating an ERC-1155 🐰 token");
     gasPrice = await fetchGasPrice();
-    const erc1155 = await ethers.getContractFactory("ERC1155Generic");
+    const erc1155 = await ethers.getContractFactory("ERC1155Generic",  metamaske);
     const erc1155C = await erc1155.deploy("GBM-TEST-1155", "GBM1155", {
         gasPrice: gasPrice
     });
@@ -648,7 +723,7 @@ async function runTestAuctionManual() {
     console.log("ERC-1155 token deployed at address: " + erc1155C.address);
 
     //Minting a bunch of 721 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
         console.log("Minting ERC-721 🐱 tokenID " + (tokenIDMintedSofar + 1));
         let tx = await erc721C.mint(
             tokenURIList[tokenIDMintedSofar],
@@ -656,13 +731,15 @@ async function runTestAuctionManual() {
                 gasPrice: gasPrice,
             });
         console.log("Transfering ERC-721 🐱 tokenID " + (tokenIDMintedSofar + 1) + " to the GBM diamond contract");
-        tx = await erc721C["safeTransferFrom(address,address,uint256)"](
-            wallets[0].address,
-            diamondAddress,
-            (tokenIDMintedSofar + 1),
-            {
-                gasPrice: gasPrice,
-            });
+        if(i<5){
+            tx = await erc721C["safeTransferFrom(address,address,uint256)"](
+                metamaske.address,
+                diamondAddress,
+                (tokenIDMintedSofar + 1),
+                {
+                    gasPrice: gasPrice,
+                });
+        }
 
         tokenIDMintedSofar++;
     }
@@ -671,41 +748,40 @@ async function runTestAuctionManual() {
     //Minting a bunch of 1155 
     for (let i = 0; i < 5; i++) {
 
-        console.log("Minting 10 of ERC-1155 🐰 tokenID " + (tokenIDMintedSofar + 1));
+        console.log("Minting 10 of ERC-1155 🐰 tokenID " + (tokenIDOffset + 1));
         let tx = await erc1155C.mint(
-            (tokenIDMintedSofar + 1),
+            (tokenIDOffset + 1),
             10,
-            tokenURIList[tokenIDMintedSofar],
+            tokenURIList[tokenIDOffset],
             {
                 gasPrice: gasPrice,
             });
-        console.log("Transfering ERC-1155 🐰 tokenID " + (tokenIDMintedSofar + 1) + " to the GBM diamond contract");
+        console.log("Transfering ERC-1155 🐰 tokenID " + (tokenIDOffset + 1) + " to the GBM diamond contract");
         tx = await erc1155C["safeTransferFrom(address,address,uint256,uint256,bytes)"](
-            wallets[0].address,
+            metamaske.address,
             diamondAddress,
-            (tokenIDMintedSofar + 1),
+            (tokenIDOffset + 1),
             10,
             "0x",
             {
                 gasPrice: gasPrice,
             });
 
-        tokenIDMintedSofar++;
+            tokenIDOffset++;
     }
 
     let timestamp = (await ethers.provider.getBlock(ethers.provider.getBlockNumber())).timestamp;
 
-
     //Create a safe GBM auction
-    console.log("Creating test unsafe ERC721 🐱 auction....");
+    console.log("Creating test safe ERC721 🐱 auction....");
     gasPrice = await fetchGasPrice();
-    let tx = await gBMAuctionRegistrationFacet.unsafeRegister721Auction(
+    let tx = await gBMAuctionRegistrationFacet.safeRegister721Auction(
         1, //Token ID 
         erc721C.address, // tokenContractAddress, 
         0, //gbmPreset
         timestamp, //Start time = ASAP
         0, //currencyID
-        wallets[0].address, //beneficiary
+        metamaske.address, //beneficiary
         {
             gasPrice: gasPrice,
         });
@@ -745,7 +821,7 @@ async function runTestAuctionManual() {
         0, //gbmPreset
         timestamp, //Start time = ASAP
         0, //currencyID
-        wallets[0].address, //beneficiary
+        metamaske.address, //beneficiary
         {
             gasPrice: gasPrice,
         });
@@ -803,7 +879,7 @@ async function runTestAuctionManual() {
         0, //gbmPreset
         timestamp, //Start time = ASAP
         0, //currencyID
-        wallets[0].address, //beneficiary
+        metamaske.address, //beneficiary
         {
             gasPrice: gasPrice,
         });
@@ -816,17 +892,17 @@ async function runTestAuctionManual() {
 
 
     //getSale_GBMPreset_CancellationPeriodDuration
-    //Create an unsafe GBM auction
-    console.log("Creating test unsafe ERC1155 🐰 auction....");
+    //Create an safe GBM auction
+    console.log("Creating test safe ERC1155 🐰 auction for token ID" + (tokenIDOffset-4));
     gasPrice = await fetchGasPrice();
-    tx = await gBMAuctionRegistrationFacet.unsafeRegister1155auction(
-        6, //Token ID 
+    tx = await gBMAuctionRegistrationFacet.safeRegister1155auction(
+        tokenIDOffset-4, //Token ID 
         erc1155C.address, // tokenContractAddress, 
         6, //Amount
         0, //gbmPreset
         timestamp, //Start time = ASAP
         0, //currencyID
-        wallets[0].address, //beneficiary
+        metamaske.address, //beneficiary
         {
             gasPrice: gasPrice,
         });
@@ -837,16 +913,16 @@ async function runTestAuctionManual() {
     console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
 
     //Create a safe GBM auction
-    console.log("Creating test safe ERC1155 🐰 auction....");
+    console.log("Creating test safe ERC1155 🐰 auction for token ID" + (tokenIDOffset-3));
     gasPrice = await fetchGasPrice();
     tx = await gBMAuctionRegistrationFacet.safeRegister1155auction(
-        7, //Token ID 
+        tokenIDOffset-3, //Token ID 
         erc1155C.address, // tokenContractAddress, 
-        7, //Amount
+        5, //Amount
         0, //gbmPreset
         timestamp, //Start time = ASAP
         0, //currencyID
-        wallets[0].address, //beneficiary
+        metamaske.address, //beneficiary
         {
             gasPrice: gasPrice,
         });
@@ -855,6 +931,8 @@ async function runTestAuctionManual() {
     numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
     highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
     console.log("Test auction created at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    console.log("I was impersonating: " + globConnectedMetamaskWalletAddress);
 
 
     console.log("Auctions ready to be tested manually\n\**********************************************\x1b[0m");
@@ -866,7 +944,7 @@ export async function main(testingEnabled:boolean) {
     automatedTesting = testingEnabled;
     console.log("\x1b[30m\x1b[47m");
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 16; i++) {
         console.log("performDeploymentStep(" + i + ")");
         await performDeploymentStep(i);
     }

@@ -25,7 +25,7 @@ interface IGBMGettersFacet {
 
     /// @notice get the address to which the GBM License fee is being paid
     /// @return GBMAccount
-    function getGBMAccount() external view returns(address);
+    function getGBMFeesAccount() external view returns(address);
 
     /// @notice get the boolean controlling if the license fee is paid at settlement time in tokens or separately off-chain
     /// @return isLicensePaidOnChain

@@ -39,7 +39,7 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
     }
 
     /// @notice Set the parameters of a GBM preset
-    /// @dev Will throw if not called by the GBM admin OR the Diamond owner.
+    /// @dev Will throw if not called by the GBM admin
     /// @param presetIndex The index of the preset you wish to set
     /// @param auctionDuration How long will the auction last at the minimum
     /// @param hammerTimeDuration How much time a new bid can come in after the last bid at the end of an auction
@@ -100,10 +100,42 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
     }
 
     /// @notice Set the GBM preset used when no preset are specified by auctions
-    /// @dev Will throw if not called by the GBM admin OR the Diamond owner.
+    /// @dev Will throw if not called by the GBM admin
     /// @param presetIndex The index of the preset you wish to set as default
     function setDefaultGBMPreset( uint256 presetIndex) external onlyAdmin {
           s.defaultPreset = presetIndex; 
+    }
+
+
+
+    /// @notice Set the fee structure on your marketplace
+    /// @dev Will throw if not called by the GBM admin
+    /// @param licensePaidTo The address the GBM license fee is being paid to
+    /// @param licensePaidOnChain Is the license paid on chain or trough legacy fiat invoice
+    /// @param GBMFeePercentKage How much is the license fee for Gbm auction
+    /// @param marketplaceFeeCollectorWallet What is the wallet where you want your profits being sent to
+    /// @param mPlaceDirectFeePercentKage How much is your cut for direct sales
+    /// @param mPlaceEnglishFeePercentKage How much is your cut for English auctions
+    /// @param mPlaceGBMFeePercentKage How much is your cut for GBM auctions
+    function setMarketPlaceFeesStructure (
+        address licensePaidTo, //0xA7427d0D45e8dd969049872F9cDE383716A39B23
+        bool licensePaidOnChain, //true
+        uint256 GBMFeePercentKage, // 2000 = 2%
+        address marketplaceFeeCollectorWallet,
+        uint256 mPlaceDirectFeePercentKage,
+        uint256 mPlaceEnglishFeePercentKage,
+        uint256 mPlaceGBMFeePercentKage
+    )external onlyAdmin {
+        // GBM licensing setup
+        s.GBMAccount = licensePaidTo;
+        s.isLicensePaidOnChain = licensePaidOnChain;
+        s.GBMFeePercentKage = GBMFeePercentKage; //2%%
+
+        //Marketplace fees setup
+        s.marketPlaceRoyalty =marketplaceFeeCollectorWallet;
+        s.mPlaceDirectFeePercentKage = mPlaceDirectFeePercentKage;  
+        s.mPlaceEnglishFeePercentKage = mPlaceEnglishFeePercentKage;  
+        s.mPlaceGBMFeePercentKage = mPlaceGBMFeePercentKage;
     }
 
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
+    </head>
+    <body>
+        <div class="page-content">
+            <div class="page-title">My NFTs</div>
+            <div class="metamask-missing">
+                <p class="gbm-header">Please connect your MetaMask wallet.</p>
+            </div>
+            <div class="metamask-found" hidden>
+                <div class="nft-filters-container">
+                    <button class="gbm-btn filter-btn active">
+                        <div>On Auction</div>
+                        <div class="filter-button-number">
+                          <div id="auction-number">0</div>
+                        </div>
+                    </button>
+                    <!-- <button class="gbm-btn filter-btn">
+                        <div>On Sale (Fixed Price)</div>
+                        <div class="filter-button-number">
+                          <div id="direct-number">0</div>
+                        </div>
+                    </button> -->
+                    <button class="gbm-btn filter-btn">
+                        <div>In NFT Drop Contract</div>
+                        <div class="filter-button-number">
+                          <div id="escrowed-number">0</div>
+                        </div>
+                    </button>
+                    <button class="gbm-btn filter-btn">
+                        <div>Not on Sale</div>
+                        <div class="filter-button-number">
+                          <div id="owned-number">0</div>
+                        </div>
+                    </button>
+                    <button class="gbm-btn filter-btn">
+                        <div>All</div>
+                        <div class="filter-button-number">
+                          <div id="all-number">0</div>
+                        </div>
+                    </button>
+                </div>
+                <div id="nft-container">
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="scripts/global.js"></script>
+    </body>
+</html>

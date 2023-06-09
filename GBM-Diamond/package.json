@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "concurrently --kill-others \"npx hardhat node\" \"ts-node installer/src/index.ts\""
+    "build": "concurrently --kill-others \"npx hardhat node\" \"ts-node frontend/src/index.ts\""
   },
   "author": "",
   "license": "ISC",

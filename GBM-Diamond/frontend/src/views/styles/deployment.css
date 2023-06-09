@@ -1,0 +1,138 @@
+/*
+  Page specific
+*/
+
+.configuration-column-split {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.configuration-column {
+  max-width: 45%;
+}
+
+.configuration-terminal {
+  max-width: 50%;
+  width: 100%;
+  border: 2px solid white;
+  background-color: #555753;
+  border-radius: 10px;
+}
+
+.configuration-terminal-text {
+  margin: 3rem;
+  color:white;
+  font-weight: 400;
+  font-size: larger;
+  line-height: 160%;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+.configuration-option {
+  padding-bottom: 2rem;
+}
+
+.configuration-option-label {
+  padding-bottom: 1.25rem;
+}
+
+.configuration-description {
+  color: white;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 25px;
+  letter-spacing: -0.03em;
+  margin-top: -0.5rem;
+}
+
+.configuration-slider {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.configuration-slider-description {
+  padding-left: 2rem;
+  color: white;
+  font-weight: 400;
+  font-size: large
+}
+
+.deploy-btn {
+  font-size: large;
+  color: white;
+  background-color: #FF5959;
+  height: 4rem;
+  width: 100%;
+}
+
+.configuration-default-preset {
+  padding-top: 2rem;
+}
+
+.configuration-default-preset-header {
+  padding-bottom: 1.5rem;
+}
+
+.configuration-default-preset-group {
+  display: flex;
+  flex-direction: row;
+  padding: 0.25rem 0;
+  justify-content: space-between;
+}
+
+.configuration-default-preset-label {
+  font-size: large;
+  color: white;
+  width: 45%;
+  align-self: center;
+}
+
+.configuration-default-preset-input {
+  width: 45%;
+  height: 2.5rem;
+} 
+
+.successful-deployment-header {
+  color: #49BEB7;
+  padding-bottom: 2.5rem;
+}
+
+.successful-deployment-info {
+  max-width: 25rem;
+  display: flex;
+  flex-direction: row;
+  padding: 0.25rem 0;
+  justify-content: space-between;
+}
+
+.successful-deployment-info-label {
+  font-size: large;
+  color: white;
+  width: 45%;
+  align-self: center;
+}
+
+.successful-deployment-info-value {
+  font-size: large;
+  font-weight: 700;
+  color: white;
+  align-self: center;
+  width: 45%;
+} 
+
+.reset-btn {
+  margin-top: 2rem;
+  color: white;
+  font-size: large;
+  font-weight: 700;
+  background-color: transparent;
+  border: 1.5px solid #F1F1F1;
+  border-radius: 60px;
+  height: 4rem;
+  width: 45%;
+  cursor: pointer;
+}
