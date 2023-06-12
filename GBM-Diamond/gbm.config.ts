@@ -1,9 +1,9 @@
-export const conf:any = JSON.stringify(
-    {
+let confi =  {
     "RunTestAuction": true, //Set to true if you want to create an empty set of test auctions with self deployed smart contracts.
     "UseSameAddressForDeployerAndGbmAdmin": true,  //set to true if the gbm administrator is also the smart contract deployer/diamond administrator
     "GBMAdminOverrideAddress": "0x0000000000000000000000000000000000000000", // Address of the GBM admin if the above value is false
     "GBMPresetArray": [{
+            "name": "GBM_Fast&Furious",                      // We recommend using a name that make sense for you and your users
             "presetIndex": 1,
             "auctionDuration": 600,                         // Recommended duration for most auctions : 86400 (24hours)
             "hammerTimeDuration": 300,                      // Recommended duration : 900 (15mn)
@@ -13,8 +13,8 @@ export const conf:any = JSON.stringify(
             "incentiveMax": 10000,                          // Recommended incentiveMax : 10000 (10%)
             "incentiveGrowthMultiplier": 11120,             // Recommended incentiveGrowthMultiplier : 11120 (With previous params, double your bid net the max 10%)
             "firstMinBid": "0",                             // We do not recommend requiring a first minimal bid. Javascript do not handle bigNumbers, so please use a string in wei
-            "name": "GBM_Fast&Furious"                      // We recommend using a name that make sense for you and your users
         }, {
+            "name": "English_Breakfast",
             "presetIndex": 2,
             "auctionDuration": 600,
             "hammerTimeDuration": 300,
@@ -23,15 +23,27 @@ export const conf:any = JSON.stringify(
             "incentiveMin": 0,
             "incentiveMax": 0,
             "incentiveGrowthMultiplier": 0,
-            "firstMinBid": "0", 
-            "name": "English_Breakfast"
+            "firstMinBid": "0"
         }
     ],
     "CurrenciesArray": [{
         "CurrencyIndex": 1,
-        "CurrencyName": "fETH",                                  // To be used by your frontend, not used otherwise
+
+        "CurrencyName": "fETH",                                           // To be used by your frontend, not used otherwise
         "CurrencyAddress": "0x0000000000000000000000000000000000000000", //Address 0x0 for the base currency, ERC20 token address if not
     }]
-});
+}
 
-4
+
+
+let pregen:any;
+try{
+    pregen = require("./presetGenerator");
+} catch{
+    pregen = require("./scripts/libraries/presetGenerator");
+}
+
+confi.GBMPresetArray = [...confi.GBMPresetArray, ...pregen.generateAllPresetsFromOffset(confi.GBMPresetArray.length)];
+
+export const conf:any = JSON.stringify(confi);
+

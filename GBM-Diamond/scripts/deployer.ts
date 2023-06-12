@@ -78,7 +78,7 @@ var conf: any;
 conf = JSON.parse(require("../gbm.config.ts").conf);
 
 let wallets = await ethers.getSigners()
-let signer = wallets[0]; //This signer object is gonna use to create every contract factory in a JIT fashion
+let signer = wallets[0]; //This signer object is gonna be used to create every contract factory in a JIT fashion
 
 let deployerStatus:any = {}; //The current status of the deployment
 deployerStatus.commandHistory = [];
