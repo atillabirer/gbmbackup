@@ -192,14 +192,17 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
                 _presetIndex = s.defaultPreset;
             }
 
-            //Checking that the auction AND the grace period is over
-            require(
-                block.timestamp >=
-                    s.saleToEndTimestamp[auctionID] +
-                        s.GBMPresets[_presetIndex].cancellationPeriodDuration
-                    || (msg.sender == _beneficiary && block.timestamp >= s.saleToEndTimestamp[auctionID]),
-                "This auction cannot be claimed yet"
-            );
+            if(msg.sender != _beneficiary || _highestBidIndex !=0){ //As long as there is no bids, the seller can claim the auction at any time.
+
+                //If there are bids, we need to wait for the end of the auction + grace period
+                require(
+                    block.timestamp >=
+                        s.saleToEndTimestamp[auctionID] +
+                            s.GBMPresets[_presetIndex].cancellationPeriodDuration
+                        || (msg.sender == _beneficiary && block.timestamp >= s.saleToEndTimestamp[auctionID]),
+                    "This auction cannot be claimed yet"
+                );
+            }
         }
 
         /*
