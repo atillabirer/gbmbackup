@@ -24,6 +24,9 @@ contract DiamondInitFacet {
         //GBM admin (the account allowed to create presets, sales, etc)
         s.GBMAdminAccount = msg.sender;
 
+        //Default preset is the first one
+        s.defaultPreset = 1;
+
         // GBM licensing setup
         s.GBMAccount = 0xA7427d0D45e8dd969049872F9cDE383716A39B23;
         s.isLicensePaidOnChain = true;

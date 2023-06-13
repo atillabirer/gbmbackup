@@ -24,9 +24,9 @@ let gbmTimeSeries = [{
         "cancellationPeriodDuration": "3600"
     },{
         "timePrefix": "day-7",
-        "auctionDuration": "604800",
-        "hammerTimeDuration": "3600",
-        "cancellationPeriodDuration": "7200"
+        "auctionDuration": "120",
+        "hammerTimeDuration": "120",
+        "cancellationPeriodDuration": "20"
     },
 ]
 
