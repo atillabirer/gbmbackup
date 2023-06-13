@@ -68,7 +68,6 @@ sockServer.on('connection', ws => {
             return;
         }
         if (commands[0] === 'POST-DEPLOYMENT') {
-            console.log(commands);
             await HardhatNetworkSetup_After(commands[1], parseInt(commands[2]));
             return;
         }

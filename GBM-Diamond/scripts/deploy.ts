@@ -380,7 +380,7 @@ async function runTestAuction() {
     console.log("Creating an ERC-721 🐱 token");
     gasPrice = await fetchGasPrice();
     const erc721 = await ethers.getContractFactory("ERC721Generic");
-    const erc721C = await erc721.deploy("GBM-TEST-721", "GBM721", {
+    const erc721C = await erc721.deploy("GBM Whales", "GBM721", {
         gasPrice: gasPrice
     });
     await erc721C.deployed();
@@ -705,7 +705,7 @@ async function runTestAuctionManual() {
     console.log("Creating an ERC-721 🐱 token");
     gasPrice = await fetchGasPrice();
     const erc721 = await ethers.getContractFactory("ERC721Generic",  metamaske);
-    const erc721C = await erc721.deploy("GBM-TEST-721", "GBM721", {
+    const erc721C = await erc721.deploy("GBM Whales", "GBM721", {
         gasPrice: gasPrice
     });
     await erc721C.deployed();

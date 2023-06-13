@@ -15,7 +15,6 @@ Array.from(document.getElementsByClassName("filter-btn")).forEach((_element, ind
 });
 
 async function onScriptLoad() {
-    console.log('fire')
     await loadGBMAuctions();
 };
 
@@ -33,7 +32,6 @@ async function loadGBMAuctions() {
         reverseChildren(document.getElementsByClassName("auction-grid-rows-container")[0]);
         subscribeToNewAuctions(retrieveNewAuction);
     } catch {
-        console.log("Can't reach diamond yet!")
         setTimeout(async () => {
             await loadGBMAuctions()
         }, 2000);
@@ -199,7 +197,7 @@ function startElementCountdownTimer(_auction, _index) {
                 hours = timecalc(timestamp, 60 * 60) % 24,
                 minutes = timecalc(timestamp, 60) % 60,
                 seconds = timecalc(timestamp, 1) % 60;
-                if (timestamp >=0) timer.innerHTML = `${messagePrefix} in ${hours}h ${minutes}m ${seconds}s`;
+                if (timestamp >=0) timer.innerHTML = `${messagePrefix} in ${days}d ${hours}h ${minutes}m ${seconds}s`;
 
             if (timecalc(timestamp, 1) < 1) {
                 if (auctionStatus !== "auction-upcoming") 

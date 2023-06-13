@@ -5,7 +5,10 @@
 - [ ] Metamask Disconnect Button - Actual logic missing
 - [ ] Chain swap hack on hardhat is refreshing the page before both calls
 - [ ] Select / Option CSS missing for dropdowns
+- [x] Messed up the above, workable but deviated from figma
 - [ ] Clearer Terminal messages
+- [ ] Missing 1155 logic
+- [ ] Fix issue with bold values in text, font-weight not showing
 
 ### Deployment
 
@@ -52,8 +55,13 @@
 
 ### Auction 
 
-- [ ] Fix loader CSS
+- [x] Fix loader CSS
 - [ ] Outdated view (see Figma)
-- [ ] Add new bid listener
-- [ ] Test claim functionality
-- [ ] Add GBM Incentive identifier (HIGH, LOW)
+- [x] Add new bid listener
+- [x] Test claim functionality
+- [x] Add GBM Incentive identifier (HIGH, LOW)
+- [ ] Plug the above to actual code
+- [ ] Add read more function to description
+- [ ] Add show more to bids
+- [ ] Add timestamp to bids
+- [ ] Fix occasional double bid-found event

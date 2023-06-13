@@ -1,7 +1,27 @@
 const urlParams = new URLSearchParams(window.location.search);
 const tokenId = urlParams.get('tokenId');
 let latestAuction; 
-const erc721contractAddress = localStorage.getItem('erc721contract');
+
+Array.from(document.getElementsByClassName("gbm-select-neo")).forEach((_selectElement) => {
+    _selectElement.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        let targeted = document.getElementById(e.target.getAttribute('for'));
+        targeted.checked = true;
+        if (targeted.value !== targeted.parentElement.getAttribute('selected-value')) {
+            targeted.parentElement.setAttribute('selected-value', targeted.value)
+            targeted.parentElement.setAttribute('selected-index', targeted.getAttribute('index'))
+            generateBreakdown();
+        }
+        _selectElement.classList.toggle('expanded');
+    }
+});
+
+document.onclick = function(e) {
+    Array.from(document.getElementsByClassName("gbm-select-neo")).forEach((_selectElement) => {
+        _selectElement.classList.remove('expanded');
+    });
+}
 
 onScriptLoad() 
 
@@ -14,34 +34,35 @@ async function onScriptLoad() {
     latestAuction = await gbmContracts.methods.getTotalNumberOfSales().call();
 
     await populatePresets();
+    generateBreakdown();
 }
 
 async function populatePresets() {
     const { names, presets } = await getPresets();
 
-    const selectElement = document.getElementsByClassName('gbm-select')[0];
-    selectElement.onchange = (_event) => showPreset(presets[_event.target.selectedIndex])
-    selectElement.innerHTML = '';
+    let incentivePresets = names.map((_element) => _element.split("_")[0])
+    let timePresets = names.map((_element) => _element.split("_")[1])
+    incentivePresets = [...new Set(incentivePresets)].splice(1);
+    timePresets = [...new Set(timePresets)].splice(2);
 
-    for (i = 0; i < presets.length; i++) {
-        const optionEl = document.createElement('option');
-        optionEl.value = i+1;
-        optionEl.innerHTML = names[i].replace("_", " ");
-        selectElement.appendChild(optionEl);
+    var gbmCSS = window.document.styleSheets[0];
+    const selectDuration = document.getElementById('select-duration');
+    selectDuration.innerHTML = '';
+    gbmCSS.insertRule(`#select-duration.expanded { height: ${3*timePresets.length}rem; }`, gbmCSS.cssRules.length)
+    selectDuration.setAttribute('selected-value', timePresets[0])
+    selectDuration.setAttribute('selected-index', 0);
+    const selectIncentive = document.getElementById('select-incentive');
+    selectIncentive.innerHTML = '';
+    gbmCSS.insertRule(`#select-incentive.expanded { height: ${3*timePresets.length}rem; }`, gbmCSS.cssRules.length)
+    selectIncentive.setAttribute('selected-value', incentivePresets[0])
+    selectIncentive.setAttribute('selected-index', 0);
+
+    for (i = 0; i < timePresets.length; i++) {
+        selectDuration.innerHTML += `<input type="radio" name="duration" index="${i}" value="${timePresets[i]}" id="${timePresets[i]}" ${i === 0 ? 'checked' : ''}/><label for="${timePresets[i]}">${globalConf[window.ethereum.networkVersion].timePresets[i].displayName}</label>`
     }
-
-    showPreset(presets[0]);
-}
-
-function showPreset(preset) {
-    const presetValues = document.getElementsByClassName('auction-input');
-    presetValues[0].value = preset.auctionDuration;
-    presetValues[1].value = preset.cancellationPeriodDuration;
-    presetValues[2].value = preset.hammerTimeDuration;
-    presetValues[3].value = preset.incentiveGrowthMultiplier;
-    presetValues[4].value = preset.incentiveMax;
-    presetValues[5].value = preset.incentiveMin;
-    presetValues[6].value = preset.stepMin;
+    for (i = 0; i < timePresets.length; i++) {
+        selectIncentive.innerHTML += `<input type="radio" name="incentive" index="${i}" value="${incentivePresets[i]}" id="${incentivePresets[i]}" ${i === 0 ? 'checked' : ''}/><label for="${incentivePresets[i]}">${globalConf[window.ethereum.networkVersion].incentivePresets[i].displayName}</label>`
+    }
 }
 
 async function getPresets() {
@@ -56,12 +77,47 @@ async function getPresets() {
     }
 }
 
+const convertToMinutes = (_secondsString) => parseInt(_secondsString) / 60; 
+const convertToPercentage = (_valueInK) => parseInt(_valueInK) / 1000; 
+
+function generateBreakdown() {
+    let selectDuration = document.getElementById('select-duration');
+    let selectIncentive = document.getElementById('select-incentive');
+    let timePreset = globalConf[window.ethereum.networkVersion].timePresets[parseInt(selectDuration.getAttribute("selected-index"))];
+    let incentivePreset = globalConf[window.ethereum.networkVersion].incentivePresets[parseInt(selectIncentive.getAttribute("selected-index"))];
+
+    document.getElementById('time-specifics').innerHTML = `
+        Hammer time: ${convertToMinutes(timePreset.hammerTimeDuration)} minutes </br>
+        Cancellation period: ${convertToMinutes(timePreset.cancellationPeriodDuration)} minutes
+    `;
+
+    document.getElementById('incentive-specifics').innerHTML = `
+        Bidders will make between ${convertToPercentage(incentivePreset.incentiveMin)}% and ${convertToPercentage(incentivePreset.incentiveMax)}% return on their bid. In total, bidders will receive up to ${convertToPercentage(incentivePreset.totalOfWinning)}% of the winning bid.
+    `;
+
+    document.getElementById('cancellation-text1-2').innerHTML = `
+        ${convertToPercentage(incentivePreset.incentiveMin)}%-${convertToPercentage(incentivePreset.incentiveMax)}% of winning bid
+    `;
+
+    document.getElementById('cancellation-text2').innerHTML = `
+        If you are not happy with the final sale price, you will have ${convertToMinutes(timePreset.cancellationPeriodDuration)}mins after the end of the auction to cancel, by paying the cancellation fee.
+    `;
+}
+
 async function createAuctionAndRedirect() {
     const nextAuction = parseInt(latestAuction)+1;
+
+    let selectDuration = document.getElementById('select-duration');
+    let selectIncentive = document.getElementById('select-incentive');
+
+    // console.log(`${selectIncentive.getAttribute("selected-value")}_${selectDuration.getAttribute("selected-value")}`)
+    // console.log(`${selectIncentive.getAttribute("selected-index")}_${selectDuration.getAttribute("selected-index")}`)
+
+    let presetNumber = parseInt(selectDuration.getAttribute("selected-index"))*5 + parseInt(selectIncentive.getAttribute("selected-index")) + 3
     await startNewAuction(
         tokenId, 
         erc721contractAddress, 
-        document.getElementsByClassName('gbm-select')[0].value,
+        presetNumber,
         Math.ceil(Date.now() / 1000) + 30, 
         0, 
         window.ethereum.selectedAddress);

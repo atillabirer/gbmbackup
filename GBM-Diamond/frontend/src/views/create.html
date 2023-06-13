@@ -20,54 +20,78 @@
                     <div id="token-title"></div>                    
                     <div class="parameter-container">
                         <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Select Preset: </div>
+                            <div class="gbm-radio width-limiter">
+                                <label>
+                                    <input type="radio" name="radio" checked/>
+                                    <div class="first-choice box">
+                                       <p>GBM Auction</p>
+                                    </div>
+                                </label>
+                                <label>
+                                    <input type="radio" name="radio"/>
+                                    <div class="second-choice box">
+                                        <p>Fixed Price</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="parameter-option">
+                            <div class="gbm-header parameter-option-label">Currency</div>
                             <div class="parameter-option-fields">
                                 <select class="gbm-select">
-                                    <option>Test</option>
+                                    <option>Fake Ether (fETH)</option>
                                 </select>
                             </div>
                         </div>
                         <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Auction Duration: </div>
+                            <div class="gbm-header parameter-option-label">Starting bid</div>
                             <div class="parameter-option-fields">
-                                <input class="auction-input gbm-input-boxed width-limiter" type="text" disabled/>
+                                <input class="auction-input gbm-input-boxed width-limiter" type="text" value="0.01"/>
                             </div>
                         </div>
                         <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Cancellation Period Duration: </div>
-                            <div class="parameter-option-fields">
-                                <input class="auction-input gbm-input-boxed width-limiter" type="text" disabled/>
+                            <div class="gbm-radio width-limiter">
+                                <label>
+                                    <input type="radio" name="radio2" checked/>
+                                    <div class="first-choice box">
+                                       <p>Now</p>
+                                    </div>
+                                </label>
+                                <label>
+                                    <input type="radio" name="radio2"/>
+                                    <div class="second-choice box">
+                                        <p>Later</p>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                         <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Hammer Time Duration: </div>
+                            <div class="gbm-header parameter-option-label">Duration</div>
                             <div class="parameter-option-fields">
-                                <input class="auction-input gbm-input-boxed width-limiter" type="text" disabled/>
+                                <span id="select-duration" class="gbm-select-neo"></span>
+                            </div>
+                            <div id='time-specifics' class="parameter-description">
+                                End date: Jun 01, 2023 at 12:00am UTC - 4 </br>
+                                Hammer time: 20 minutes </br>
+                                Cancellation period: 30 minutes
                             </div>
                         </div>
                         <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Incentive Growth Multiplier: </div>
+                            <div class="gbm-header parameter-option-label">GBM incentives</div>
                             <div class="parameter-option-fields">
-                                <input class="auction-input gbm-input-boxed width-limiter" type="text" disabled/>
+                                <span id="select-incentive" class="gbm-select-neo"></span>
+                            </div>
+                            <div id='incentive-specifics' class="parameter-description">
+                                Bidders will make between 0.5% and 5% return on their bid. In total, bidders will receive up to 10% of the winning bid.
                             </div>
                         </div>
                         <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Incentive Max: </div>
-                            <div class="parameter-option-fields">
-                                <input class="auction-input gbm-input-boxed width-limiter" type="text" disabled/>
+                            <div class="gbm-header parameter-option-label">Cancellation</div>
+                            <div id="cancellation-text1" class="parameter-description flex-row opposite-ends">
+                                <div id="cancellation-text1-1">Cancellation fee</div>
+                                <div id="cancellation-text1-2"></div>
                             </div>
-                        </div>
-                        <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Incentive Min: </div>
-                            <div class="parameter-option-fields">
-                                <input class="auction-input gbm-input-boxed width-limiter" type="text" disabled/>
-                            </div>
-                        </div>
-                        <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Step Min: </div>
-                            <div class="parameter-option-fields">
-                                <input class="auction-input gbm-input-boxed width-limiter" type="text" disabled/>
-                            </div>
+                            <div id="cancellation-text2" class="parameter-description"></div>
                         </div>
                     </div>
                     <button class="auction-btn" onclick="createAuctionAndRedirect()">Confirm Auction Creation</button>

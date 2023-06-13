@@ -58,6 +58,13 @@ function enableCustomization(_onChangeValue) {
 }
 
 function connectToDeployer() {
+    if (!document.getElementById('use-deployer').checked && document.getElementById('admin-address').value.match(/^0x[a-fA-F0-9]{40}$/g).length === 0)
+    {
+        document.getElementById('admin-address').focus();
+        console.log("invalid hex")
+        return;
+    }
+
     localStorage.clear();
 
     document.getElementsByClassName('configuration-terminal-text')[0].innerHTML = 'Starting deployment... <br/>';
@@ -71,8 +78,6 @@ function connectToDeployer() {
     defaultPresets.UseSameAddressForDeployerAndGbmAdmin = document.getElementById("use-deployer").checked;
     defaultPresets.GBMAdminOverrideAddress = !defaultPresets.UseSameAddressForDeployerAndGbmAdmin ? document.getElementById("admin-address").value : defaultPresets.GBMAdminOverrideAddress;
     
-    console.log(defaultPresets);
-
     const webSocket = new WebSocket('ws://localhost:443/');
     
     webSocket.onopen = (event) => {

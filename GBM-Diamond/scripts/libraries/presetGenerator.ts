@@ -69,7 +69,7 @@ let gbmAuctionSettings = [{
 ];
 
 
-export function generateAllPresetsFromOffset(_offset){
+export function generateAllPresetsFromOffset(_offset: any){
     let offset = parseInt(_offset);
 
     let serie : Array<any> = [];
