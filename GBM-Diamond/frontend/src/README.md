@@ -53,6 +53,9 @@
 - [ ] Outdated view (awaiting new Figma)
 - [x] Temporary view Token Sale-style
 - [x] Fix whale image
+- [ ] Make sure the initial state of radio buttons is set (refresh issues)
+- [x] Added delayed auction start
+- [ ] Check for missing fields before submission
 
 ### Auction 
 

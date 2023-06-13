@@ -28,6 +28,8 @@ document.onclick = function(e) {
 onScriptLoad() 
 
 async function onScriptLoad() {
+    document.getElementById('start-date-selector').style.display = 'none';
+
     const title = document.getElementById('token-title');
     title.innerHTML = `GBM Whale #${tokenId}`;
 
@@ -89,8 +91,25 @@ function generateBreakdown() {
     let selectIncentive = document.getElementById('select-incentive');
     let timePreset = globalConf[window.ethereum.networkVersion].timePresets[parseInt(selectDuration.getAttribute("selected-index"))];
     let incentivePreset = globalConf[window.ethereum.networkVersion].incentivePresets[parseInt(selectIncentive.getAttribute("selected-index"))];
+    let startTime = new Date();
+
+    if (document.getElementById('start-date-selector').style.display !== 'none') {
+        let timePicker = document.getElementsByClassName('gbm-time-picker')[0].value;
+        let datePicker = document.getElementsByClassName('gbm-date-picker')[0].value;
+        let time = timePicker === '' ? ["23","00"] : timePicker.split(":") 
+        let date = datePicker === '' ? [startTime.getFullYear(), startTime.getMonth(), startTime.getDate()] : datePicker.split("-")
+        
+        startTime = new Date(
+                parseInt(date[0]),
+                parseInt(date[1])-1,
+                parseInt(date[2]),
+                parseInt(time[0]),
+                parseInt(time[1]),
+                )
+    }
 
     document.getElementById('time-specifics').innerHTML = `
+        End date: ${new Date(startTime.getTime() + parseInt(timePreset.auctionDuration)*1000).toUTCString()} </br>
         Hammer time: ${convertToMinutes(timePreset.hammerTimeDuration)} minutes </br>
         Cancellation period: ${convertToMinutes(timePreset.cancellationPeriodDuration)} minutes
     `;
@@ -111,6 +130,8 @@ function generateBreakdown() {
 async function createAuctionAndRedirect() {
     const nextAuction = parseInt(latestAuction)+1;
 
+    let startTime = Math.ceil(Date.now() / 1000) + 30;
+
     let selectDuration = document.getElementById('select-duration');
     let selectIncentive = document.getElementById('select-incentive');
     let minBid = document.getElementById('min-bid');
@@ -118,12 +139,30 @@ async function createAuctionAndRedirect() {
     let presetName = `${selectIncentive.getAttribute("selected-value")}_${selectDuration.getAttribute("selected-value")}`;
     let presetNumber = gbmPresetNames.indexOf(presetName) + 1;
     
+    console.log(document.getElementById('start-date-selector').style.display)
+
+    if (document.getElementById('start-date-selector').style.display !== 'none') {
+        let time = document.getElementsByClassName('gbm-time-picker')[0].value.split(":");
+        let date = document.getElementsByClassName('gbm-date-picker')[0].value.split("-");
+        startTime = Math.floor(
+            new Date(
+                parseInt(date[0]),
+                parseInt(date[1])-1,
+                parseInt(date[2]),
+                parseInt(time[0]),
+                parseInt(time[1]),
+                ).getTime() / 1000
+        )
+    }
+
+    console.log(startTime)
+
     if (minBid.value !== "1" || minBid.value !== "") {
         await startNewAuctionCustom(
             tokenId, 
             erc721contractAddress, 
             presetNumber,
-            Math.ceil(Date.now() / 1000) + 30, 
+            startTime, 
             0, 
             window.ethereum.selectedAddress,
             parseInt(minBid.value));
@@ -154,4 +193,9 @@ async function startNewAuction(tokenID, tokenContractAddress, gbmPreset, startTi
 
 async function startNewAuctionCustom(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, minimumBid) {
     await gbmContracts.methods.safeRegister721Auction_Custom(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, 0, minimumBid).send({ from: window.ethereum.selectedAddress });
+}
+
+function toggleStartDateSelection(_visible){
+    document.getElementById('start-date-selector').style.display = _visible ? 'flex' : 'none';
+    generateBreakdown();
 }
