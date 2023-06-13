@@ -26,6 +26,13 @@ interface IGBMCurrencyFacet {
     /// currency is the native chain currency. eg : ETH on Etherum, MATIC on Polygon, etc...
     function setCurrencyAddress(uint256 currencyIndex, address currencyAddress) external;
 
+    /// @notice Set the name of currency associated with the currency index
+    /// @dev Will throw if currencyIndex == 0. Will throw if not called by the GBM admin.
+    /// @param currencyIndex The index of the currency you wish to change the name of
+    /// @param currencyAddress The address of the currency. If set to 0x0, it mean that the 
+    /// @param currencyName The new name of the currency
+    function setCurrencyAddressAndName(uint256 currencyIndex, address currencyAddress,string calldata currencyName) external;
+
     /// @notice Get the address of currency associated with the currency index
     /// @dev Will throw if currencyIndex == 0. If currency is the native one, will return 0x0
     /// @param currencyIndex The index of the currency you wish to know the address of
