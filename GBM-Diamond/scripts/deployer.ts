@@ -212,7 +212,7 @@ async function doStep_d_c(){
 async function doStep_s_p(arg:string){
     const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"]);
 
-    if(arg.substring(0,5) == "s_p_+"){ //Case of all facets at once
+    if(arg.substring(0,5) == "s_p_+"){ //Case of all presets   at once
         let ending = parseInt(arg.substring(5));
         for(let i=0; i<ending; i++){
 
@@ -258,7 +258,7 @@ async function doStep_s_p(arg:string){
 
     } else {
         let index = parseInt(arg.substring(4));
-        if(index != 0 && index<conf.GBMPresetArray.length){
+        if(index != 0 && index <= conf.GBMPresetArray.length){
             index--;
         } else {
             throw "Please specify a valid currency index";
@@ -307,93 +307,60 @@ async function doStep_s_p(arg:string){
 async function doStep_s_c(arg:string){
     const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"]);
 
-    if(arg.substring(0,5) == "s_p_+"){ //Case of all facets at once
+    if(arg.substring(0,5) == "s_c_+"){ //Case of all currencies at once
         let ending = parseInt(arg.substring(5));
         for(let i=0; i<ending; i++){
 
             let gasPrice = await fetchGasPrice();
-
-            let dapreset:any = conf.GBMPresetArray[i];
-            let tx = await theDiamond.setGBMPreset(
-                dapreset.presetIndex,
-                dapreset.auctionDuration,
-                dapreset.hammerTimeDuration,
-                dapreset.cancellationPeriodDuration,
-                dapreset.stepMin,
-                dapreset.incentiveMin,
-                dapreset.incentiveMax,
-                dapreset.incentiveGrowthMultiplier,
-                dapreset.firstMinBid,
-                dapreset.name,
+            let dapreset:any = conf.CurrenciesArray[i];
+            let tx = await theDiamond.setCurrencyAddressAndName(
+                dapreset.currencyIndex,
+                dapreset.currencyAddress,
+                dapreset.currencyName,
                 {
                     ...gasPrice,
                 });
         
-            if(deployerStatus.registeredPresets == undefined){
-                deployerStatus.registeredPresets = {};
+            if(deployerStatus.registeredCurrencies == undefined){
+                deployerStatus.registeredCurrencies = {};
             }
 
-            deployerStatus.registeredPresets["" + dapreset.presetIndex] = {
-                presetIndex: dapreset.presetIndex,
-                auctionDuration: dapreset.auctionDuration,
-                hammerTimeDuration: dapreset.hammerTimeDuration,
-                cancellationPeriodDuration: dapreset.cancellationPeriodDuration,
-                stepMin: dapreset.stepMin,
-                incentiveMin: dapreset.incentiveMin,
-                incentiveMax: dapreset.incentiveMax,
-                incentiveGrowthMultiplier: dapreset.incentiveGrowthMultiplier,
-                firstMinBid: dapreset.firstMinBid,
-                name: dapreset.name
-                
+            deployerStatus.registeredCurrencies["" + dapreset.currencyIndex] = {
+                currencyIndex: dapreset.currencyIndex,
+                currencyAddress: dapreset.currencyAddress,
+                currencyName: dapreset.currencyName
             }
 
- 
-            
         }
 
     } else {
         let index = parseInt(arg.substring(4));
-        if(index != 0 && index<conf.GBMPresetArray.length){
+        if(index != 0 && index<=conf.CurrenciesArray.length){
             index--;
         } else {
             throw "Please specify a valid currency index";
         }
 
+       
         let gasPrice = await fetchGasPrice();
-
-        let dapreset:any = conf.GBMPresetArray[index];
-        let tx = await theDiamond.setGBMPreset(
-            dapreset.presetIndex,
-            dapreset.auctionDuration,
-            dapreset.hammerTimeDuration,
-            dapreset.cancellationPeriodDuration,
-            dapreset.stepMin,
-            dapreset.incentiveMin,
-            dapreset.incentiveMax,
-            dapreset.incentiveGrowthMultiplier,
-            dapreset.firstMinBid,
-            dapreset.name,
+        let dapreset:any = conf.CurrenciesArray[index];
+        let tx = await theDiamond.setCurrencyAddressAndName(
+            dapreset.currencyIndex,
+            dapreset.currencyAddress,
+            dapreset.currencyName,
             {
                 ...gasPrice,
             });
-
-        if(deployerStatus.registeredPresets == undefined){
-            deployerStatus.registeredPresets = {};
+    
+        if(deployerStatus.registeredCurrencies == undefined){
+            deployerStatus.registeredCurrencies = {};
         }
 
-        deployerStatus.registeredPresets["" + dapreset.presetIndex] = {
-            presetIndex: dapreset.presetIndex,
-            auctionDuration: dapreset.auctionDuration,
-            hammerTimeDuration: dapreset.hammerTimeDuration,
-            cancellationPeriodDuration: dapreset.cancellationPeriodDuration,
-            stepMin: dapreset.stepMin,
-            incentiveMin: dapreset.incentiveMin,
-            incentiveMax: dapreset.incentiveMax,
-            incentiveGrowthMultiplier: dapreset.incentiveGrowthMultiplier,
-            firstMinBid: dapreset.firstMinBid,
-            name: dapreset.name
+        deployerStatus.registeredCurrencies["" + dapreset.currencyIndex] = {
+            currencyIndex: dapreset.currencyIndex,
+            currencyAddress: dapreset.currencyAddress,
+            currencyName: dapreset.currencyName
         }
-
     }
 }
 
@@ -440,7 +407,6 @@ async function test(){
         "d_c",
         "s_p_+26",
         "s_c_1",
-        "s_a_0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
     ]
 
     await init();
