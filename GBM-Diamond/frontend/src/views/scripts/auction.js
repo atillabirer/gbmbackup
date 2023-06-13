@@ -189,6 +189,8 @@ const stateSwitcher = {
       document.getElementById('bids-disabled-lower-msg').innerHTML = 'The auction must be settled for the buyer to receive the NFT and the seller to receive payment.';
     } else {
       document.getElementsByClassName('bid-btn')[0].style.display = 'none';
+      document.getElementById('bids-disabled-upper-msg').innerHTML = 'Auction ended';
+      document.getElementById('bids-disabled-lower-msg').innerHTML = 'The sale was accepted by the seller.';
     }
   }
 }
