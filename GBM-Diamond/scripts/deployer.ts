@@ -89,7 +89,7 @@ async function init(){
 }
 
 //Potential race condition if the deploy script is called just after having been initalized
-init(); 
+//init(); 
 
 export function setDeployerStatus(_deployerStatus: string) {
     deployerStatus = JSON.parse(_deployerStatus);
@@ -141,6 +141,14 @@ export async function performDeploymentStep(step: string) {
                 console.log("=> " + step + "");
                 return [("" + step), "deed is done"]; ;
             }
+        
+        case "d_h":
+            {
+                await doStep_d_h(step);
+                deployerStatus.commandHistory.push(step);
+                console.log("=> " + step + "");
+                return [("" + step), "deed is done"]; ;
+            }
          
         
         
@@ -171,6 +179,13 @@ async function doStep_d_d(){
     deployerStatus.deployedFacets["Diamond"] = facet.address;
 }
 
+async function doStep_d_h(arg: string){
+    await hardhatHelpers.impersonateAccount(arg.substring(6));
+    signer = await ethers.getSigner(arg.substring(6));
+
+    await hardhatHelpers.setBalance(arg.substring(6), 10 ** 24);
+}
+
 async function doStep_d_c(){
     //Collecting all the depployed contrats
     let facets : Array<any> = [];
@@ -192,8 +207,8 @@ async function doStep_d_c(){
     }
 
     //Generating ABI call to the init
-    const reloadInitFacet = await ethers.getContractAt("DiamondInitFacet", deployerStatus.deployedFacets["DiamondInitFacet"]);
-    const diamondCut =  await ethers.getContractAt("DiamondCutFacet", deployerStatus.deployedFacets["Diamond"]);
+    const reloadInitFacet = await ethers.getContractAt("DiamondInitFacet", deployerStatus.deployedFacets["DiamondInitFacet"], signer);
+    const diamondCut =  await ethers.getContractAt("DiamondCutFacet", deployerStatus.deployedFacets["Diamond"], signer);
     let functionCall = reloadInitFacet.interface.encodeFunctionData("init", [177013]); //Henshin
     let gasPrice = await fetchGasPrice();
     let tx = await diamondCut.diamondCut(facets, deployerStatus.deployedFacets["Diamond"], functionCall, {
@@ -210,7 +225,7 @@ async function doStep_d_c(){
 
 //Set a GBM preset in the diamond
 async function doStep_s_p(arg:string){
-    const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"]);
+    const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"], signer);
 
     if(arg.substring(0,5) == "s_p_+"){ //Case of all presets   at once
         let ending = parseInt(arg.substring(5));
@@ -305,7 +320,7 @@ async function doStep_s_p(arg:string){
 
 //Set a currency in the diamond
 async function doStep_s_c(arg:string){
-    const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"]);
+    const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"], signer);
 
     if(arg.substring(0,5) == "s_c_+"){ //Case of all currencies at once
         let ending = parseInt(arg.substring(5));
@@ -365,10 +380,6 @@ async function doStep_s_c(arg:string){
 }
 
 
-/*
-
-
-*/
 
 async function fetchGasPrice() {
 
@@ -389,9 +400,9 @@ function feemult(input:any){
 }
 
 
-
 async function test(){
     let demoSteps = [
+        "d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e",
         "f_d_DiamondCutFacet",
         "d_d",
         "f_d_DiamondInitFacet",
@@ -414,6 +425,8 @@ async function test(){
     for(let i=0; i<demoSteps.length; i++){
         await performDeploymentStep(demoSteps[i]);
     }
+
+    console.log("Deployment test over")
 
     return;
 
