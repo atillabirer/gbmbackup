@@ -222,7 +222,7 @@ function startElementCountdownTimer(_sale) {
               hours = timecalc(timestamp, 60 * 60) % 24,
               minutes = timecalc(timestamp, 60) % 60,
               seconds = timecalc(timestamp, 1) % 60;
-          infoValueContainers[1].innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+          infoValueContainers[1].innerHTML = `${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${seconds > 0 ? `${seconds}s` : ''}`;
 
           if (timecalc(timestamp, 1) < 1) {
               clearInterval(countdown);
