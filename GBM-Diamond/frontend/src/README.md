@@ -9,6 +9,7 @@
 - [ ] Clearer Terminal messages
 - [ ] Missing 1155 logic
 - [ ] Fix issue with bold values in text, font-weight not showing
+- [ ] Remove units from timers when at 0
 
 ### Deployment
 

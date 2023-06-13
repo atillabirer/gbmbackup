@@ -20,7 +20,6 @@ async function onScriptLoad() {
   saleId = urlParams.get('saleId');
   const auction = await getAuctionInfo(saleId);
   _localPageAuction = auction;
-  console.log(auction);
   fetchedMetadata = await (await fetch(`/whale/${auction.tokenID}/json`)).json()
   await generateSaleElements(auction);
   populateNFTDetails(auction, fetchedMetadata);
@@ -87,11 +86,13 @@ async function generateSaleElements(_sale) {
   document.getElementById('bidOrPrice').value = /* _sale.saleKind === '' ? "Price" : */ "Current bid";
   document.getElementById('bidOrPriceAmount').innerHTML = `${_sale.highestBidValue} ${_sale.highestBidCurrencyName}`
 
+  let presetDetected = globalConf[window.ethereum.networkVersion].incentivePresets.find((preset) => { 
+    return preset.incentiveMin === `${_sale.gbmPreset.incentiveMin}` &&
+    preset.incentiveMax === `${_sale.gbmPreset.incentiveMax.toString()}` &&
+    preset.incentiveGrowthMultiplier === `${_sale.gbmPreset.incentiveGrowthMultiplier.toString()}`
+  })
 
-  let auctionTypes = ['English', 'Low', 'Medium', 'High', 'Degen'];
-  let presetNum = Math.abs((_sale.gbmPresetIndex - 3)%5);
-
-  document.getElementById('incentive-box-type').innerHTML = auctionTypes[presetNum];
+  document.getElementById('incentive-box-type').innerHTML = presetDetected.incentivePrefix;
 
   minimumBid = parseFloat(_sale.highestBidValue) !== 0 ? (_sale.highestBidValue) * ((parseFloat(stepMin) / 100000) + 1) : 0.01;
   document.getElementById('minimum-bid-message').innerHTML = `Minimum bid: ${minimumBid} ${_sale.highestBidCurrencyName}`

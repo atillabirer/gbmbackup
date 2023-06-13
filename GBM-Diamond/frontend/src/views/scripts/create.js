@@ -1,6 +1,8 @@
 const urlParams = new URLSearchParams(window.location.search);
 const tokenId = urlParams.get('tokenId');
 let latestAuction; 
+let gbmPresetNames;
+let gbmPresets;
 
 Array.from(document.getElementsByClassName("gbm-select-neo")).forEach((_selectElement) => {
     _selectElement.onclick = function(e) {
@@ -39,7 +41,9 @@ async function onScriptLoad() {
 
 async function populatePresets() {
     const { names, presets } = await getPresets();
-
+    gbmPresetNames = names;
+    gbmPresets = presets;
+    
     let incentivePresets = names.map((_element) => _element.split("_")[0])
     let timePresets = names.map((_element) => _element.split("_")[1])
     incentivePresets = [...new Set(incentivePresets)].splice(1);
@@ -109,18 +113,29 @@ async function createAuctionAndRedirect() {
 
     let selectDuration = document.getElementById('select-duration');
     let selectIncentive = document.getElementById('select-incentive');
+    let minBid = document.getElementById('min-bid');
 
-    // console.log(`${selectIncentive.getAttribute("selected-value")}_${selectDuration.getAttribute("selected-value")}`)
-    // console.log(`${selectIncentive.getAttribute("selected-index")}_${selectDuration.getAttribute("selected-index")}`)
-
-    let presetNumber = parseInt(selectDuration.getAttribute("selected-index"))*5 + parseInt(selectIncentive.getAttribute("selected-index")) + 3
-    await startNewAuction(
-        tokenId, 
-        erc721contractAddress, 
-        presetNumber,
-        Math.ceil(Date.now() / 1000) + 30, 
-        0, 
-        window.ethereum.selectedAddress);
+    let presetName = `${selectIncentive.getAttribute("selected-value")}_${selectDuration.getAttribute("selected-value")}`;
+    let presetNumber = gbmPresetNames.indexOf(presetName) + 1;
+    
+    if (minBid.value !== "1" || minBid.value !== "") {
+        await startNewAuctionCustom(
+            tokenId, 
+            erc721contractAddress, 
+            presetNumber,
+            Math.ceil(Date.now() / 1000) + 30, 
+            0, 
+            window.ethereum.selectedAddress,
+            parseInt(minBid.value));
+    } else {
+        await startNewAuction(
+            tokenId, 
+            erc721contractAddress, 
+            presetNumber,
+            Math.ceil(Date.now() / 1000) + 30, 
+            0, 
+            window.ethereum.selectedAddress);
+    }
     location.href = `${window.location.protocol}//${window.location.host}/auction?saleId=${nextAuction}`;
 }
 
@@ -135,4 +150,8 @@ async function startNewAuction(tokenID, tokenContractAddress, gbmPreset, startTi
     */
     //console.log(gbmContracts.methods.safeRegister721Auction(${tokenID}, ${tokenContractAddress}, ${gbmPreset}, ${startTimestamp}, ${currencyID}, ${beneficiary})`)
     await gbmContracts.methods.safeRegister721Auction(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary).send({ from: window.ethereum.selectedAddress });
+}
+
+async function startNewAuctionCustom(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, minimumBid) {
+    await gbmContracts.methods.safeRegister721Auction_Custom(tokenID, tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, 0, minimumBid).send({ from: window.ethereum.selectedAddress });
 }
