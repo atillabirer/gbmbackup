@@ -329,9 +329,10 @@ async function doStep_s_p(arg:string){
             throw "Please specify a valid currency index";
         }
         let dapreset:any = conf.GBMPresetArray[index];
-        let continuer = true;
         
         console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
+
+        let continuer = true;
         while (continuer) {
             try {
                 let gasPrice = await fetchGasPrice();
@@ -578,12 +579,33 @@ async function doSubStep_mint721Token(args:Array<any>){
     deployerStatus.totalUsedTokenURI++;
 
     console.log("Minting ERC-721 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️  🐱");
-    let gasPrice = await fetchGasPrice();
-    let tx = await the721.mint(
-        tokenURIList[deployerStatus.totalUsedTokenURI-1],
-        {
-           ...gasPrice,
-        });
+
+    let continuer = true;
+    while (continuer) {
+        try {
+            
+            let gasPrice = await fetchGasPrice();
+            let tx = await the721.mint(
+                tokenURIList[deployerStatus.totalUsedTokenURI-1],
+                {
+                ...gasPrice,
+                });
+                    
+            
+            continuer = false;
+        } catch (e) {
+            if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+            } else {
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log(e);
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            console.log("retrying")
+        }
+    }
+    
 }
 
 
@@ -611,15 +633,33 @@ async function doSubStep_transfer721Token(args:Array<any>){  //Args are expced a
         console.log("Transferring ERC-721 tokenID " + tokenID + " to the Diamond 🐱 🛫💎");
     }
 
-    let gasPrice = await fetchGasPrice();
-    let tx = await the721["safeTransferFrom(address,address,uint256)"](
-        _from,
-        _to,
-        tokenID,
-        {
-            ...gasPrice,
+    let continuer = true;
+    while (continuer) {
+        try {
+            let gasPrice = await fetchGasPrice();
+            
+            let tx = await the721["safeTransferFrom(address,address,uint256)"](
+                _from,
+                _to,
+                tokenID,
+                {
+                    ...gasPrice,
+                }
+            );
+            
+            continuer = false;
+        } catch (e) {
+            if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+            } else {
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log(e);
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            console.log("retrying")
         }
-    );
+    }
 }
 
 
@@ -656,14 +696,34 @@ async function doSubStep_mint1155Token(args:Array<any>){  //Args[0] should be th
     deployerStatus.totalUsedTokenURI++;
 
     console.log("Minting " + args[0] +"x of ERC-1155 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️  🐰");
-    let gasPrice = await fetchGasPrice();
-    let tx = await the1155.mint(
-        (deployerStatus.totalUsedTokenURI),
-        args[0],
-            tokenURIList[deployerStatus.totalUsedTokenURI-1],
-        {
-            ...gasPrice
-        });
+
+    let continuer = true;
+    while (continuer) {
+        try {
+            let gasPrice = await fetchGasPrice();
+            
+            let tx = await the1155.mint(
+                (deployerStatus.totalUsedTokenURI),
+                args[0],
+                    tokenURIList[deployerStatus.totalUsedTokenURI-1],
+                {
+                    ...gasPrice
+                });
+            
+            
+            continuer = false;
+        } catch (e) {
+            if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+            } else {
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log(e);
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            console.log("retrying")
+        }
+    }
 }
 
 
@@ -692,17 +752,36 @@ async function doSubStep_transfer1155Token(args:Array<any>){  //Args are expced 
         console.log("Transferring " + amount + " of ERC-1155 tokenID " + tokenID + " to the Diamond 🐰 🛫💎");
     }
 
+    let continuer = true;
+    while (continuer) {
+        try {
+            let gasPrice = await fetchGasPrice();
+            
+            let tx = await the1155["safeTransferFrom(address,address,uint256,uint256,bytes)"](
+                _from,
+                _to,
+                tokenID,
+                amount,
+                "0x",
+                {
+                    ...gasPrice
+                });
+            
+            continuer = false;
+        } catch (e) {
+            if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+            } else {
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log(e);
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            console.log("retrying")
+        }
+    }
 
-    let gasPrice = await fetchGasPrice();
-    let tx = await the1155["safeTransferFrom(address,address,uint256,uint256,bytes)"](
-        _from,
-        _to,
-        tokenID,
-        amount,
-        "0x",
-        {
-            ...gasPrice
-        });
+   
 }
 
 //args are : TokenID, 721contract, GBMpreset, Timestamp, CurrencyID, beneficiary
@@ -743,18 +822,37 @@ async function doSubStep_create721Auction(args:Array<any>){
 
     console.log("Creating test ERC721 auction with auctionID #" + number + " 🚀 🐱 ");
 
-    let gasPrice = await fetchGasPrice();
-
-    let tx = await theDiamond.safeRegister721Auction(
-        _tokenID, //Token ID 
-        _contract721, // tokenContractAddress, 
-        _GBMpreset, //gbmPreset
-        _timestamp, //Start time = ASAP
-        _currency, //currencyID
-        _beneficiary, //beneficiary
-        {
-            ...gasPrice,
-        });
+    let continuer = true;
+    while (continuer) {
+        try {
+            let gasPrice = await fetchGasPrice();
+            
+            let tx = await theDiamond.safeRegister721Auction(
+                _tokenID, //Token ID 
+                _contract721, // tokenContractAddress, 
+                _GBMpreset, //gbmPreset
+                _timestamp, //Start time = ASAP
+                _currency, //currencyID
+                _beneficiary, //beneficiary
+                {
+                    ...gasPrice,
+                });
+            
+            
+            continuer = false;
+        } catch (e) {
+            if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+            } else {
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log(e);
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            console.log("retrying")
+        }
+    }
+   
 }
 
 //args are : TokenID, amount, 1155contract, GBMpreset, Timestamp, CurrencyID, beneficiary
@@ -796,19 +894,40 @@ async function doSubStep_create1155Auction(args:Array<any>){
 
     console.log("Creating test ERC1155 auction with auctionID #" + number + " 🚀 🐰 ");
 
-    let gasPrice = await fetchGasPrice();
 
-    let tx = await theDiamond.safeRegister1155auction(
-        _tokenID, //Token ID 
-        _contract1155, // tokenContractAddress, 
-        _amount,
-        _GBMpreset, //gbmPreset
-        _timestamp, //Start time = ASAP
-        _currency, //currencyID
-        _beneficiary, //beneficiary
-        {
-            ...gasPrice,
-        });
+
+    let continuer = true;
+    while (continuer) {
+        try {
+            let gasPrice = await fetchGasPrice();
+            
+            let tx = await theDiamond.safeRegister1155auction(
+                _tokenID, //Token ID 
+                _contract1155, // tokenContractAddress, 
+                _amount,
+                _GBMpreset, //gbmPreset
+                _timestamp, //Start time = ASAP
+                _currency, //currencyID
+                _beneficiary, //beneficiary
+                {
+                    ...gasPrice,
+                });
+                    
+            
+            continuer = false;
+        } catch (e) {
+            if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+            } else {
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log(e);
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            console.log("retrying")
+        }
+    }
+
 }
 
 
