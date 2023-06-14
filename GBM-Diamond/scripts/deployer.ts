@@ -1101,7 +1101,7 @@ async function test(){
 
     await init();
     let demoStepsManual = [
-        "d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e", //replace here with your metamask wallet address
+        //"d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e", //replace here with your metamask wallet address
         "f_d_DiamondCutFacet",
         "d_d",
         "f_d_DiamondInitFacet",
