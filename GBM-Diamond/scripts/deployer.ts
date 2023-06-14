@@ -363,9 +363,6 @@ async function doStep_s_p(arg:string){
                 console.log("retrying")
             }
         }
-
-
-       
         
 
         if(deployerStatus.registeredPresets == undefined){
@@ -426,7 +423,6 @@ async function doStep_s_c(arg:string){
                     console.log("retrying")
                 }
             }
-           
         
             if(deployerStatus.registeredCurrencies == undefined){
                 deployerStatus.registeredCurrencies = {};
@@ -930,6 +926,78 @@ async function doSubStep_create1155Auction(args:Array<any>){
 
 }
 
+//args are : SaleID, bidValue
+async function doSubStep_bidOnAuctionNativeCurr(args:Array<any>){ 
+    let _saleID = "" + args[0];
+    let _bidValue = "" + args[1];
+
+    const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"], signer);
+
+    console.log("Placing a bid of " + _bidValue + "fETH on auctionID #" + _saleID + " 💸 🚀 ");
+    let _weiBidValue = ethers.utils.parseUnits(_bidValue, "ether");
+    let numberOfBidsRes = await theDiamond.getSale_NumberOfBids(_saleID);
+    let  highestBidValue = await theDiamond.getSale_HighestBid_Value(_saleID);
+
+    let continuer = true;
+    while (continuer) {
+        try {
+            let gasPrice = await fetchGasPrice();
+            
+            let tx = await theDiamond.bid(
+                _saleID, //SaleID 
+                _weiBidValue,
+                highestBidValue,
+                {
+                    ...gasPrice,
+                    gasLimit: "312345",
+                    value: _weiBidValue
+                }
+            );
+            
+            
+            continuer = false;
+        } catch (e) {
+            if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+            } else {
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log(e);
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            console.log("retrying")
+        }
+
+        numberOfBidsRes = await theDiamond.getSale_NumberOfBids(_saleID);
+        highestBidValue = await theDiamond.getSale_HighestBid_Value(_saleID);
+
+        console.log("Bid 💸 placed at saleID #" + _saleID + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + ethers.utils.formatUnits(highestBidValue));
+    }
+
+
+}
+
+/*
+
+
+    numberOfBidsRes = await gBMGettersFacet.getSale_NumberOfBids(bidIDRes);
+    highestBidValue = await gBMGettersFacet.getSale_HighestBid_Value(bidIDRes);
+    console.log("Bid placed at saleID " + bidIDRes + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + highestBidValue);
+
+    //placing a bid for 200 wei
+    tx = await gBMBiddingFacet.bid(
+        bidIDRes, //SaleID 
+        200,
+        100,
+        {
+            gasLimit: "312345",
+            gasPrice: gasPrice,
+            value: 200
+        }
+    );
+
+
+*/
 
 /*   
 
@@ -1007,6 +1075,23 @@ for(let i=0; i<3; i++){
     });
 }
 
+//placing a bid
+testSequenceManual.push({
+    "func":"doSubStep_bidOnAuctionNativeCurr",
+    "args": ["1", "1"]
+});
+
+//placing a bid
+testSequenceManual.push({
+    "func":"doSubStep_bidOnAuctionNativeCurr",
+    "args": ["1", "2"]
+});
+
+//placing a bid
+testSequenceManual.push({
+    "func":"doSubStep_bidOnAuctionNativeCurr",
+    "args": ["2", "1"]
+});
 
 
 
@@ -1016,7 +1101,7 @@ async function test(){
 
     await init();
     let demoStepsManual = [
-        //"d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e", //replace here with your metamask wallet address
+        "d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e", //replace here with your metamask wallet address
         "f_d_DiamondCutFacet",
         "d_d",
         "f_d_DiamondInitFacet",
@@ -1032,7 +1117,7 @@ async function test(){
         "d_c",
         "s_p_+26",
         "s_c_1",
-        "d_t_l_+40"
+        "d_t_l_+43"
     ]
 
     let useThisIfDeployingForReal = [
@@ -1049,9 +1134,8 @@ async function test(){
         "f_d_GBMPrimaryAndSecondaryAuctionRegistrationFacet",
         "f_d_GBMDirectSalePrimaryAndSecondaryFacet",
         "d_c",
-        "s_p_+26", //Remove the first two presets in the GBM.auction settings
+        "s_p_+24", //Remove the first two presets (english breakfast, fast and furious) in the gbm.config.ts file
         "s_c_1", 
-        "d_t_l_+40" //Feel free to comment out if you don't wann run example auctions and minting example tokens
     ]
 
 
