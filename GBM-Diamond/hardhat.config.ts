@@ -13,6 +13,10 @@ const config: HardhatUserConfig = {
     }, 
     actualHardhat:{
       url: "http://127.0.0.1:8545"
+    },
+    moonbaseAlpha:{
+      url: "https://rpc.api.moonbase.moonbeam.network",
+      //accounts:[""]
     }
   },
 };

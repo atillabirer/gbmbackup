@@ -226,10 +226,29 @@ async function doStep_d_c(){
     const reloadInitFacet = await ethers.getContractAt("DiamondInitFacet", deployerStatus.deployedFacets["DiamondInitFacet"], signer);
     const diamondCut =  await ethers.getContractAt("DiamondCutFacet", deployerStatus.deployedFacets["Diamond"], signer);
     let functionCall = reloadInitFacet.interface.encodeFunctionData("init", [177013]); //Henshin
-    let gasPrice = await fetchGasPrice();
-    let tx = await diamondCut.diamondCut(facets, deployerStatus.deployedFacets["Diamond"], functionCall, {
-        ...gasPrice
-    });
+
+    let continuer = true;
+    while(continuer){
+        try {
+            let gasPrice = await fetchGasPrice();
+            let tx = await diamondCut.diamondCut(facets, deployerStatus.deployedFacets["Diamond"], functionCall, {
+                ...gasPrice
+            });
+            continuer = false;
+        } catch (e){
+            if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+            } else {
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log(e);
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            console.log("retrying")
+        }
+    }
+
+  
 
     if(deployerStatus.cutFacets == undefined){
         deployerStatus.cutFacets = facets;
@@ -247,26 +266,39 @@ async function doStep_s_p(arg:string){
         let ending = parseInt(arg.substring(5));
         for(let i=0; i<ending; i++){
 
-
-            let gasPrice = await fetchGasPrice();
-
             let dapreset:any = conf.GBMPresetArray[i];
-            
             console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
-            let tx = await theDiamond.setGBMPreset(
-                dapreset.presetIndex,
-                dapreset.auctionDuration,
-                dapreset.hammerTimeDuration,
-                dapreset.cancellationPeriodDuration,
-                dapreset.stepMin,
-                dapreset.incentiveMin,
-                dapreset.incentiveMax,
-                dapreset.incentiveGrowthMultiplier,
-                dapreset.firstMinBid,
-                dapreset.name,
-                {
-                    ...gasPrice,
-                });
+            let continuer = true;
+            while(continuer){
+                try {
+                    let gasPrice = await fetchGasPrice();
+                    let tx = await theDiamond.setGBMPreset(
+                        dapreset.presetIndex,
+                        dapreset.auctionDuration,
+                        dapreset.hammerTimeDuration,
+                        dapreset.cancellationPeriodDuration,
+                        dapreset.stepMin,
+                        dapreset.incentiveMin,
+                        dapreset.incentiveMax,
+                        dapreset.incentiveGrowthMultiplier,
+                        dapreset.firstMinBid,
+                        dapreset.name,
+                        {
+                            ...gasPrice,
+                        });
+                    continuer = false;
+                } catch (e){
+                    if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                        console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 20s ⏲️")
+                    } else {
+                        console.log("Transaction error, retrying in 20s, likely ignore the error message below =======================================================")
+                        console.log(e);
+                        console.log("Transaction error, retrying in 20s, likely ignore the error message above =======================================================")
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 20000));
+                    console.log("retrying")
+                }
+            }
         
             if(deployerStatus.registeredPresets == undefined){
                 deployerStatus.registeredPresets = {};
@@ -296,25 +328,44 @@ async function doStep_s_p(arg:string){
         } else {
             throw "Please specify a valid currency index";
         }
-
-        let gasPrice = await fetchGasPrice();
-
         let dapreset:any = conf.GBMPresetArray[index];
+        let continuer = true;
+        
         console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
-        let tx = await theDiamond.setGBMPreset(
-            dapreset.presetIndex,
-            dapreset.auctionDuration,
-            dapreset.hammerTimeDuration,
-            dapreset.cancellationPeriodDuration,
-            dapreset.stepMin,
-            dapreset.incentiveMin,
-            dapreset.incentiveMax,
-            dapreset.incentiveGrowthMultiplier,
-            dapreset.firstMinBid,
-            dapreset.name,
-            {
-                ...gasPrice,
-            });
+        while (continuer) {
+            try {
+                let gasPrice = await fetchGasPrice();
+                let tx = await theDiamond.setGBMPreset(
+                    dapreset.presetIndex,
+                    dapreset.auctionDuration,
+                    dapreset.hammerTimeDuration,
+                    dapreset.cancellationPeriodDuration,
+                    dapreset.stepMin,
+                    dapreset.incentiveMin,
+                    dapreset.incentiveMax,
+                    dapreset.incentiveGrowthMultiplier,
+                    dapreset.firstMinBid,
+                    dapreset.name,
+                    {
+                        ...gasPrice,
+                    });
+                continuer = false;
+            } catch (e) {
+                if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                    console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                } else {
+                    console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                    console.log(e);
+                    console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                }
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                console.log("retrying")
+            }
+        }
+
+
+       
+        
 
         if(deployerStatus.registeredPresets == undefined){
             deployerStatus.registeredPresets = {};
@@ -350,13 +401,31 @@ async function doStep_s_c(arg:string){
 
             console.log("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
 
-            let tx = await theDiamond.setCurrencyAddressAndName(
-                dapreset.currencyIndex,
-                dapreset.currencyAddress,
-                dapreset.currencyName,
-                {
-                    ...gasPrice,
-                });
+            let continuer = true;
+            while (continuer) {
+                try {
+                    let gasPrice = await fetchGasPrice();
+                    let tx = await theDiamond.setCurrencyAddressAndName(
+                        dapreset.currencyIndex,
+                        dapreset.currencyAddress,
+                        dapreset.currencyName,
+                        {
+                            ...gasPrice,
+                        });
+                    continuer = false;
+                } catch (e) {
+                    if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                        console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                    } else {
+                        console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                        console.log(e);
+                        console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 10000));
+                    console.log("retrying")
+                }
+            }
+           
         
             if(deployerStatus.registeredCurrencies == undefined){
                 deployerStatus.registeredCurrencies = {};
@@ -385,14 +454,33 @@ async function doStep_s_c(arg:string){
         let dapreset:any = conf.CurrenciesArray[index];
         console.log("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
 
-        let tx = await theDiamond.setCurrencyAddressAndName(
-            dapreset.currencyIndex,
-            dapreset.currencyAddress,
-            dapreset.currencyName,
-            {
-                ...gasPrice,
-            });
-    
+
+        let continuer = true;
+        while (continuer) {
+            try {
+                let gasPrice = await fetchGasPrice();
+                let tx = await theDiamond.setCurrencyAddressAndName(
+                    dapreset.currencyIndex,
+                    dapreset.currencyAddress,
+                    dapreset.currencyName,
+                    {
+                        ...gasPrice,
+                    });
+                continuer = false;
+            } catch (e) {
+                if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                    console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                } else {
+                    console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                    console.log(e);
+                    console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                }
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                console.log("retrying")
+            }
+        }
+
+
         if(deployerStatus.registeredCurrencies == undefined){
             deployerStatus.registeredCurrencies = {};
         }
@@ -809,7 +897,7 @@ async function test(){
 
     await init();
     let demoStepsManual = [
-        "d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e", //replace here with your metamask wallet address
+        //"d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e", //replace here with your metamask wallet address
         "f_d_DiamondCutFacet",
         "d_d",
         "f_d_DiamondInitFacet",
@@ -827,6 +915,8 @@ async function test(){
         "s_c_1",
         "d_t_l_+40"
     ]
+
+
 
     for(let i=0; i<demoStepsManual.length; i++){
         await performDeploymentStep(demoStepsManual[i]);
