@@ -1,5 +1,4 @@
 let deploymentStep = localStorage.getItem('currentDeploymentStep')
-
 if (deploymentStep > 13) {
     flipVisibility();
 }
@@ -15,3 +14,4 @@ function flipVisibility() {
         elements2[i].hidden = true;
     }
 }
+

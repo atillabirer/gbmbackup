@@ -7,6 +7,8 @@ let minimumBid = 0.01;
 let incentiveMax = 0;
 let _localPageAuction = {};
 let fetchedMetadata;
+let saleId;
+let bids = [];
 
 const bidInput = document.getElementsByClassName("bid-input")[0];
 bidInput.addEventListener('input', updatePotentialIncentive);
@@ -15,22 +17,44 @@ onScriptLoad();
 
 async function onScriptLoad() {
   const urlParams = new URLSearchParams(window.location.search);
-  const saleId = urlParams.get('saleId');
+  saleId = urlParams.get('saleId');
   const auction = await getAuctionInfo(saleId);
+  _localPageAuction = auction;
   fetchedMetadata = await (await fetch(`/whale/${auction.tokenID}/json`)).json()
-  generateAuctionElements(auction);
+  await generateSaleElements(auction);
+  populateNFTDetails(auction, fetchedMetadata);
+  finalizeLoading();
+  subscribeToNewBids(updateHighestBid, startElementCountdownTimer);
+  await initializeBidHistory(saleId);
+}
+
+function finalizeLoading() {
   const loader = document.getElementsByClassName("loading-container");
   const container = document.getElementsByClassName("auction-container");
   loader[0].style.display = 'none';
-  container[0].style.visibility = 'visible';
-  subscribeToNewBids(updateHighestBid, startElementCountdownTimer, auction);
-  const bidsNo = await getNumberOfBids(saleId);
-  const previousBids = await loadBids(saleId, bidsNo);
-  for (i = 0; i < previousBids.length; i++) {
-      if (i === 0) {
-          document.getElementsByClassName("bid-history")[0].innerHTML = 'Bid History';
-      }
-      generateBidHistoryElement(previousBids[i]);
+  container[0].style.display = 'flex';
+}
+
+async function initializeBidHistory(_saleId) {
+  const bidsNo = await getNumberOfBids(_saleId);
+  bids = await loadBids(_saleId, bidsNo);
+  generateBidHistoryElementLoop()
+}
+
+function generateBidHistoryElementLoop() {
+  document.getElementsByClassName("bids")[0].innerHTML = "";
+  for (i = 0; i < bids.length; i++) {
+    if (i === 0) {
+        document.getElementsByClassName("bid-history")[0].innerHTML = 'Bid History';
+    }
+    generateBidHistoryElement(bids[i], i);
+  }
+  reverseChildren(document.getElementsByClassName("bids")[0]);
+}
+
+function reverseChildren(parent) {
+  for (var i = 1; i < parent.childNodes.length; i++){
+      parent.insertBefore(parent.childNodes[i], parent.firstChild);
   }
 }
 
@@ -48,64 +72,146 @@ function updateHighestBid(newBidValue) {
   minimumBidContainer[0].innerHTML = `Minimum bid: ${minimumBid} ${currencyName}`
 }
 
-function generateAuctionElements(auction) {
-  _localPageAuction = auction;
-  incentiveMax = auction.gbmPreset.incentiveMax;
-  stepMin = auction.gbmPreset.stepMin;
-  currencyName = auction.highestBidCurrencyName;
-  const collectionContainer = document.getElementsByClassName('collection-and-id');
-  collectionContainer[0].innerHTML = `GBM Whale #${auction.tokenID}`;
+async function generateSaleElements(_sale) {
+  _localPageSale = _sale;
+  incentiveMax = _sale.gbmPreset.incentiveMax;
+  stepMin = _sale.gbmPreset.stepMin;
+  currencyName = _sale.highestBidCurrencyName;
 
-  const descriptionContainer = document.getElementsByClassName('token-name');
-  descriptionContainer[0].innerHTML = fetchedMetadata.description;
+  let collectionName = await erc721contract.methods.name().call();
+  document.getElementsByClassName('collection-and-id')[0].innerHTML = `${collectionName}`;
+  document.getElementsByClassName('token-name')[0].innerHTML = `${collectionName} #${_sale.tokenID}`;
 
-  const infoValueContainers = document.getElementsByClassName('info-value');
-  infoValueContainers[0].innerHTML = `${auction.highestBidValue} ${auction.highestBidCurrencyName}`
+  document.getElementById('description-container').innerHTML = fetchedMetadata.description;
+  document.getElementById('bidOrPrice').value = /* _sale.saleKind === '' ? "Price" : */ "Current bid";
+  document.getElementById('bidOrPriceAmount').innerHTML = `${_sale.highestBidValue} ${_sale.highestBidCurrencyName}`
 
-  minimumBid = parseFloat(auction.highestBidValue) !== 0 ? (auction.highestBidValue) * ((parseFloat(stepMin) / 100000) + 1) : 0.01;
-  const minimumBidContainer = document.getElementsByClassName('minimum-bid');
-  minimumBidContainer[0].innerHTML = `Minimum bid: ${minimumBid} ${auction.highestBidCurrencyName}`
+  let presetDetected = globalConf[window.ethereum.networkVersion].incentivePresets.find((preset) => { 
+    return preset.incentiveMin === `${_sale.gbmPreset.incentiveMin}` &&
+    preset.incentiveMax === `${_sale.gbmPreset.incentiveMax.toString()}` &&
+    preset.incentiveGrowthMultiplier === `${_sale.gbmPreset.incentiveGrowthMultiplier.toString()}`
+  })
 
-  highestBid = auction.highestBidValue;
+  document.getElementById('incentive-box-type').innerHTML = presetDetected.incentivePrefix;
 
-  document.getElementsByClassName('media-container')[0].style = `background-image: url('/whale/${auction.tokenID}/image')`
+  minimumBid = parseFloat(_sale.highestBidValue) !== 0 ? (_sale.highestBidValue) * ((parseFloat(stepMin) / 100000) + 1) : 0.01;
+  document.getElementById('minimum-bid-message').innerHTML = `Minimum bid: ${minimumBid} ${_sale.highestBidCurrencyName}`
 
-  startElementCountdownTimer(_localPageAuction)
+  highestBid = _sale.highestBidValue;
+
+  if (highestBid === "0") document.getElementsByClassName('incentive-text')[0].innerHTML = `The first bidder will earn <strong>${parseFloat(_sale.gbmPreset.incentiveMin) / 100}%</strong> if outbid.`;
+
+  document.getElementsByClassName('media-container')[0].style = `background-image: url('/whale/${_sale.tokenID}/image')`
+
+  startElementCountdownTimer(_localPageSale);
 }
 
-function startElementCountdownTimer(_auction) {
+async function populateNFTDetails(_sale, _metadata) {
+  let tokenURI = await erc721contract.methods.tokenURI(_sale.tokenID).call();
+  
+  document.getElementById('details-token-id').innerHTML = _sale.tokenID;
+  document.getElementById('details-mint-date').innerHTML = '-';
+  document.getElementById('details-token-standard').innerHTML = 'ERC-721';
+  document.getElementById('details-blockchain').innerHTML = 'Local Hardhat';
+  document.getElementById('details-smart-contract').innerHTML = localStorage.getItem("erc721contract");
+  document.getElementById('details-token-uri').innerHTML = `${tokenURI.substring(0,25)}...${tokenURI.substring(tokenURI.length-20)}`
+}
 
-  const labelContainers = document.getElementsByClassName('label');
+const stateSwitcher = {
+  switchToUpcoming: function () {
+    document.getElementById('timerMessage').innerHTML = "Auction starts in";
+    document.getElementsByClassName('cost-message')[0].style.display = 'none';
+    document.getElementsByClassName('bid-btn')[0].style.display = 'none';
+    document.getElementById('minimum-bid-message').style.display = 'none';
+    bidInput.style.display = 'none';
+  },
+
+  switchToOngoing: function (
+    _sale, //any
+  ) {
+    document.getElementById('timerMessage').innerHTML = "Ends in";
+    document.getElementsByClassName('cost-message')[0].style.display = 'block';
+    document.getElementById('minimum-bid-message').style.display = 'block';
+    bidInput.style.display = 'block';
+    bidInput.disabled = false;
+    bidInput.placeholder = 'Input your bid here';
+    if (_sale.highestBidBidder.toLowerCase() === window.ethereum.selectedAddress) {
+      document.getElementById('bids-enabled').style.display = 'none';
+      document.getElementsByClassName('bid-btn')[0].style.display = 'none';
+      document.getElementById('bids-disabled').style.display = 'block';
+      document.getElementById('bids-disabled-upper-msg').innerHTML = 'You are the highest bidder!';
+      document.getElementsByClassName('incentive-text')[0].innerHTML = `You will earn ${web3.utils.fromWei(_localPageAuction.highestBidIncentive)} if outbid or the sale is cancelled by the seller.`;
+    } else {
+      document.getElementById('bids-enabled').style.display = 'block';
+      document.getElementsByClassName('bid-btn')[0].style.display = 'block';
+      document.getElementById('bids-disabled').style.display = 'none';
+    }
+  },
+
+  switchToCancellation: function (
+    _sale, //any
+  ) {
+    document.getElementById('timerMessage').innerHTML = "Cancellation period ends in";
+    document.getElementById('bidOrPrice').innerHTML = "Winning bid";
+    document.getElementsByClassName('cost-message')[0].style.display = 'block';
+    document.getElementById('minimum-bid-message').style.display = 'block';
+    bidInput.style.display = 'none';
+    document.getElementById('bids-enabled').style.display = 'none';
+    document.getElementById('bids-disabled').style.display = 'block';
+    document.getElementById('bids-disabled-lower-msg').innerHTML = 'The seller has the remaining time to accept or cancel the sale.';
+    document.getElementsByClassName('bid-btn')[0].style.display = 'none';
+    if (_sale.highestBidBidder.toLowerCase() === window.ethereum.selectedAddress) {
+      document.getElementById('bids-disabled-upper-msg').innerHTML = 'You have won this auction!';
+      document.getElementsByClassName('incentive-text')[0].innerHTML = `You will earn ${web3.utils.fromWei(_localPageAuction.highestBidIncentive)} if the sale is cancelled.`;
+    } else {
+      document.getElementById('bids-disabled-upper-msg').innerHTML = 'Auction ended';
+      document.getElementsByClassName('incentive')[0].style.display = 'none';
+    }
+  },
+
+  switchToSettlement: function (
+    _sale, //any
+  ) {
+    document.getElementById('timerMessage').innerHTML = "Buyer";
+    document.getElementById('timerCountdown').innerHTML = `${_sale.highestBidBidder.substring(0,6)}...${_sale.highestBidBidder.substring(_sale.highestBidBidder.length - 6)}`;
+    document.getElementById('bidOrPrice').innerHTML = "Winning bid";
+    document.getElementsByClassName('cost-message')[0].style.display = 'block';
+    document.getElementById('minimum-bid-message').style.display = 'block';
+    bidInput.style.display = 'none';
+    document.getElementById('bids-enabled').style.display = 'none';
+    document.getElementById('bids-disabled').style.display = 'block';
+    document.getElementsByClassName('incentive')[0].style.display = 'none';
+    if (_sale.highestBidBidder.toLowerCase() === window.ethereum.selectedAddress) {
+      document.getElementsByClassName('bid-btn')[0].style.display = 'block';
+      document.getElementsByClassName('bid-btn')[0].disabled = false;
+      document.getElementsByClassName('bid-btn')[0].innerHTML = "Settle auction";
+      document.getElementsByClassName('bid-btn')[0].onclick = () => { claim() }
+      document.getElementById('bids-disabled-upper-msg').innerHTML = '';
+      document.getElementById('bids-disabled-lower-msg').innerHTML = 'The auction must be settled for the buyer to receive the NFT and the seller to receive payment.';
+    } else {
+      document.getElementsByClassName('bid-btn')[0].style.display = 'none';
+      document.getElementById('bids-disabled-upper-msg').innerHTML = 'Auction ended';
+      document.getElementById('bids-disabled-lower-msg').innerHTML = 'The sale was accepted by the seller.';
+    }
+  }
+}
+
+function startElementCountdownTimer(_sale) {
   const infoValueContainers = document.getElementsByClassName('info-value');
 
   let tsToUse;
 
-  if (_auction.startTimestamp * 1000 - Date.now() > 0) {
-      tsToUse = _auction.startTimestamp;
-      labelContainers[1].innerHTML = "Starts in"
-      bidInput.placeholder = 'This auction has yet to start...'
-  } else if (_auction.endTimestamp * 1000 - Date.now() > 0) {
-      tsToUse = _auction.endTimestamp;
-      labelContainers[1].innerHTML = "Ends in"
-      bidInput.disabled = false;
-      bidInput.placeholder = 'Input your bid here'
-  } else if ((parseInt(_auction.endTimestamp) + parseInt(_auction.gbmPreset[2]))*1000 - Date.now() > 0) {
-      tsToUse = parseInt(_auction.endTimestamp) + parseInt(_auction.gbmPreset[2]);
-      labelContainers[1].innerHTML = "Claimable in"
-      bidInput.disabled = false;
-      bidInput.placeholder = 'This auction has ended.'
-      const bidButton = document.getElementsByClassName('bid-btn')[0];
-      bidButton.disabled = true;
-      bidButton.innerHTML = "Please wait...";
+  if (_sale.startTimestamp * 1000 - Date.now() > 0) {
+      tsToUse = _sale.startTimestamp;
+      stateSwitcher.switchToUpcoming();
+  } else if (_sale.endTimestamp * 1000 - Date.now() > 0) {
+      tsToUse = _sale.endTimestamp;
+      stateSwitcher.switchToOngoing(_sale);
+  } else if ((parseInt(_sale.endTimestamp) + parseInt(_sale.gbmPreset[2]))*1000 - Date.now() > 0) {
+      tsToUse = parseInt(_sale.endTimestamp) + parseInt(_sale.gbmPreset[2]);
+      stateSwitcher.switchToCancellation(_sale);
   } else {
-      infoValueContainers[1].innerHTML = `This auction has ended!`;
-      bidInput.placeholder = 'This auction has ended.'
-      bidInput.disabled = true;
-
-      const bidButton = document.getElementsByClassName('bid-btn')[0];
-      bidButton.disabled = false;
-      bidButton.innerHTML = "Claim Token";
-      bidButton.onclick = () => { claim() }
+      stateSwitcher.switchToSettlement(_sale);
   }
 
   var timestamp = tsToUse * 1000 - Date.now();
@@ -117,49 +223,73 @@ function startElementCountdownTimer(_auction) {
               hours = timecalc(timestamp, 60 * 60) % 24,
               minutes = timecalc(timestamp, 60) % 60,
               seconds = timecalc(timestamp, 1) % 60;
-          infoValueContainers[1].innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+          infoValueContainers[1].innerHTML = `${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${seconds > 0 ? `${seconds}s` : ''}`;
 
           if (timecalc(timestamp, 1) < 1) {
               clearInterval(countdown);
-              startElementCountdownTimer(_auction);
+              startElementCountdownTimer(_sale);
           }
       }, 1000);
   }
 }
 
-function generateBidHistoryElement(bid) {
+function generateBidHistoryElement(bid, index) {
   const bidsContainer = document.getElementsByClassName("bids");
   const bidEl = document.createElement('div');
   bidEl.classList.add("previous-bid");
 
   const bidInnerHTML = `
-          <div class="previous-bid-row1">
-              <div class="previous-bidder">${bid.bidBidder.substring(0, 4)}...${bid.bidBidder.substring(bid.bidBidder.length - 3)}</div>
+          <div class="previous-bid-row flex-row opposite-ends">
+              <div class="flex-row">
+                <div class="green-dot"></div>
+                <div class="previous-bidder">${bid.bidBidder.substring(0, 7)}...${bid.bidBidder.substring(bid.bidBidder.length - 5)}</div>
+              </div>
               <div class="previous-bid-value">${bid.bidValue} ${bid.bidCurrencyName}</div>
           </div>
-          <div class="previous-bid-row2">
-               <div class="previous-bid-incentive">${bid.bidIncentive}</div>
+          <div class="previous-bid-row smaller-row">
+               <div class="previous-bid-incentive">${bids.length - 1 === index ? "Reward if outbid" : "Earned when outbid"}: ${bid.bidIncentive} ${bid.bidCurrencyName}</div>
           </div>
-      `
+      `;
 
   bidEl.innerHTML = bidInnerHTML;
   bidsContainer[0].appendChild(bidEl);
 }
 
-function subscribeToNewBids(callback, callback2, auction) {
+function generateBidHistoryElementFromEvent(_newBid) {
+  let newBid = {
+    bidBidder: _newBid.bidder,
+    bidValue: web3.utils.fromWei(_newBid.bidamount),
+    bidCurrencyName: currencyName,
+    bidCurrencyIndex: bids.length,
+    bidIncentive: web3.utils.fromWei(_newBid.incentivesDue),
+  }
+
+  bids.push(newBid);
+  bids = [...new Set(bids)]; // hacky way to prevent duplicate events
+  generateBidHistoryElementLoop();
+}
+
+function subscribeToNewBids(callback, callback2) {
   gbmContracts.events.AuctionBid_Placed({}, function(error, event) {
     // console.log(event);
   }).on('data', function(event) {
+    if (saleId !== event.returnValues.saleID) return;
+    _localPageAuction.highestBidBidder = event.returnValues.bidder;
+    _localPageAuction.highestBidIncentive = event.returnValues.incentivesDue;
     callback(web3.utils.fromWei(event.returnValues.bidamount))
+    generateBidHistoryElementFromEvent(event.returnValues);
+    clearInterval(countdown);
+    callback2(_localPageAuction);
   }).on('changed', function(event) {
     // console.log(event);
   }).on('error', console.error);
 
   gbmContracts.events.AuctionRegistration_EndTimeUpdated({}, function(error, event) {
   }).on('data', function(event) {
+    if (saleId !== event.returnValues.saleID) return;
     clearInterval(countdown);
-    auction.endTimestamp = event.returnValues.endTimeStamp;
-    callback2(auction);
+    _localPageAuction.endTimestamp = event.returnValues.endTimeStamp;
+    callback2(_localPageAuction);
   }).on('changed', function(event) {
     // console.log(event);
   }).on('error', console.error);
@@ -184,6 +314,7 @@ async function getAuctionInfo(saleID) {
         tokenAmount: await gbmContracts.methods.getSale_TokenAmount(saleID).call(),
         tokenKind: await gbmContracts.methods.getSale_TokenKind(saleID).call(),
         gbmPreset: await gbmContracts.methods.getSale_GBMPreset(saleID).call(), // can break this down further
+        gbmPresetIndex: await gbmContracts.methods.getSale_GBMPresetIndex(saleID).call(), // can break this down further
         currencyID: await gbmContracts.methods.getSale_CurrencyID(saleID).call(),
         currencyName: await gbmContracts.methods.getSale_Currency_Name(saleID).call(),
         currencyAddress: await gbmContracts.methods.getSale_Currency_Address(saleID).call(),
@@ -238,7 +369,7 @@ async function claim() {
 }
 
 function updatePotentialIncentive(e) {
-  const incentiveContainer = document.getElementsByClassName('incentive');
+  const incentiveContainer = document.getElementsByClassName('incentive-text');
   const bidButton = document.getElementsByClassName('bid-btn')[0];
   const currentBidInput = parseFloat(e.target.value || 0)
   let decimals = new web3.utils.BN('100000');
@@ -265,13 +396,10 @@ function updatePotentialIncentive(e) {
           _newbid, //_newBid
       ));
 
-
-
-      const incentiveContainer = document.getElementsByClassName('incentive');
-      incentiveContainer[0].innerHTML = `<img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn ${earnableIncentives} (${incentivePercentage}%) if outbid.`;
+      incentiveContainer[0].innerHTML = `You will earn ${earnableIncentives} (${incentivePercentage}%) if outbid.`;
       bidButton.disabled = currentBidInput <= minimumBid;
   } catch {
-      incentiveContainer[0].innerHTML = `<img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn 0 (0%) if outbid.`
+      incentiveContainer[0].innerHTML = `You will earn 0 (0%) if outbid.`
       bidButton.disabled = true;
   }
 }
@@ -316,7 +444,7 @@ const incentiveCalculator = {
       }
   },
 
-  calculateIncentivesPercentReturnFromBidAndPreset: function (
+  calculateIncentivesPercentReturnFromBidAndPreset(
       _bidDecimals, //etherjsBigNumber
       _incentiveMin, //etherjsBigNumber
       _incentiveMax, //etherjsBigNumber

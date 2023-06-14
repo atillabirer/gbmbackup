@@ -9,13 +9,9 @@ A demo Frontend is included so that you can iterate on top of it when integratin
 In order to modify the deployment parameters, you can edit the gbm.config file options yourself or soon, use the step by step option picker as a part of the deployment process.
 
 ## Features coming very soon (Days) : 
-=> Secondary sales registration by third parties on whitelisted set of NFT smart contracts          
-=> Direct Sale support                
-=> TheGraph built in schema    
-=> Grace period           
-=> Admin Panel          
-=> Configuration wizard          
-=> Demo Frontend polish (error handling, auto refresh, etc...)          
+ => TheGraph built in schema    
+ => Frontend polishing/connection to existing smart contract features
+ 
 
 ## Feature Roadmap :
 => Solidity codebase audit                

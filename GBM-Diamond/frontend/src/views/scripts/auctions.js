@@ -15,18 +15,28 @@ Array.from(document.getElementsByClassName("filter-btn")).forEach((_element, ind
 });
 
 async function onScriptLoad() {
-    const auctionNo = await getNumberOfAuctions();
-    const auctions = await loadAuctions(auctionNo);
-    const loader = document.getElementsByClassName('loading-container');
-    loader[0].style.display = 'none';
-    for (i = 0; i < auctions.length; i++) {
-        generateAuctionElement(auctions[i], i);
-    }
-    updateCounters();
-    toggleAuctions(0);
-    reverseChildren(document.getElementsByClassName("auction-grid-rows-container")[0]);
-    subscribeToNewAuctions(retrieveNewAuction);
+    await loadGBMAuctions();
 };
+
+async function loadGBMAuctions() {
+    try {
+        const auctionNo = await getNumberOfAuctions();
+        const auctions = await loadAuctions(auctionNo);
+        const loader = document.getElementsByClassName('loading-container');
+        loader[0].style.display = 'none';
+        for (i = 0; i < auctions.length; i++) {
+            generateAuctionElement(auctions[i], i);
+        }
+        updateCounters();
+        toggleAuctions(0);
+        reverseChildren(document.getElementsByClassName("auction-grid-rows-container")[0]);
+        subscribeToNewAuctions(retrieveNewAuction);
+    } catch {
+        setTimeout(async () => {
+            await loadGBMAuctions()
+        }, 2000);
+    }
+}
 
 function updateCounters() {
     document.getElementById("live-number").innerHTML = Array.from(document.getElementsByClassName("auction-live")).length;
@@ -187,7 +197,7 @@ function startElementCountdownTimer(_auction, _index) {
                 hours = timecalc(timestamp, 60 * 60) % 24,
                 minutes = timecalc(timestamp, 60) % 60,
                 seconds = timecalc(timestamp, 1) % 60;
-                timer.innerHTML = `${messagePrefix} in ${hours}h ${minutes}m ${seconds}s`;
+                if (timestamp >=0) timer.innerHTML = `${messagePrefix} in ${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${seconds > 0 ? `${seconds}s` : ''}`;
 
             if (timecalc(timestamp, 1) < 1) {
                 if (auctionStatus !== "auction-upcoming") 

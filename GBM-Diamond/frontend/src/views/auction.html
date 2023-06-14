@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>GBM dApp</title>
-        <link rel="icon" type="image/png" href="./images/favicon.png"/>
-
         <script
         src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
         integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
@@ -30,25 +27,49 @@
                         <div></div>
                     </div>
                 </div>
-                <div class="auction-container">
-                    <div class="column-container media-container"></div>
+                <div class="auction-container flex-row">
+                    <div class="column-container">
+                        <div class="media-container"></div>
+                        <br />
+                        <br />
+                        <div class="gbm-header">NFT Description</div>
+                        <br />
+                        <div id="description-container">
+                            Welcome to the GBM Whales collection, a captivating world of unique and adorable NFT whales. Each meticulously crafted with love and imagination, these one-of-a-kind digital creatures possess their own charm, vibrant colors, and delightful details. As proud o... Read more 
+                        </div>
+                    </div>
                     <div class="column-container info-container">
                         <div class="collection-and-id"></div>
                         <div class="token-name">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
                         <div class="auction-status">
-                            <div class="status-container current-bid">
-                                <div class="label">Current bid</div>
-                                <div class="info-value"></div>
+                            <div class="status-container cost-message">
+                                <div id="bidOrPrice" class="label">Current bid</div>
+                                <div id="bidOrPriceAmount" class="info-value"></div>
                             </div>
-                            <div class="status-container end-timestamp">
-                                <div class="label">Ends in</div>
-                                <div class="info-value">-</div>
+                            <div class="status-container timer-message">
+                                <div id="timerMessage" class="label">Ends in</div>
+                                <div id="timerCountdown" class="info-value">-</div>
                             </div>
                         </div>
-                        <div class="minimum-bid tooltip">Minimum bid: $111.65</div>
-                        <input class="bid-input" disabled type="text" placeholder="Input your bid here" />
-                        <div class="incentive tooltip"><img class="incentive-logo" src="./images/gbm-logo.svg" />You will earn 0
-                            (0%) if outbid.</div>
+                        <div id="bids-enabled">
+                            <div id="minimum-bid-message" class="minimum-bid tooltip">Minimum bid: $111.65</div>
+                            <input class="bid-input" disabled type="text" placeholder="Input your bid here" />
+                        </div>
+                        <div id="bids-disabled">
+                            <div id="bids-disabled-upper-msg"></div>
+                            <div id="bids-disabled-lower-msg"></div>
+                        </div>
+                        <div class="incentive tooltip">
+                            <div class="incentive-box">
+                                <div class="incentive-box-left">
+                                    <img class="incentive-logo" src="./images/gbm-logo.svg" />
+                                </div>
+                                <div id="incentive-box-type" class="incentive-box-right">
+                                    Medium
+                                </div>
+                            </div>    
+                            <div class="incentive-text">You will earn 0 (0%) if outbid.</div>
+                        </div>
                         <div class="btn-container">
                             <button class="bid-btn" onclick="placeBid()" disabled>Place bid</button>
                             <button class="share-btn" onclick="copyToClipboard()">Share</button>
@@ -56,6 +77,36 @@
                         <div class="bid-history-container">
                             <div class="bid-history"></div>
                             <div class="bids">
+                            </div>
+                        </div>
+                        </br>
+                        </br>
+                        <div class="gbm-header">NFT Details</div>
+                        <br />
+                        <div id="details-container">
+                            <div class="flex-row opposite-ends">
+                                <div>Token ID</div>
+                                <div id="details-token-id">2</div>
+                            </div>
+                            <div class="flex-row opposite-ends">
+                                <div>Mint Date</div>
+                                <div id="details-mint-date">2</div>
+                            </div>
+                            <div class="flex-row opposite-ends">
+                                <div>Token Standard</div>
+                                <div id="details-token-standard">ERC-721</div>
+                            </div>
+                            <div class="flex-row opposite-ends">
+                                <div>Blockchain</div>
+                                <div id="details-blockchain">Local Hardhat</div>
+                            </div>
+                            <div class="flex-row opposite-ends">
+                                <div>Smart Contract</div>
+                                <div id="details-smart-contract">2</div>
+                            </div>
+                            <div class="flex-row opposite-ends">
+                                <div>Token URI</div>
+                                <div id="details-token-uri">2</div>
                             </div>
                         </div>
                     </div>

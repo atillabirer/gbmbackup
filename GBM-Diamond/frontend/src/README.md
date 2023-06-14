@@ -5,7 +5,11 @@
 - [ ] Metamask Disconnect Button - Actual logic missing
 - [ ] Chain swap hack on hardhat is refreshing the page before both calls
 - [ ] Select / Option CSS missing for dropdowns
+- [x] Messed up the above, workable but deviated from figma
 - [ ] Clearer Terminal messages
+- [ ] Missing 1155 logic
+- [ ] Fix issue with bold values in text, font-weight not showing
+- [ ] Remove units from timers when at 0
 
 ### Deployment
 
@@ -18,8 +22,8 @@
 
 ### Browse Auctions
 
-- [ ] Keep loading / pinging after deployment until it works
-- [ ] Toggle from Upcoming to Live has a second of a negative timer
+- [x] Keep loading / pinging after deployment until it works
+- [x] Toggle from Upcoming to Live has a second of a negative timer
 - [ ] Adjust the new auction listener to the new view
 - [ ] Add bid event listener logic
 - [ ] Display message on empty list
@@ -49,11 +53,19 @@
 - [ ] Outdated view (awaiting new Figma)
 - [x] Temporary view Token Sale-style
 - [x] Fix whale image
+- [ ] Make sure the initial state of radio buttons is set (refresh issues)
+- [x] Added delayed auction start
+- [ ] Check for missing fields before submission
 
 ### Auction 
 
-- [ ] Fix loader CSS
+- [x] Fix loader CSS
 - [ ] Outdated view (see Figma)
-- [ ] Add new bid listener
-- [ ] Test claim functionality
-- [ ] Add GBM Incentive identifier (HIGH, LOW)
+- [x] Add new bid listener
+- [x] Test claim functionality
+- [x] Add GBM Incentive identifier (HIGH, LOW)
+- [ ] Plug the above to actual code
+- [ ] Add read more function to description
+- [ ] Add show more to bids
+- [ ] Add timestamp to bids
+- [ ] Fix occasional double bid-found event

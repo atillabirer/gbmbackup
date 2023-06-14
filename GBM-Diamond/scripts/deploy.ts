@@ -273,32 +273,32 @@ async function setCurrency() {
     if (conf.CurrenciesArray.length != 0) {
         for (let i = 0; i < conf.CurrenciesArray.length; i++) {
             let dapreset: any = conf.CurrenciesArray[i];
-            console.log("Registering currency at index " + dapreset.CurrencyIndex);
+            console.log("Registering currency at index " + dapreset.currencyIndex);
             console.log(JSON.stringify(dapreset));
 
             //Updating gas price
             gasPrice = await fetchGasPrice();
             tx = await gBMCurrencyFacet.setCurrencyName(
-                dapreset.CurrencyIndex,
-                dapreset.CurrencyName, {
+                dapreset.currencyIndex,
+                dapreset.currencyName, {
                 gasPrice: gasPrice,
             });
 
-            let res = await gBMCurrencyFacet.getCurrencyAddress(dapreset.CurrencyIndex);
-            if (res.toLowerCase() != dapreset.CurrencyAddress.toLowerCase()) {
+            let res = await gBMCurrencyFacet.getCurrencyAddress(dapreset.currencyIndex);
+            if (res.toLowerCase() != dapreset.currencyAddress.toLowerCase()) {
                 gasPrice = await fetchGasPrice();
                 tx = await gBMCurrencyFacet.setCurrencyAddress(
-                    dapreset.CurrencyIndex,
-                    dapreset.CurrencyAddress, {
+                    dapreset.currencyIndex,
+                    dapreset.currencyAddress, {
                     gasPrice: gasPrice,
                 });
             }
         }
 
         gasPrice = await fetchGasPrice();
-        console.log("Setting the default currency to currency at index: " + conf.CurrenciesArray[0].CurrencyIndex);
+        console.log("Setting the default currency to currency at index: " + conf.CurrenciesArray[0].currencyIndex);
         tx = await gBMCurrencyFacet.setDefaultCurrency(
-            conf.CurrenciesArray[0].CurrencyIndex,
+            conf.CurrenciesArray[0].currencyIndex,
             {
                 gasLimit: 100000, //hardcoded cause ethers fuckery
                 gasPrice: gasPrice,
@@ -380,7 +380,7 @@ async function runTestAuction() {
     console.log("Creating an ERC-721 🐱 token");
     gasPrice = await fetchGasPrice();
     const erc721 = await ethers.getContractFactory("ERC721Generic");
-    const erc721C = await erc721.deploy("GBM-TEST-721", "GBM721", {
+    const erc721C = await erc721.deploy("GBM Whales", "GBM721", {
         gasPrice: gasPrice
     });
     await erc721C.deployed();
@@ -705,7 +705,7 @@ async function runTestAuctionManual() {
     console.log("Creating an ERC-721 🐱 token");
     gasPrice = await fetchGasPrice();
     const erc721 = await ethers.getContractFactory("ERC721Generic",  metamaske);
-    const erc721C = await erc721.deploy("GBM-TEST-721", "GBM721", {
+    const erc721C = await erc721.deploy("GBM Whales", "GBM721", {
         gasPrice: gasPrice
     });
     await erc721C.deployed();

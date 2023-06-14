@@ -5,7 +5,7 @@
     color: white;
     font-size: larger;
     font-weight: 700;
-  }
+}
   
 .gbm-btn {
     font-size: medium;
@@ -16,201 +16,270 @@
     border-radius: 50px;
     border: none;
     cursor: pointer;
-  }
+}
 
-  .gbm-btn.transparent{
+.gbm-btn.transparent{
     background-color: transparent;
     border: 1.5px solid white;
-  }
+}
 
-  .gbm-btn.red{
-    background-color: #FF5959;
-  }
+.gbm-btn.red{
+  background-color: #FF5959;
+}
   
-  .gbm-select {
-    color: white;
-    font-size: large;
-    height: 3rem;
-    width: 100%;
-    background-color: #49BEB7;
-    border: none;
-    border-radius: 50px;
-    padding: 0.5rem 1rem;
-    background-image: url('../images/received.svg');
-    background-repeat: no-repeat;
-    background-position: calc(100% - 15px) center;
-    background-size: 15px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-  
-  .gbm-input-boxed {
-    color: #fff;
-    font-size: larger;
-    padding: 10px;  
-    background: #05848A;
-    border-radius: 4px;
-    border: none;
-    cursor: text;
-    height: 3rem;
-    width: 100%;  
-  }
+.gbm-select {
+  color: white;
+  font-size: large;
+  height: 3rem;
+  width: 100%;
+  background-color: #49BEB7;
+  border: none;
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  background-image: url('../images/received.svg');
+  background-repeat: no-repeat;
+  background-position: calc(100% - 15px) center;
+  background-size: 15px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
 
-  .gbm-input-boxed.rounded {
-    border-radius: 30px;
-  }
-  
-  .gbm-textarea {
-    font-family: 'Roboto', sans-serif;
-    resize: none;
-    height: 140px;
-    overflow: hidden;
-  }
+.gbm-select-neo {
+  font-size: large;
+  width: 100%;
+  background-color: #49BEB7;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  overflow: hidden;
+  transition: 0.3s all ease-in-out;
+  background-image: url('../images/received.svg');
+  background-repeat: no-repeat;
+  background-position: calc(100% - 15px) center;
+  background-size: 15px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  display: inline-block;
+  height: 3rem;
+}
 
-  .gbm-checkbox {
-    color:#fff;
-    display: block;
-    position: relative;
-    padding: 1rem 2.5rem;
-    cursor: pointer;
-    font-size: large;
-  }
-  
-  /* Hide the browser's default checkbox */
-  .gbm-checkbox input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-  }
-  
-  /* Create a custom checkbox */
-  .gbm-checkmark {
-    position: absolute;
-    top: 0.90rem;
-    left: 0.25rem;
-    height: 25px;
-    width: 25px;
-    background: #49BEB7;
-  }
-  
-  /* On mouse-over, add a grey background color */
-  .gbm-checkbox:hover input ~ .gbm-checkmark {
-    background-color: #05848A;
-  }
-  
-  /* When the checkbox is checked, add a blue background */
-  .gbm-checkbox input:checked ~ .gbm-checkmark {
-    background-color: #49BEB7;
-  }
-  
-  /* Create the checkmark/indicator (hidden when not checked) */
-  .gbm-checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-  }
-  
-  /* Show the checkmark when checked */
-  .gbm-checkbox input:checked ~ .gbm-checkmark:after {
-    display: block;
-  }
-  
-  /* Style the checkmark/indicator */
-  .gbm-checkbox .gbm-checkmark:after {
-    left: 9px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-  }
-  
-  /* The switch - the box around the slider */
-  .gbm-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-  }
-  
-  /* Hide default HTML checkbox */
-  .gbm-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  /* The slider */
-  .gbm-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
-  }
-  
-  .gbm-slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-  }
-  
-  input:checked + .gbm-slider {
-    background-color: #49BEB7;
-  }
-  
-  input:focus + .gbm-slider {
-    box-shadow: 0 0 1px #49BEB7;
-  }
-  
-  input:checked + .gbm-slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
-  }
-  
-  /* Rounded sliders */
-  .gbm-slider.round {
-    border-radius: 34px;
-  }
-  
-  .gbm-slider.round:before {
-    border-radius: 50%;
-  }
+.gbm-select-neo input:focus + label {
+  background: white;
+}
+.gbm-select-neo input {
+  height: 3rem;
+  display: inline-block;
+  position: absolute;
+  opacity: 0.01;
+}
+.gbm-select-neo label {
+  display: block;
+  height: 3rem;
+  line-height: 3rem;
+  padding-left: 1em;
+  padding-right: 3em;
+  cursor: pointer;
+  position: relative;
+  transition: 0.3s color ease-in-out;
+}
 
-  .gbm-subtitle {
-    width: 95%;
-    margin-top: -1rem;
-    color: white;
-    font-style: normal;
-    font-weight: 400;
-    font-size: larger;
-    line-height: 160%;
-  }
+.gbm-select-neo label:nth-child(2) {
+  margin-top: 3rem;
+}
+
+.gbm-select-neo input:checked + label {
+  display: block;
+  border-top: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  border-bottom: 1px solid #49BEB74D;
+}
+
+.gbm-select-neo input:checked + label:nth-child(2) {
+  margin-top: 0;
+  position: relative;
+}
+
+.gbm-select-neo.expanded {
+  border: none;
+  background: #fff;
+  border-radius: 13px;
+  padding: 0;
+  box-shadow: rgba(0, 0, 0, 0.1) 3px 3px 5px 0px;
+  color: #085F63;
+}
+
+.gbm-select-neo.expanded label {
+  border-top: 1px solid #49BEB74D;
+}
+.gbm-select-neo.expanded label:hover {
+  color: #49BEB7;
+}
+.gbm-select-neo.expanded input:checked + label {
+  color: #085F63;
+}
+
+.gbm-input-boxed {
+  color: #fff;
+  font-size: larger;
+  padding: 10px;  
+  background: #05848A;
+  border-radius: 4px;
+  border: none;
+  cursor: text;
+  height: 3rem;
+  width: 100%;  
+}
+
+.gbm-input-boxed.rounded {
+  border-radius: 30px;
+}
   
-  .gbm-range {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 5px;
-    border-radius: 5px;
-    background: #05848A;
-    outline: none;
-  }
+.gbm-textarea {
+  font-family: 'Roboto', sans-serif;
+  resize: none;
+  height: 140px;
+  overflow: hidden;
+}
+
+.gbm-checkbox {
+  color:#fff;
+  display: block;
+  position: relative;
+  padding: 1rem 2.5rem;
+  cursor: pointer;
+  font-size: large;
+}
+  
+.gbm-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+  
+/* Create a custom checkbox */
+.gbm-checkmark {
+  position: absolute;
+  top: 0.90rem;
+  left: 0.25rem;
+  height: 25px;
+  width: 25px;
+  background: #49BEB7;
+}
+  
+.gbm-checkbox:hover input ~ .gbm-checkmark {
+  background-color: #05848A;
+}
+  
+.gbm-checkbox input:checked ~ .gbm-checkmark {
+  background-color: #49BEB7;
+}
+  
+.gbm-checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+  
+.gbm-checkbox input:checked ~ .gbm-checkmark:after {
+  display: block;
+}
+  
+.gbm-checkbox .gbm-checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+  
+.gbm-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+  
+.gbm-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+  
+.gbm-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+  
+.gbm-slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+  
+input:checked + .gbm-slider {
+  background-color: #49BEB7;
+}
+  
+input:focus + .gbm-slider {
+  box-shadow: 0 0 1px #49BEB7;
+}
+  
+input:checked + .gbm-slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+  
+.gbm-slider.round {
+  border-radius: 34px;
+}
+  
+.gbm-slider.round:before {
+  border-radius: 50%;
+}
+
+.gbm-subtitle {
+  width: 95%;
+  margin-top: -1rem;
+  color: white;
+  font-style: normal;
+  font-weight: 400;
+  font-size: larger;
+  line-height: 160%;
+}
+  
+.gbm-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 5px;
+  background: #05848A;
+  outline: none;
+}
 
   .gbm-range:hover {
     opacity: 1;
@@ -298,7 +367,7 @@
     font-size: 1.5em;
     user-select: none;
     color: #fff;
-    margin: 10px auto
+    margin: 10px auto;
  }
 
   .gbm-radio .box p:before {
@@ -309,4 +378,38 @@
     font-weight: normal;
     color: white;
  }
-  
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.opposite-ends {
+  justify-content: space-between;
+}
+
+.gbm-time-picker {
+  height: 3rem;
+  width: 6rem;
+  text-align: center;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background-color: #49BEB7;
+  border-radius: 50px;
+  border: none;
+  margin-right: 10px;
+}
+
+.gbm-date-picker {
+  height: 3rem;
+  width: 10rem;
+  text-align: center;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background-color: #49BEB7;
+  border-radius: 50px;
+  border: none;
+  padding-right: 10px;
+}
