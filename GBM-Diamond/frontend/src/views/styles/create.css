@@ -99,3 +99,7 @@
 #cancellation-text1-1 { 
     margin-bottom: 1rem;
 }
+
+#start-date-selector {
+    display: none;
+}

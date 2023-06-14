@@ -387,3 +387,29 @@ input:checked + .gbm-slider:before {
 .opposite-ends {
   justify-content: space-between;
 }
+
+.gbm-time-picker {
+  height: 3rem;
+  width: 6rem;
+  text-align: center;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background-color: #49BEB7;
+  border-radius: 50px;
+  border: none;
+  margin-right: 10px;
+}
+
+.gbm-date-picker {
+  height: 3rem;
+  width: 10rem;
+  text-align: center;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background-color: #49BEB7;
+  border-radius: 50px;
+  border: none;
+  padding-right: 10px;
+}

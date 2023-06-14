@@ -52,17 +52,24 @@
                         <div class="parameter-option">
                             <div class="gbm-radio width-limiter">
                                 <label>
-                                    <input type="radio" name="radio2" checked/>
+                                    <input type="radio" name="radio2" onclick="toggleStartDateSelection(false)" checked/>
                                     <div class="first-choice box">
                                        <p>Now</p>
                                     </div>
                                 </label>
                                 <label>
-                                    <input type="radio" name="radio2"/>
+                                    <input type="radio" name="radio2" onclick="toggleStartDateSelection(true)"/>
                                     <div class="second-choice box">
                                         <p>Later</p>
                                     </div>
                                 </label>
+                            </div>
+                        </div>
+                        <div id="start-date-selector" class="parameter-option flex-row">
+                            <div style="margin: auto 1rem auto 0;">Date & time: </div>
+                            <div class="flex-row opposite-ends">
+                                <input class="gbm-time-picker" type="time" onchange="generateBreakdown()">
+                                <input class="gbm-date-picker" type="date" onchange="generateBreakdown()">
                             </div>
                         </div>
                         <div class="parameter-option">
