@@ -1035,6 +1035,26 @@ async function test(){
         "d_t_l_+40"
     ]
 
+    let useThisIfDeployingForReal = [
+        "f_d_DiamondCutFacet",
+        "d_d",
+        "f_d_DiamondInitFacet",
+        "f_d_DiamondLoupeFacet",
+        "f_d_OwnershipFacet",
+        "f_d_GBMAdminFacet",
+        "f_d_GBMAuctionBiddingFacet",
+        "f_d_GBMCurrencyFacet",
+        "f_d_GBMEscrowFacet_Tracking",
+        "f_d_GBMGettersFacet",
+        "f_d_GBMPrimaryAndSecondaryAuctionRegistrationFacet",
+        "f_d_GBMDirectSalePrimaryAndSecondaryFacet",
+        "d_c",
+        "s_p_+26", //Remove the first two presets in the GBM.auction settings
+        "s_c_1", 
+        "d_t_l_+40" //Feel free to comment out if you don't wann run example auctions and minting example tokens
+    ]
+
+
 
 
     for(let i=0; i<demoStepsManual.length; i++){
