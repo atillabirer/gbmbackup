@@ -81,6 +81,7 @@ let signer:any; //= wallets[0]; //This signer object is gonna be used to create 
 let deployerStatus:any = {}; //The current status of the deployment
 deployerStatus.commandHistory = [];
 deployerStatus.deployedFacets = {};
+let tokenURIList = require("./libraries/NFTTestList.json").nftarray;
 
 async function init(){
     wallets =  await ethers.getSigners();
@@ -149,6 +150,14 @@ export async function performDeploymentStep(step: string) {
                 console.log("=> " + step + "");
                 return [("" + step), "deed is done"]; ;
             }
+        
+        case "d_t":  
+        {
+            await doStep_d_t(step);
+            deployerStatus.commandHistory.push(step);
+            console.log("=> " + step + "");
+            return [("" + step), "deed is done"]; ;
+        }
          
         
         
@@ -157,6 +166,9 @@ export async function performDeploymentStep(step: string) {
 
 
 async function doStep_f_d(arg:string){
+
+    console.log("Deploying the " + arg.substring(4) + " ↗️");
+
     let gasPrice = await fetchGasPrice();
     const Facet = await ethers.getContractFactory(arg.substring(4), signer);
     const facet = await Facet.deploy({
@@ -167,6 +179,9 @@ async function doStep_f_d(arg:string){
 }
 
 async function doStep_d_d(){
+
+    console.log("Deploying the Diamond ↗️ 💎");
+
     let gasPrice = await fetchGasPrice();
     const Facet = await ethers.getContractFactory("Diamond", signer);
     const facet = await Facet.deploy(
@@ -187,6 +202,10 @@ async function doStep_d_h(arg: string){
 }
 
 async function doStep_d_c(){
+
+
+    console.log("Cutting the Diamond ⚒️ 💎");
+
     //Collecting all the depployed contrats
     let facets : Array<any> = [];
     let count = Object.keys(deployerStatus.deployedFacets).length;
@@ -231,9 +250,12 @@ async function doStep_s_p(arg:string){
         let ending = parseInt(arg.substring(5));
         for(let i=0; i<ending; i++){
 
+
             let gasPrice = await fetchGasPrice();
 
             let dapreset:any = conf.GBMPresetArray[i];
+            
+            console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🏆 ⚙️");
             let tx = await theDiamond.setGBMPreset(
                 dapreset.presetIndex,
                 dapreset.auctionDuration,
@@ -267,8 +289,7 @@ async function doStep_s_p(arg:string){
                 
             }
 
- 
-            
+            deployerStatus.commandHistory.push("s_p_" + i);
         }
 
     } else {
@@ -282,6 +303,7 @@ async function doStep_s_p(arg:string){
         let gasPrice = await fetchGasPrice();
 
         let dapreset:any = conf.GBMPresetArray[index];
+        console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🏆 ⚙️");
         let tx = await theDiamond.setGBMPreset(
             dapreset.presetIndex,
             dapreset.auctionDuration,
@@ -328,6 +350,9 @@ async function doStep_s_c(arg:string){
 
             let gasPrice = await fetchGasPrice();
             let dapreset:any = conf.CurrenciesArray[i];
+
+            console.log("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
+
             let tx = await theDiamond.setCurrencyAddressAndName(
                 dapreset.currencyIndex,
                 dapreset.currencyAddress,
@@ -346,6 +371,8 @@ async function doStep_s_c(arg:string){
                 currencyName: dapreset.currencyName
             }
 
+            deployerStatus.commandHistory.push("s_c_" + i);
+
         }
 
     } else {
@@ -359,6 +386,8 @@ async function doStep_s_c(arg:string){
        
         let gasPrice = await fetchGasPrice();
         let dapreset:any = conf.CurrenciesArray[index];
+        console.log("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
+
         let tx = await theDiamond.setCurrencyAddressAndName(
             dapreset.currencyIndex,
             dapreset.currencyAddress,
@@ -379,8 +408,6 @@ async function doStep_s_c(arg:string){
     }
 }
 
-
-
 async function fetchGasPrice() {
 
     let feeData = await ethers.provider.getFeeData();
@@ -400,9 +427,185 @@ function feemult(input:any){
 }
 
 
+
+/*   
+
+==========================================================================================================================================
+
+                                                                TEST LOGIC
+
+==========================================================================================================================================
+
+
+*/
+
+
+
+async function doStep_d_t(arg:string){
+
+ 
+    if(arg.substring(0,7) == "d_t_l_+"){    //d_t_l_+xx
+
+        let ending = parseInt(arg.substring(7));
+        for(let i = 1; i<= ending; i++){
+            await do_substep_dtm(i);
+        }
+    } else {    //d_t_l_xx
+        let index = parseInt(arg.substring(6));
+        await do_substep_dtm(index);
+    }
+}
+
+async function do_substep_dtm(arg:number){
+
+    //Calling the function from it's name in the array
+    await eval("" + testSequenceManual[arg-1].func + "(" + JSON.stringify(testSequenceManual[arg-1].args) + ")");
+
+}
+
+
+async function doSubStep_create721Contract(args:Array<any>){
+
+    //Deploying a test ERC721
+    console.log("Deploying an ERC-721 contract 🐱 ↗️");
+    let gasPrice = await fetchGasPrice();
+    const erc721 = await ethers.getContractFactory("ERC721Generic", signer);
+    const erc721C = await erc721.deploy("GBM Whales", "GBM721", {
+        ...gasPrice
+    });
+    await erc721C.deployed();
+
+    if( deployerStatus.ERC721 == undefined){
+        deployerStatus.ERC721 = [];
+    }
+
+    deployerStatus.ERC721.push(("" + erc721C.address));
+
+}
+
+async function doSubStep_mint721Token(args:Array<any>){
+    let contract721Address = deployerStatus.ERC721[0];
+    const the721 =  await ethers.getContractAt("ERC721Generic", contract721Address, signer);
+
+    if( deployerStatus.totalUsedTokenURI == undefined){
+        deployerStatus.totalUsedTokenURI = 0;
+    }
+
+    deployerStatus.totalUsedTokenURI++;
+
+    console.log("Minting ERC-721 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️ 🐱");
+    let gasPrice = await fetchGasPrice();
+    let tx = await the721.mint(
+        tokenURIList[deployerStatus.totalUsedTokenURI],
+        {
+           ...gasPrice,
+        });
+}
+
+
+async function doSubStep_transfer721Token(args:Array<any>){  //Args are expced as : from, to, tokenID.   Value are S (signer) or D (Diamond) for from & to.
+    let contract721Address = deployerStatus.ERC721[0];
+    const the721 =  await ethers.getContractAt("ERC721Generic", contract721Address, signer);
+
+    let _from = "";
+    let _to = "";
+    let tokenID = args[2];
+
+
+    if(args[0] == "S"){
+        _from = signer.address;
+    } else {
+        _from = deployerStatus.deployedFacets["Diamond"];
+    }
+
+    if(args[1] == "S"){
+        _to = signer.address;
+
+        console.log("Transferring ERC-721 tokenID " + tokenID + " to the Signer Wallet 🛫🙂 🐱");
+    } else {
+        _to = deployerStatus.deployedFacets["Diamond"];
+        console.log("Transferring ERC-721 tokenID " + tokenID + " to the Diamond 🛫💎 🐱");
+    }
+
+
+    let gasPrice = await fetchGasPrice();
+    let tx = await the721.mint(
+        tokenURIList[deployerStatus.totalUsedTokenURI],
+        {
+           ...gasPrice,
+        });
+}
+
+
+async function doSubStep_create1155Contract(args:Array<any>){
+
+    //Deploying a test 1155
+    console.log("Deploying an ERC-1155 contract 🐰 ↗️");
+    let gasPrice = await fetchGasPrice();
+    const erc1155 = await ethers.getContractFactory("ERC1155Generic", signer);
+    const erc1155C = await erc1155.deploy("GBM pokeWhales", "GBM1155", {
+        ...gasPrice
+    });
+    await erc1155C.deployed();
+
+    if( deployerStatus.ERC1155 == undefined){
+        deployerStatus.ERC1155 = [];
+    }
+
+    deployerStatus.ERC1155.push(("" + erc1155C.address));
+
+}
+
+
+/*   
+
+==========================================================================================================================================
+
+                                                                TEST SEQUENCES
+
+==========================================================================================================================================
+
+
+*/
+
+
+
+let testSequenceManual: Array<any> = [];
+testSequenceManual.push({
+    "func":"doSubStep_create721Contract",
+    "args": [""]
+});
+
+//Minting 10 721 tokens for testing purpose
+for(let i=0; i<10; i++){
+    testSequenceManual.push({
+        "func":"doSubStep_mint721Token",
+        "args": [""]
+    });
+}
+
+//Transferring 6 of them to the GBM smart contract
+for(let i=0; i<6; i++){
+    testSequenceManual.push({
+        "func":"doSubStep_transfer721Token",
+        "args": ["S","D", i+1]
+    });
+}
+
+//Minting a 1155 contract
+testSequenceManual.push({
+    "func":"doSubStep_create1155Contract",
+    "args": [""]
+});
+
+
 async function test(){
+
+
+    await init();
+
     let demoSteps = [
-        "d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e",
+        "d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e", //replace here with your metamask wallet address
         "f_d_DiamondCutFacet",
         "d_d",
         "f_d_DiamondInitFacet",
@@ -418,15 +621,14 @@ async function test(){
         "d_c",
         "s_p_+26",
         "s_c_1",
+        "d_t_l_+18"
     ]
-
-    await init();
 
     for(let i=0; i<demoSteps.length; i++){
         await performDeploymentStep(demoSteps[i]);
     }
 
-    console.log("Deployment test over")
+    console.log("Deployment test over");
 
     return;
 
