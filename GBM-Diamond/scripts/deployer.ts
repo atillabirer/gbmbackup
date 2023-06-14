@@ -125,14 +125,14 @@ export async function performDeploymentStep(step: string) {
                 await doStep_d_c();
                 deployerStatus.commandHistory.push(step);
                 console.log("=> " + step + "");
-                return [("" + step), "deed is done"]; ;
+                return [("" + step), "deed is done"];
             }
         case "s_p":
             {
                 await doStep_s_p(step);
                 deployerStatus.commandHistory.push(step);
                 console.log("=> " + step + "");
-                return [("" + step), "deed is done"]; ;
+                return [("" + step), "deed is done"];
             }
 
         case "s_c":
@@ -140,7 +140,7 @@ export async function performDeploymentStep(step: string) {
                 await doStep_s_c(step);
                 deployerStatus.commandHistory.push(step);
                 console.log("=> " + step + "");
-                return [("" + step), "deed is done"]; ;
+                return [("" + step), "deed is done"];
             }
         
         case "d_h":
@@ -148,7 +148,7 @@ export async function performDeploymentStep(step: string) {
                 await doStep_d_h(step);
                 deployerStatus.commandHistory.push(step);
                 console.log("=> " + step + "");
-                return [("" + step), "deed is done"]; ;
+                return [("" + step), "deed is done"];
             }
         
         case "d_t":  
@@ -156,11 +156,8 @@ export async function performDeploymentStep(step: string) {
             await doStep_d_t(step);
             deployerStatus.commandHistory.push(step);
             console.log("=> " + step + "");
-            return [("" + step), "deed is done"]; ;
+            return [("" + step), "deed is done"];
         }
-         
-        
-        
     }
 }
 
@@ -436,7 +433,6 @@ function feemult(input:any){
 
 ==========================================================================================================================================
 
-
 */
 
 
@@ -496,7 +492,7 @@ async function doSubStep_mint721Token(args:Array<any>){
     console.log("Minting ERC-721 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️ 🐱");
     let gasPrice = await fetchGasPrice();
     let tx = await the721.mint(
-        tokenURIList[deployerStatus.totalUsedTokenURI],
+        tokenURIList[deployerStatus.totalUsedTokenURI-1],
         {
            ...gasPrice,
         });
@@ -557,6 +553,28 @@ async function doSubStep_create1155Contract(args:Array<any>){
 }
 
 
+async function doSubStep_mint1155Token(args:Array<any>){  //Args[0] should be the amount of token to mint
+    let contract1155Address = deployerStatus.ERC1155[0];
+    const the1155 =  await ethers.getContractAt("ERC1155Generic", contract1155Address, signer);
+
+    if( deployerStatus.totalUsedTokenURI == undefined){
+        deployerStatus.totalUsedTokenURI = 0;
+    }
+
+    deployerStatus.totalUsedTokenURI++;
+
+    console.log("Minting " + args[0] +"x of ERC-1155 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️ 🐰");
+    let gasPrice = await fetchGasPrice();
+    let tx = await the1155.mint(
+        (deployerStatus.totalUsedTokenURI),
+        args[0],
+            tokenURIList[deployerStatus.totalUsedTokenURI-1],
+        {
+            ...gasPrice
+        });
+}
+
+
 /*   
 
 ==========================================================================================================================================
@@ -571,6 +589,8 @@ async function doSubStep_create1155Contract(args:Array<any>){
 
 
 let testSequenceManual: Array<any> = [];
+
+//Deploying a 721 contract
 testSequenceManual.push({
     "func":"doSubStep_create721Contract",
     "args": [""]
@@ -592,11 +612,20 @@ for(let i=0; i<6; i++){
     });
 }
 
-//Minting a 1155 contract
+//Deploying a 1155 contract
 testSequenceManual.push({
     "func":"doSubStep_create1155Contract",
     "args": [""]
 });
+
+//Minting 10*10 1155 tokens for testing purpose
+for(let i=0; i<10; i++){
+    testSequenceManual.push({
+        "func":"doSubStep_mint1155Token",
+        "args": ["10"]
+    });
+}
+
 
 
 async function test(){
@@ -621,7 +650,7 @@ async function test(){
         "d_c",
         "s_p_+26",
         "s_c_1",
-        "d_t_l_+18"
+        "d_t_l_+28"
     ]
 
     for(let i=0; i<demoSteps.length; i++){
