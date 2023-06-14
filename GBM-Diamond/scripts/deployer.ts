@@ -252,7 +252,7 @@ async function doStep_s_p(arg:string){
 
             let dapreset:any = conf.GBMPresetArray[i];
             
-            console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🏆 ⚙️");
+            console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
             let tx = await theDiamond.setGBMPreset(
                 dapreset.presetIndex,
                 dapreset.auctionDuration,
@@ -300,7 +300,7 @@ async function doStep_s_p(arg:string){
         let gasPrice = await fetchGasPrice();
 
         let dapreset:any = conf.GBMPresetArray[index];
-        console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🏆 ⚙️");
+        console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
         let tx = await theDiamond.setGBMPreset(
             dapreset.presetIndex,
             dapreset.auctionDuration,
@@ -489,7 +489,7 @@ async function doSubStep_mint721Token(args:Array<any>){
 
     deployerStatus.totalUsedTokenURI++;
 
-    console.log("Minting ERC-721 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️ 🐱");
+    console.log("Minting ERC-721 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️  🐱");
     let gasPrice = await fetchGasPrice();
     let tx = await the721.mint(
         tokenURIList[deployerStatus.totalUsedTokenURI-1],
@@ -517,20 +517,24 @@ async function doSubStep_transfer721Token(args:Array<any>){  //Args are expced a
     if(args[1] == "S"){
         _to = signer.address;
 
-        console.log("Transferring ERC-721 tokenID " + tokenID + " to the Signer Wallet 🛫🙂 🐱");
+        console.log("Transferring ERC-721 tokenID " + tokenID + " to the Signer Wallet 🐱 🛫🙂");
     } else {
         _to = deployerStatus.deployedFacets["Diamond"];
-        console.log("Transferring ERC-721 tokenID " + tokenID + " to the Diamond 🛫💎 🐱");
+        console.log("Transferring ERC-721 tokenID " + tokenID + " to the Diamond 🐱 🛫💎");
     }
 
-
     let gasPrice = await fetchGasPrice();
-    let tx = await the721.mint(
-        tokenURIList[deployerStatus.totalUsedTokenURI],
+    let tx = await the721["safeTransferFrom(address,address,uint256)"](
+        _from,
+        _to,
+        tokenID,
         {
-           ...gasPrice,
-        });
+            ...gasPrice,
+        }
+    );
 }
+
+
 
 
 async function doSubStep_create1155Contract(args:Array<any>){
@@ -563,7 +567,7 @@ async function doSubStep_mint1155Token(args:Array<any>){  //Args[0] should be th
 
     deployerStatus.totalUsedTokenURI++;
 
-    console.log("Minting " + args[0] +"x of ERC-1155 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️ 🐰");
+    console.log("Minting " + args[0] +"x of ERC-1155 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️  🐰");
     let gasPrice = await fetchGasPrice();
     let tx = await the1155.mint(
         (deployerStatus.totalUsedTokenURI),
@@ -571,6 +575,151 @@ async function doSubStep_mint1155Token(args:Array<any>){  //Args[0] should be th
             tokenURIList[deployerStatus.totalUsedTokenURI-1],
         {
             ...gasPrice
+        });
+}
+
+
+async function doSubStep_transfer1155Token(args:Array<any>){  //Args are expced as : from, to, tokenID, amount.   Value are S (signer) or D (Diamond) for from & to.
+    let contract1155Address = deployerStatus.ERC1155[0];
+    const the1155 =  await ethers.getContractAt("ERC1155Generic", contract1155Address, signer);
+
+    let _from = "";
+    let _to = "";
+    let tokenID = args[2];
+    let amount = args[3];
+
+
+    if(args[0] == "S"){
+        _from = signer.address;
+    } else {
+        _from = deployerStatus.deployedFacets["Diamond"];
+    }
+
+    if(args[1] == "S"){
+        _to = signer.address;
+
+        console.log("Transferring " + amount + " of ERC-1155 tokenID " + tokenID + " to the Signer Wallet 🐰 🛫🙂");
+    } else {
+        _to = deployerStatus.deployedFacets["Diamond"];
+        console.log("Transferring " + amount + " of ERC-1155 tokenID " + tokenID + " to the Diamond 🐰 🛫💎");
+    }
+
+
+    let gasPrice = await fetchGasPrice();
+    let tx = await the1155["safeTransferFrom(address,address,uint256,uint256,bytes)"](
+        _from,
+        _to,
+        tokenID,
+        amount,
+        "0x",
+        {
+            ...gasPrice
+        });
+}
+
+//args are : TokenID, 721contract, GBMpreset, Timestamp, CurrencyID, beneficiary
+// 721contract is either 0xxxx or can be set to D for the deployed 721 contract
+// Timestamp can be set to a number or N for now, or N+xxx for now with xxx seconds added
+// Beneficiary is either an address or S for the signer
+async function doSubStep_create721Auction(args:Array<any>){ 
+    let _tokenID = "" + args[0];
+    let _contract721 = "" +  args[1];
+    let _GBMpreset = "" +  args[2];
+    let _timestamp:any = "" +  args[3];
+    let _currency = "" +  args[4];
+    let _beneficiary = "" +  args[5];
+
+
+    if(_contract721 == "D"){
+        _contract721 = deployerStatus.ERC721[0];
+    }
+
+    if(_timestamp == "N"){
+        _timestamp = "" + Math.floor(Date.now()/1000);
+    } else  if(_timestamp.substring(0,2) == "N+"){
+        _timestamp = ""+ Math.floor(Date.now()/1000) + parseInt(_timestamp.substring(2));
+    }
+
+    if(_beneficiary == "S"){
+        _beneficiary = signer.address;
+    }
+
+
+    const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"], signer);
+
+
+    let _numberOFSale = await theDiamond.getTotalNumberOfSales();
+
+    let number:any = "" + _numberOFSale.toString();
+    number = 1 + parseInt(number);
+
+    console.log("Creating test ERC721 auction with auctionID #" + number + " 🚀 🐱 ");
+
+    let gasPrice = await fetchGasPrice();
+
+    let tx = await theDiamond.safeRegister721Auction(
+        _tokenID, //Token ID 
+        _contract721, // tokenContractAddress, 
+        _GBMpreset, //gbmPreset
+        _timestamp, //Start time = ASAP
+        _currency, //currencyID
+        _beneficiary, //beneficiary
+        {
+            ...gasPrice,
+        });
+}
+
+//args are : TokenID, amount, 1155contract, GBMpreset, Timestamp, CurrencyID, beneficiary
+// 721contract is either 0xxxx or can be set to D for the deployed 1155 contract
+// Timestamp can be set to a number or N for now, or N+xxx for now with xxx seconds added
+// Beneficiary is either an address or S for the signer
+async function doSubStep_create1155Auction(args:Array<any>){ 
+    let _tokenID = "" + args[0];
+    let _amount = "" + args[1];
+    let _contract1155 = "" +  args[2];
+    let _GBMpreset = "" +  args[3];
+    let _timestamp:any = "" +  args[4];
+    let _currency = "" +  args[5];
+    let _beneficiary = "" +  args[6];
+
+
+    if(_contract1155 == "D"){
+        _contract1155 = deployerStatus.ERC1155[0];
+    }
+
+    if(_timestamp == "N"){
+        _timestamp = "" + Math.floor(Date.now()/1000);
+    } else  if(_timestamp.substring(0,2) == "N+"){
+        _timestamp = ""+ Math.floor(Date.now()/1000) + parseInt(_timestamp.substring(2));
+    }
+
+    if(_beneficiary == "S"){
+        _beneficiary = signer.address;
+    }
+
+
+    const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"], signer);
+
+
+    let _numberOFSale = await theDiamond.getTotalNumberOfSales();
+
+    let number:any = "" + _numberOFSale.toString();
+    number = 1 + parseInt(number);
+
+    console.log("Creating test ERC1155 auction with auctionID #" + number + " 🚀 🐰 ");
+
+    let gasPrice = await fetchGasPrice();
+
+    let tx = await theDiamond.safeRegister1155auction(
+        _tokenID, //Token ID 
+        _contract1155, // tokenContractAddress, 
+        _amount,
+        _GBMpreset, //gbmPreset
+        _timestamp, //Start time = ASAP
+        _currency, //currencyID
+        _beneficiary, //beneficiary
+        {
+            ...gasPrice,
         });
 }
 
@@ -587,8 +736,8 @@ async function doSubStep_mint1155Token(args:Array<any>){  //Args[0] should be th
 */
 
 
-
-let testSequenceManual: Array<any> = [];
+//Do NOT allow this list to be remotely set. Only manipulate it from this file. No setters. It could allow arbirtary js execution on your machine, including downloading and executing key leakers, etc... 
+let testSequenceManual: Array<any> = [];  
 
 //Deploying a 721 contract
 testSequenceManual.push({
@@ -612,6 +761,7 @@ for(let i=0; i<6; i++){
     });
 }
 
+
 //Deploying a 1155 contract
 testSequenceManual.push({
     "func":"doSubStep_create1155Contract",
@@ -626,14 +776,39 @@ for(let i=0; i<10; i++){
     });
 }
 
+//Transferring 6x(1..6) of them to the GBM smart contract
+for(let i=10; i<16; i++){
+    testSequenceManual.push({
+        "func":"doSubStep_transfer1155Token",
+        "args": ["S","D", i+1, i-9]
+    });
+}
+
+//Creating 3 GBM 721 auctions
+for(let i=0; i<3; i++){
+    testSequenceManual.push({
+        "func":"doSubStep_create721Auction",
+        "args": [""+(i+1), "D", 0, "N", 1, "S"]
+    });
+}
+
+//Creating 3 GBM 1155 auctions
+for(let i=0; i<3; i++){
+    testSequenceManual.push({
+        "func":"doSubStep_create1155Auction",
+        "args": [""+(i+11), (i+1), "D", 0, "N", 1, "S"]
+    });
+}
+
+
+
+
 
 
 async function test(){
 
-
     await init();
-
-    let demoSteps = [
+    let demoStepsManual = [
         "d_h_b_0xf181e8B385FE770C78e3B848F321998F78b0d73e", //replace here with your metamask wallet address
         "f_d_DiamondCutFacet",
         "d_d",
@@ -650,11 +825,11 @@ async function test(){
         "d_c",
         "s_p_+26",
         "s_c_1",
-        "d_t_l_+28"
+        "d_t_l_+40"
     ]
 
-    for(let i=0; i<demoSteps.length; i++){
-        await performDeploymentStep(demoSteps[i]);
+    for(let i=0; i<demoStepsManual.length; i++){
+        await performDeploymentStep(demoStepsManual[i]);
     }
 
     console.log("Deployment test over");
