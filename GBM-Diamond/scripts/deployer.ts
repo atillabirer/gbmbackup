@@ -776,8 +776,6 @@ async function doSubStep_transfer1155Token(args:Array<any>){  //Args are expced 
             console.log("retrying")
         }
     }
-
-   
 }
 
 //args are : TokenID, 721contract, GBMpreset, Timestamp, CurrencyID, beneficiary
@@ -973,7 +971,6 @@ async function doSubStep_bidOnAuctionNativeCurr(args:Array<any>){
 
         console.log("Bid 💸 placed at saleID #" + _saleID + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + ethers.utils.formatUnits(highestBidValue));
     }
-
 
 }
 
