@@ -76,14 +76,19 @@ Another solution would be to go to MetaMask and click on Account > Settings > Ad
 
 
 ## Deploying to persistent testnet/mainnet      
-       
-Make sure your [gbm.config](gbm.config) file is properly setup               
--disabling the creation of test auctions                     
+        
+It his highly advised to first run deployment test on testnets such as moonbase alpha.           
+Make sure your [gbm.config](gbm.config) file is properly setup                              
 -Currencies added (the first currency in the array is gonna be the default)          
 -GBM presets setup (the first preset in the array is gonna be the default)             
 -etc...              
-Once done, addd your target network to [hardhat.config.ts](hardhat.config.ts) and set it as the default network.         
-Use npm run build as usual.          
+Once done, addd your target network to [hardhat.config.ts](hardhat.config.ts) and set it as the default network. Don't forget to add your private keys        
+Use 
+```    
+npx hardhat run scripts/deployer.ts   
+```    
+Come back in a few minutes, and everything should be deployed.
+You can then hardcode/connect to your backend the contract addresses and host your frontend for your users to use.
             
 # Running automated tests 
 
