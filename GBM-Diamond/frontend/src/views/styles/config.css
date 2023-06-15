@@ -1,5 +1,4 @@
-
-.config-page { 
+.config-page {
   width: 1000px;
 }
 
@@ -74,7 +73,7 @@ h3 {
 .preset-input {
   margin: auto;
   height: 2rem;
-  background-color: #05848A;
+  background-color: #05848a;
   border-radius: 10px;
   color: #fff;
   border: none;
@@ -83,11 +82,12 @@ h3 {
   width: 45%;
 }
 
-.update-btn, .add-new-btn { 
+.update-btn,
+.add-new-btn {
   margin: 10px 0;
   height: 3rem;
   width: 100%;
-  background-color: #49BEB7;
+  background-color: #49beb7;
   border-radius: 50px;
   color: #fff;
   border: none;
@@ -97,7 +97,7 @@ h3 {
 }
 
 .configuration-spread {
-    display: flex;
+  display: flex;
 }
 
 .configuration-field {
@@ -108,12 +108,12 @@ h3 {
 }
 
 .configuration-input {
-    margin: 14px;
-    height: 2rem;
-    background-color: #05848A;
-    border-radius: 10px;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    font-size: larger;
+  margin: 14px;
+  height: 2rem;
+  background-color: #05848a;
+  border-radius: 10px;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  font-size: larger;
 }

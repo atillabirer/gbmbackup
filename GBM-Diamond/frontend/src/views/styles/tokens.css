@@ -1,4 +1,4 @@
-.config-page { 
+.config-page {
   width: 1000px;
 }
 
@@ -24,8 +24,8 @@ h1 {
 
 .nft-info {
   background-color: #fff;
-  color: #085F63;
-  font-family: 'Roboto', sans-serif;
+  color: #085f63;
+  font-family: "Roboto", sans-serif;
   height: 8rem;
   letter-spacing: 0.5px;
 }
@@ -58,13 +58,13 @@ h1 {
   width: 90%;
   margin: 20px 5% 0 5%;
   background-color: transparent;
-  border: 1.5px solid #085F63;
-  color: #085F63;
-  transition: all .3s ease-in;
+  border: 1.5px solid #085f63;
+  color: #085f63;
+  transition: all 0.3s ease-in;
 }
 
 .nft-btn:hover {
-  background-color: #085F63;
+  background-color: #085f63;
   color: #fff;
 }
 
@@ -85,7 +85,7 @@ h1 {
   padding-left: 1.25rem;
   background-color: transparent;
   border: 1.5px solid white;
-  transition: all .2s cubic-bezier(.455, .03, .515, .955);
+  transition: all 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
 
 .filter-btn.active {
@@ -93,7 +93,8 @@ h1 {
   border: none;
 }
 
-.filter-btn:hover, .filter-btn.active:hover {
+.filter-btn:hover,
+.filter-btn.active:hover {
   color: #49beb7;
   background-color: #fff;
   border: 1px solid #49beb7;
