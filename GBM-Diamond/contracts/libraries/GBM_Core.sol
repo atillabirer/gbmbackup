@@ -28,7 +28,6 @@ struct GBMStorage {
 
     address GBMAdminAccount;                    // The address of the GBM contract administrator. Make it a real wallet you know the pkey of.
                                                 // Nota Bene: This a separate address from the diamond owner. Ofc, you can use same address twice.
-
     address marketPlaceRoyalty;                 // The address to which all marketplace royalties are paid for.
     uint256 mPlaceGBMFeePercentKage;            // How much the marketplace take as a percentkage in case of a settled GBM auction
     uint256 mPlaceEnglishFeePercentKage;        // How much the marketplace take as a percentkage in case of a settled English auction
@@ -90,5 +89,11 @@ struct GBMStorage {
     mapping (uint256 => bool) saleToClaimed; // A mapping storing wether or not a sale have been settled    
 
     mapping (address => bool) secondarySaleNFTContractWhitelist; // A mapping storing which NFTs contract can be put up for sale on the secondary market
+
+
+    /* Clients specific variables */
+    address STELLA_xStellaContract; //An ERC20 token contract to be used in multi-tier check
+    address STELLA_dualFarmContract; //The address of the dual farm contract
+    uint256 STELLA_tierLimit; //The token staking limit for a tier
 }
 
