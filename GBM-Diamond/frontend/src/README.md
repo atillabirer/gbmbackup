@@ -2,14 +2,17 @@
 
 ### Global
 
+- [ ] Fix split second white page on reload/change
 - [ ] Metamask Disconnect Button - Actual logic missing
 - [ ] Chain swap hack on hardhat is refreshing the page before both calls
-- [ ] Select / Option CSS missing for dropdowns
+- [x] Select / Option CSS missing for dropdowns
 - [x] Messed up the above, workable but deviated from figma
 - [ ] Clearer Terminal messages
 - [ ] Missing 1155 logic
-- [ ] Fix issue with bold values in text, font-weight not showing
-- [ ] Remove units from timers when at 0
+- [x] Fix issue with bold values in text, font-weight not showing
+- [x] Remove units from timers when at 0
+- [ ] Unify the Filter button CSS for Token and Auctions pages
+- [ ] Change pathing to not use queryParams and mimic myNFT auction page
 
 ### Deployment
 
@@ -23,6 +26,7 @@
 ### Browse Auctions
 
 - [x] Keep loading / pinging after deployment until it works
+    - [ ] Spotted a getPresets() failure at one point, have yet to replicate
 - [x] Toggle from Upcoming to Live has a second of a negative timer
 - [ ] Adjust the new auction listener to the new view
 - [ ] Add bid event listener logic
@@ -34,6 +38,8 @@
 - [ ] Update view of filter buttons (see Figma)
 - [ ] Add event listeners for auctions/bids
 - [ ] Only show metamask wallet NFTs, not all in the contract
+    - [x] Done for 1155
+- [ ] Remainder calculation for 1155 if token has multiple sales
 
 ### Token Sale
 
@@ -69,3 +75,36 @@
 - [ ] Add show more to bids
 - [ ] Add timestamp to bids
 - [ ] Fix occasional double bid-found event
+
+## Refactoring / Cleanup Progress
+
+### CSS
+
+- [ ] Global
+- [x] Navbar
+- [x] Deployment
+- [x] Auction
+    - [x] Mostly done
+- [x] Auctions
+- [ ] Token
+- [x] Create
+### HTML 
+
+- [ ] Global
+- [x] Navbar
+- [x] Deployment
+- [x] Auction
+    - [x] Mostly done
+- [x] Auctions
+- [ ] Token
+- [x] Create
+### Script
+
+- [x] Global
+- [x] Navbar
+- [ ] Deployment
+- [ ] Auction
+    - [x] Mostly done
+- [x] Auctions
+- [ ] Token
+- [ ] Create

@@ -1,152 +1,239 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
-        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-      ></script>
-    </head>
-    <body>
-        <div class="page-content">
-            <div class="page-title">GBM dApp Deployment</div>
-            <div class="metamask-missing">
-                <p class="gbm-header">Please connect your MetaMask wallet.</p>
+  <head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+      integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <div class="page-content">
+      <div class="page-title">GBM dApp Deployment</div>
+      <div class="metamask-missing">
+        <p class="gbm-header">Please connect your MetaMask wallet.</p>
+      </div>
+      <div class="metamask-found" hidden>
+        <div class="deployment-found" hidden>
+          <div class="gbm-header successful-deployment-header">
+            The GBM dApp has been deployed successfully!
+          </div>
+          <div class="successful-deployment-details">
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">Network</div>
+              <div id="deployed-network" class="left-column bold">
+                Localhost
+              </div>
             </div>
-            <div class="metamask-found" hidden>
-                <div class="deployment-found" hidden>
-                    <div class="gbm-header successful-deployment-header">The GBM dApp has been deployed successfully!</div>
-                    <div class="successful-deployment-details">
-                        <div class="successful-deployment-info">
-                            <div class="successful-deployment-info-label">Network</div>
-                            <div id="deployed-network" class="successful-deployment-info-value">Localhost</div>
-                        </div>
-                        <div class="successful-deployment-info">
-                            <div class="successful-deployment-info-label">Version</div>
-                            <div id="deployed-version" class="successful-deployment-info-value">Test</div>
-                        </div>
-                        <div class="successful-deployment-info">
-                            <div class="successful-deployment-info-label">Deployer Address</div>
-                            <div id="deployed-deployer" class="successful-deployment-info-value"></div>
-                        </div>
-                        <div class="successful-deployment-info">
-                            <div class="successful-deployment-info-label">Admin address</div>
-                            <div id="deployed-admin" class="successful-deployment-info-value"></div>
-                        </div>
-                        <button class="reset-btn" onclick="initReset()">Clear cache and deploy new contract</button> 
-                    </div>
-                </div>
-                <div class="deployment-missing">
-                    <div class="configuration-column-split">
-                        <div class="configuration-column">
-                            <div class="configuration-option">
-                                <div class="gbm-header configuration-option-label">Network</div>
-                                <div class="configuration-option-fields">
-                                    <select id="select-network" class="gbm-select">
-                                        <option value="Hardhat Local">Hardhat Local</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="configuration-option">
-                                <div class="gbm-header configuration-option-label">Version</div>
-                                <div class="configuration-option-fields">
-                                    <select id="select-version" class="gbm-select">
-                                        <option value="Demo Showcase">Demo Showcase</option>
-                                        <option value="NFT Drop (Primary Market Only)">NFT Drop (Primary Market Only)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="configuration-option">
-                                <div class="gbm-header configuration-option-label">Deployer address</div>
-                                <div class="configuration-option-fields">
-                                    <p class="configuration-description">
-                                        We recommend that you use a very safe account (e.g. cold wallet) to deploy the GBM dApp if deploying on a mainnet. This address will be able to upgrade the smart contract. To select another address, switch account on Metamask.
-                                    </p>
-                                    <input id="deployer-address" class="gbm-input-boxed" type="text" disabled/>
-                                </div>
-                            </div>
-                            <div class="configuration-option">
-                                <div class="gbm-header configuration-option-label">Admin address</div>
-                                <div class="configuration-option-fields">
-                                    <p class="configuration-description">
-                                        This address will be the only one with admin privileges on the application, able to create and start auctions, add presets, currencies etc.
-                                    </p>
-                                    <input id="admin-address" class="gbm-input-boxed" type="text"/>
-                                    <label class="gbm-checkbox">Use same as deployer address
-                                        <input id="use-deployer" type="checkbox" checked="checked">
-                                        <span class="gbm-checkmark"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="configuration-option">
-                                <div class="configuration-slider-group">
-                                    <div class="configuration-slider">
-                                        <label class="gbm-switch">
-                                            <input id="run-tests" type="checkbox">
-                                            <span class="gbm-slider round"></span>
-                                        </label>
-                                        <p class="configuration-slider-description">
-                                            Mint test NFTs and create test auctions
-                                        </p>
-                                    </div>
-                                    <div class="configuration-slider">
-                                        <label class="gbm-switch">
-                                            <input id="enable-customization" type="checkbox">
-                                            <span class="gbm-slider round"></span>
-                                        </label>
-                                        <p class="configuration-slider-description">
-                                            Customise default auction parameters (advanced)
-                                        </p>
-                                    </div>
-                                </div>
-                                <div id="default-preset-container" class="configuration-default-preset" hidden>
-                                    <div class="gbm-header configuration-default-preset-header">Default auction parameters</div>
-                                    <div class="configuration-default-preset-group">
-                                        <div class="configuration-default-preset-label">Name</div>
-                                        <input id="preset-name" class="gbm-input-boxed configuration-default-preset-input" type="text">
-                                    </div>
-                                    <div class="configuration-default-preset-group">
-                                        <div class="configuration-default-preset-label">Auction Duration (sec)</div>
-                                        <input id="preset-auction-duration" class="gbm-input-boxed configuration-default-preset-input" type="text">
-                                    </div>
-                                    <div class="configuration-default-preset-group">
-                                        <div class="configuration-default-preset-label">Cancellation period (sec)</div>
-                                        <input id="preset-cancellation" class="gbm-input-boxed configuration-default-preset-input" type="text">
-                                    </div>
-                                    <div class="configuration-default-preset-group">
-                                        <div class="configuration-default-preset-label">Hammer time (sec)</div>
-                                        <input id="preset-hammer" class="gbm-input-boxed configuration-default-preset-input" type="text">
-                                    </div>
-                                    <div class="configuration-default-preset-group">
-                                        <div class="configuration-default-preset-label">Incentive multiplier</div>
-                                        <input id="preset-incentive-mul" class="gbm-input-boxed configuration-default-preset-input" type="text">
-                                    </div>
-                                    <div class="configuration-default-preset-group">
-                                        <div class="configuration-default-preset-label">Incentive max</div>
-                                        <input id="preset-incentive-max" class="gbm-input-boxed configuration-default-preset-input" type="text">
-                                    </div>
-                                    <div class="configuration-default-preset-group">
-                                        <div class="configuration-default-preset-label">Incentive min</div>
-                                        <input id="preset-incentive-min" class="gbm-input-boxed configuration-default-preset-input" type="text">
-                                    </div>
-                                    <div class="configuration-default-preset-group">
-                                        <div class="configuration-default-preset-label">Step min</div>
-                                        <input id="preset-step-min" class="gbm-input-boxed configuration-default-preset-input" type="text">
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="gbm-btn deploy-btn" onclick="connectToDeployer()">Deploy</button>
-                        </div>
-                        <div class="configuration-terminal">
-                            <p class="configuration-terminal-text"> 
-                                Press Deploy to start    
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">Version</div>
+              <div id="deployed-version" class="left-column bold">Test</div>
             </div>
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">
+                Deployer Address
+              </div>
+              <div id="deployed-deployer" class="left-column bold"></div>
+            </div>
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">Admin address</div>
+              <div id="deployed-admin" class="left-column bold"></div>
+            </div>
+            <button
+              class="gbm-btn transparent rounded h-4 left-column mt-2 text-large bold"
+              onclick="initReset()"
+            >
+              Clear cache and deploy new contract
+            </button>
+          </div>
         </div>
-        <script type="text/javascript" src="scripts/global.js"></script>
-    </body>
+        <div class="deployment-missing">
+          <div class="flex-row opposite-ends">
+            <div class="left-column">
+              <div class="left-column-option">
+                <div class="gbm-header left-column-option-label">Network</div>
+                <div class="left-column-option-fields">
+                  <span id="select-network" class="gbm-select"></span>
+                </div>
+              </div>
+              <div class="left-column-option">
+                <div class="gbm-header left-column-option-label">Version</div>
+                <div class="left-column-option-fields">
+                  <span id="select-version" class="gbm-select"></span>
+                </div>
+              </div>
+              <div class="left-column-option">
+                <div class="gbm-header left-column-option-label">
+                  Deployer address
+                </div>
+                <div class="left-column-option-fields">
+                  <p class="left-column-description">
+                    We recommend that you use a very safe account (e.g. cold
+                    wallet) to deploy the GBM dApp if deploying on a mainnet.
+                    This address will be able to upgrade the smart contract. To
+                    select another address, switch account on Metamask.
+                  </p>
+                  <input
+                    id="deployer-address"
+                    class="gbm-input-boxed"
+                    type="text"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div class="left-column-option">
+                <div class="gbm-header left-column-option-label">
+                  Admin address
+                </div>
+                <div class="left-column-option-fields">
+                  <p class="left-column-description">
+                    This address will be the only one with admin privileges on
+                    the application, able to create and start auctions, add
+                    presets, currencies etc.
+                  </p>
+                  <input
+                    id="admin-address"
+                    class="gbm-input-boxed"
+                    type="text"
+                  />
+                  <label class="gbm-checkbox"
+                    >Use same as deployer address
+                    <input
+                      id="use-deployer"
+                      type="checkbox"
+                      checked="checked"
+                    />
+                    <span class="gbm-checkmark"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="left-column-option">
+                <div class="left-column-slider-group">
+                  <div class="flex-row items-center">
+                    <label class="gbm-switch">
+                      <input id="run-tests" type="checkbox" />
+                      <span class="gbm-slider round"></span>
+                    </label>
+                    <p class="left-column-slider-description">
+                      Mint test NFTs and create test auctions
+                    </p>
+                  </div>
+                  <div class="flex-row items-center">
+                    <label class="gbm-switch">
+                      <input id="enable-customization" type="checkbox" />
+                      <span class="gbm-slider round"></span>
+                    </label>
+                    <p class="left-column-slider-description">
+                      Customise default auction parameters (advanced)
+                    </p>
+                  </div>
+                </div>
+                <div
+                  id="default-preset-container"
+                  class="configuration-default-preset"
+                  hidden
+                >
+                  <div class="gbm-header configuration-default-preset-header">
+                    Default auction parameters
+                  </div>
+                  <div class="configuration-default-preset-group">
+                    <div class="configuration-default-preset-label">Name</div>
+                    <input
+                      id="preset-name"
+                      class="gbm-input-boxed configuration-default-preset-input"
+                      type="text"
+                    />
+                  </div>
+                  <div class="configuration-default-preset-group">
+                    <div class="configuration-default-preset-label">
+                      Auction Duration (sec)
+                    </div>
+                    <input
+                      id="preset-auction-duration"
+                      class="gbm-input-boxed configuration-default-preset-input"
+                      type="text"
+                    />
+                  </div>
+                  <div class="configuration-default-preset-group">
+                    <div class="configuration-default-preset-label">
+                      Cancellation period (sec)
+                    </div>
+                    <input
+                      id="preset-cancellation"
+                      class="gbm-input-boxed configuration-default-preset-input"
+                      type="text"
+                    />
+                  </div>
+                  <div class="configuration-default-preset-group">
+                    <div class="configuration-default-preset-label">
+                      Hammer time (sec)
+                    </div>
+                    <input
+                      id="preset-hammer"
+                      class="gbm-input-boxed configuration-default-preset-input"
+                      type="text"
+                    />
+                  </div>
+                  <div class="configuration-default-preset-group">
+                    <div class="configuration-default-preset-label">
+                      Incentive multiplier
+                    </div>
+                    <input
+                      id="preset-incentive-mul"
+                      class="gbm-input-boxed configuration-default-preset-input"
+                      type="text"
+                    />
+                  </div>
+                  <div class="configuration-default-preset-group">
+                    <div class="configuration-default-preset-label">
+                      Incentive max
+                    </div>
+                    <input
+                      id="preset-incentive-max"
+                      class="gbm-input-boxed configuration-default-preset-input"
+                      type="text"
+                    />
+                  </div>
+                  <div class="configuration-default-preset-group">
+                    <div class="configuration-default-preset-label">
+                      Incentive min
+                    </div>
+                    <input
+                      id="preset-incentive-min"
+                      class="gbm-input-boxed configuration-default-preset-input"
+                      type="text"
+                    />
+                  </div>
+                  <div class="configuration-default-preset-group">
+                    <div class="configuration-default-preset-label">
+                      Step min
+                    </div>
+                    <input
+                      id="preset-step-min"
+                      class="gbm-input-boxed configuration-default-preset-input"
+                      type="text"
+                    />
+                  </div>
+                </div>
+              </div>
+              <button
+                id="deploy-btn"
+                class="gbm-btn red cover h-4 text-large"
+                onclick="connectToDeployer()"
+              >
+                Deploy
+              </button>
+            </div>
+            <div class="right-column configuration-terminal">
+              <p id="terminal" class="configuration-terminal-text">
+                Press Deploy to start
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="scripts/global.js"></script>
+  </body>
 </html>
