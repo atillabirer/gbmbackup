@@ -18,6 +18,9 @@ contract ERC1155Coupon is IERC1155, IERC165 {
     mapping(address => mapping(uint256 => uint256)) internal balanceOfVar; // owner => id => balance
     mapping(address => mapping(address => bool)) internal isApprovedForAllVar; // owner => oprator => isapproved ?
 
+    mapping(uint256 => bool) internal occupiedTokenID;
+    uint256[] public tokenIDArray;
+
     mapping(bytes4 => bool) supportedInterfaces;
 
     string internal c_tokenURI;
@@ -217,6 +220,12 @@ contract ERC1155Coupon is IERC1155, IERC165 {
             //Adjusting the balance
             balanceOfVar[msg.sender][_ids[i]] = balanceOfVar[msg.sender][_ids[i]] + _values[i];
             emit URI(c_tokenURI, _ids[i]);
+    
+            if(!occupiedTokenID[_ids[i]]){
+                occupiedTokenID[_ids[i]] = true;
+                tokenIDArray.push(_ids[i]);
+            }
+
         }
 
         //Emitting the event
