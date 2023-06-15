@@ -144,6 +144,15 @@ interface IGBMEventsFacet {
         uint256 endTimestamp                    // What is the latest block timestamp a third party can accept the sale offer
     );
       
+    event SaleExecuted(
+        uint256 indexed saleID,                 // The id of the sale
+        address indexed tokenContractAddress,   // The address of the contract of the NFT being sold
+        uint256 indexed tokenID,                // The ID of the token being sold    
+        uint256 tokenAmount,                    // How many tokens sold at once in this sale
+        uint256 price,                          // The amount of currency just spent in the sale
+        uint256 leftoverTokens,                 // If the sale is a partial execution, some token will still be left for sale
+        uint256 leftoverPrice                   // The total price of the remainers tokens
+    );
 
 
 }

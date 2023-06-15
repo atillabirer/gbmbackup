@@ -242,45 +242,45 @@ contract GBMDirectSalePrimaryFacet is IGBMEventsFacet, IGBMDirectSalePrimaryFace
 
         //Let's check how much currency we actually need
         uint256 _paidable = (s.saleToPrice[saleID] * amount) / s.saleToTokenAmount[saleID];
-
-        //Fetch the address of the currency used by the auction
-        address _currAddress = s.currencyAddress[s.saleTocurrencyID[saleID]];
-
-        uint256 _mpdue = (_paidable * s.mPlaceGBMFeePercentKage) / DECIMALSK; //Marpetplace share 
         address _beneficiary = s.saleToBeneficiary[saleID];
 
-
         //Currency payments
-        if(_currAddress == address(0x0)){  //Case base currency
-            require(msg.value == _paidable, "Please send the correct amount of currency to buy the tokens");
+        {
+            address _currAddress = s.currencyAddress[s.saleTocurrencyID[saleID]];
+            uint256 _mpdue = (_paidable * s.mPlaceGBMFeePercentKage) / DECIMALSK; //Marpetplace share 
 
-            //Sending money for marketplace share
-            (bool succ, ) = s.marketPlaceRoyalty.call{value: _mpdue}("");
-            require(
-                succ,
-                "Transfer failed to your marketplace fee account. Wut ?"
-            );
 
-            //Sending money for seller
-            sendbaseCurrency(_beneficiary, _paidable - _mpdue);
+            if(_currAddress == address(0x0)){  //Case base currency
+                require(msg.value == _paidable, "Please send the correct amount of currency to buy the tokens");
 
-            //Sending money to beneficiary
-        } else {
-            // Case of an ERC20 token
+                //Sending money for marketplace share
+                (bool succ, ) = s.marketPlaceRoyalty.call{value: _mpdue}("");
+                require(
+                    succ,
+                    "Transfer failed to your marketplace fee account. Wut ?"
+                );
 
-            //Sending money for marketplace share
-            IERC20(_currAddress).transferFrom(
-                msg.sender,
-                s.marketPlaceRoyalty,
-                _mpdue
-            );
+                //Sending money for seller
+                sendbaseCurrency(_beneficiary, _paidable - _mpdue);
 
-            //Sending money for seller
-            IERC20(_currAddress).transferFrom(
-                msg.sender,
-                _beneficiary,
-                _paidable - _mpdue
-            );
+                //Sending money to beneficiary
+            } else {
+                // Case of an ERC20 token
+
+                //Sending money for marketplace share
+                IERC20(_currAddress).transferFrom(
+                    msg.sender,
+                    s.marketPlaceRoyalty,
+                    _mpdue
+                );
+
+                //Sending money for seller
+                IERC20(_currAddress).transferFrom(
+                    msg.sender,
+                    _beneficiary,
+                    _paidable - _mpdue
+                );
+            }
         }
 
         //NFT Token sending
@@ -323,6 +323,8 @@ contract GBMDirectSalePrimaryFacet is IGBMEventsFacet, IGBMDirectSalePrimaryFace
             s.saleToTokenAmount[saleID] -= amount;
             if(s.saleToTokenAmount[saleID] == 0){
                 s.saleToClaimed[saleID] = true;
+            } else {
+                s.saleToPrice[saleID] -= _paidable;
             }
 
             if (s.saleToSender[saleID] == address(this)) {
@@ -335,8 +337,50 @@ contract GBMDirectSalePrimaryFacet is IGBMEventsFacet, IGBMDirectSalePrimaryFace
             }
 
         }
+        
         //TODO : Royalty checks
 
+        if(s.saleToClaimed[saleID]){
+
+            emit SaleExecuted(
+                saleID,                 // The id of the sale
+                _tkc,                   // The address of the contract of the NFT being sold
+                _tokenID,               // The ID of the token being sold    
+                amount,                 // How many tokens sold at once in this sale
+                _paidable,              // The total price for the bundle of token
+                0,                      // If the sale is a partial execution, some token will still be left for sale
+                0                       // The total price of the remainers tokens
+            );
+
+        } else {
+
+            emit SaleExecuted(
+                saleID,                             // The id of the sale
+                _tkc,                               // The address of the contract of the NFT being sold
+                _tokenID,                           // The ID of the token being sold    
+                amount,                             // How many tokens sold at once in this sale
+                _paidable,                          // The total price for the bundle of token
+                s.saleToTokenAmount[saleID],        // If the sale is a partial execution, some token will still be left for sale
+                s.saleToPrice[saleID]               // The total price of the remainers tokens
+            );
+
+        }
+
+      
+/*
+
+  event SaleExecuted(
+        uint256 indexed saleID,                 // The id of the sale
+        address indexed tokenContractAddress,   // The address of the contract of the NFT being sold
+        uint256 indexed tokenID,                // The ID of the token being sold    
+        uint256 tokenAmount,                    // How many tokens sold at once in this sale
+        uint256 price,                          // The amount of currency just spent in the sale
+        uint256 leftoverTokens,                 // If the sale is a partial execution, some token will still be left for sale
+        uint256 leftoverPrice                   // The total price of the remainers tokens
+    );
+
+*/
+       
     }
 
 
