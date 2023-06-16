@@ -125,7 +125,7 @@ async function connectToDeployer() {
           finalizeDeployment();
           setTimeout(() => {
             pageInitializer.loadCustomCss();
-            document.getElementById('nav-bar-logo').src = newImage;
+            document.getElementById('nav-bar-logo').src = newImage ?? './images/gbm-logo.svg';
             pageInitializer.flipVisibility();
           }, 2000);
           webSocket.close();
