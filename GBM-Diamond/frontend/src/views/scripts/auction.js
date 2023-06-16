@@ -92,8 +92,8 @@ async function generateSaleElements(_sale) {
       : ""
   }GBM Whale #${_sale.tokenID}`;
 
-  document.getElementById("description-container").innerHTML =
-    fetchedMetadata.description;
+  document.getElementById("description-container").innerHTML = "Welcome to the GBM Whales collection, a captivating world of unique and adorable NFT whales. Each meticulously crafted with love and imagination, these one-of-a-kind digital creatures possess their own charm, vibrant colors, and delightful details. As proud owners of these scarce and authenticated NFTs, immerse yourself in the magic of these cute whales, connect with a passionate community, and embark on an enchanting journey filled with wonder and joy."
+    // fetchedMetadata.description;
   document.getElementById("bidOrPrice").value =
     /* _sale.saleKind === '' ? "Price" : */ "Current bid";
   document.getElementById(
@@ -147,7 +147,7 @@ async function populateNFTDetails(_sale, _metadata) {
     standards[_sale.tokenKind];
   document.getElementById("details-blockchain").innerHTML = "Local Hardhat";
   document.getElementById("details-smart-contract").innerHTML =
-    localStorage.getItem("erc721contract");
+    deploymentStatus.ERC721[0]; //TODO pick the correct contract
   document.getElementById(
     "details-token-uri"
   ).innerHTML = `${tokenURI.substring(0, 25)}...${tokenURI.substring(
@@ -172,7 +172,7 @@ const stateSwitcher = {
     document.getElementById("minimum-bid-message").style.display = "block";
     bidInput.style.display = "block";
     bidInput.disabled = false;
-    bidInput.placeholder = "Input your bid here";
+    bidInput.placeholder = "Enter bid";
     if (
       _sale.highestBidBidder.toLowerCase() === window.ethereum.selectedAddress
     ) {

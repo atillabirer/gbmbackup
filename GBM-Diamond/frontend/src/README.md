@@ -17,7 +17,7 @@
 ### Deployment
 
 - [ ] Adapt the deploy script for the deployer=admin scenario
-- [ ] Fix the deployment process to not require tests (steps)
+- [x] Fix the deployment process to not require tests (steps)
 - [ ] Add an abort button that resets a failed deployment
 - [ ] Report back-end errors in case of a failed deployment
 - [ ] Detect admin address from the contract post-deployment

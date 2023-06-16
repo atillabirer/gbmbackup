@@ -320,18 +320,43 @@ const cardGenerator = {
       <div class="nft-info">
           <div class="nft-name flex-row">${
             _amount !== undefined
-              ? `<div style="color: var(--primary)">${_amount}x&nbsp;</div>`
+              ? `<div style="color: var(--primary); font-weight: 400">${_amount}x&nbsp;</div>`
               : ""
           }GBM Whale #${_token.tokenId}</div>
           <div class="nft-company">
               <img class="nft-company-image" src="images/hardhat.svg">
               <div class="nft-company-name">GBM</div>
           </div>
+          <div class="flex-row" style="margin-top: 15px;">
+          ${
+            _amount !== undefined && _className == 'nft-escrowed' ? `<button
+            class="gbm-btn quantity-control"
+            onclick="changeQuantity(-1)"
+            style="margin-left: 10px;"
+          >
+            -
+          </button>
+          <div>
+            <input
+              id="quantity-input"
+              class="gbm-input-boxed quantity-box"
+              type="text"
+              value="1"
+              disabled
+            />
+          </div>
+          <button
+            class="gbm-btn quantity-control"
+            onclick="changeQuantity(1)"
+          >
+            +
+          </button>` : ''}
           ${
             _buttonCallback !== "none"
               ? `<button class="gbm-btn nft-btn" onclick="${_buttonCallback}">${_buttonText}</button>`
               : ``
           }
+        </div>
       </div>
     `;
 

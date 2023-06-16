@@ -1,10 +1,7 @@
-let step = localStorage.getItem("currentDeploymentStep") ?? 0;
-let diamondCutAddress = localStorage.getItem("diamondCutAddress") ?? "";
-let cuts = localStorage.getItem("cuts") ?? [];
-let facets = localStorage.getItem("facets") ?? [];
 let defaultPresets;
+let terminal = document.getElementById("terminal");
 
-if (step >= 14) displayDeployedDAppStatus();
+if (deploymentStatus?.finished) displayDeployedDAppStatus();
 else initDeploymentPage();
 
 generateSelectDropdown(
@@ -19,16 +16,6 @@ generateSelectDropdown(
   ["Demo Showcase", "NFT Drop (Primary Market Only)"],
   () => {}
 );
-
-function displayDeployedDAppStatus() {
-  let details = JSON.parse(localStorage.getItem("deploymentDetails"));
-
-  // Display the values from the previous deployment
-  document.getElementById("deployed-network").innerHTML = details.network;
-  document.getElementById("deployed-version").innerHTML = details.version;
-  document.getElementById("deployed-deployer").innerHTML = details.deployer;
-  document.getElementById("deployed-admin").innerHTML = details.admin;
-}
 
 async function initDeploymentPage() {
   // If logged on to metamask, populate the deployer address
@@ -86,7 +73,7 @@ function enableCustomization(_onChangeValue) {
     !_onChangeValue.target.checked;
 }
 
-function connectToDeployer() {
+async function connectToDeployer() {
   if (
     !document.getElementById("use-deployer").checked &&
     document.getElementById("admin-address").value.match(/^0x[a-fA-F0-9]{40}$/g)
@@ -99,8 +86,8 @@ function connectToDeployer() {
 
   localStorage.clear();
 
-  document.getElementById("terminal").innerHTML =
-    "Starting deployment... <br/>";
+  terminal.innerHTML = "";
+  displayNewMessageOnTerminal("Starting Deployment ⬆️");
 
   const deployButton = document.getElementById("deploy-btn");
   deployButton.classList.add("deploying");
@@ -115,108 +102,90 @@ function connectToDeployer() {
       ? document.getElementById("admin-address").value
       : defaultPresets.GBMAdminOverrideAddress;
 
+  let deploymentConf = await (
+    await fetch("../config/deploymentConf.json")
+  ).json();
+
   const webSocket = new WebSocket("ws://localhost:443/");
 
+  let deploymentSteps = deploymentConf["demo"].deploymentSteps;
+
+  deploymentSteps[0] = deploymentSteps[0].replace(
+    "metamask",
+    window.ethereum.selectedAddress
+  );
+
+  let step = deploymentStatus ? deploymentStatus.commandHistory.length : 0;
+
   webSocket.onopen = (event) => {
-    webSocket.send(
-      `PRE-DEPLOYMENT || ${window.ethereum.selectedAddress} || ${JSON.stringify(
-        defaultPresets
-      )}`
-    );
+    let lastDeploymentState = localStorage.getItem("deploymentStatus");
+    if (lastDeploymentState) webSocket.send(`RESUME || ${lastDeploymentState}`);
+    webSocket.send(`DEPLOY || ${deploymentSteps[step]}`);
   };
 
   webSocket.onmessage = (event) => {
-    let deployOrder = [
-      "DCF",
-      "DD",
-      "FT",
-      "FT",
-      "FT",
-      "FT",
-      "FT",
-      "FT",
-      "FT",
-      "FT",
-      "FT",
-      "CUT",
-      "PRST",
-      "CRC",
-      "TST",
-    ];
-
     let receivedMsg = event.data;
     let commands = receivedMsg.split(" || ");
-    if (commands[0] !== "SERVER") return;
-
-    switch (commands[1]) {
+    switch (commands[0]) {
       case "MSG":
-        let msgToDisplay = `${new Date().toLocaleTimeString()} - ${
-          commands[2]
-        }`;
-        document.getElementById("terminal").innerHTML += msgToDisplay + "<br/>";
+        displayNewMessageOnTerminal(commands[1]);
         break;
-      case "TST":
-        document.getElementById("terminal").innerHTML += "All done!<br/>";
-        step++;
-        saveDeployerStatus(commands);
-        webSocket.send(
-          `POST-DEPLOYMENT || ${window.ethereum.selectedAddress} || ${
-            localStorage.getItem("metamaskNonce") ?? "0"
-          }`
-        );
-        localStorage.removeItem("metamaskNonce");
-        pageInitializer.flipVisibility();
-        webSocket.close();
+      case "STATE":
+        localStorage.setItem("deploymentStatus", commands[1]);
         break;
-      default:
+      case "STEP_DONE":
         step++;
         localStorage.setItem("currentDeploymentStep", step);
-        saveDeployerStatus(commands);
-      case "ACK":
-        webSocket.send(
-          `CLIENT || ${deployOrder[step]} || ${step} || ${diamondCutAddress} || ${diamondAddress} || ${cuts} || ${facets}`
-        );
+        if (step >= deploymentSteps.length) {
+          displayNewMessageOnTerminal("Deployment done ✅");
+          finalizeDeployment();
+          setTimeout(pageInitializer.flipVisibility, 2000);
+          webSocket.close();
+        } else {
+          webSocket.send(`DEPLOY || ${deploymentSteps[step]}`);
+        }
+        break;
+      default:
     }
   };
 }
 
-function saveDeployerStatus(commands) {
-  switch (commands[1]) {
-    case "DCF":
-      localStorage.setItem("diamondCutAddress", commands[2]);
-      diamondCutAddress = commands[2];
-      break;
-    case "DD":
-      localStorage.setItem("diamondAddress", commands[2]);
-      diamondAddress = commands[2];
-      break;
-    case "FT":
-      localStorage.setItem("cuts", commands[2]);
-      cuts = commands[2];
-      localStorage.setItem("facets", commands[3]);
-      facets = commands[3];
-      break;
-    case "TST":
-      const deploymentDetails = {
-        network: document
-          .getElementById("select-network")
-          .getAttribute("selected-value"),
-        version: document
-          .getElementById("select-version")
-          .getAttribute("selected-value"),
-        deployer: window.ethereum.selectedAddress,
-        admin: window.ethereum.selectedAddress,
-      };
-      localStorage.setItem(
-        "deploymentDetails",
-        JSON.stringify(deploymentDetails)
-      );
-      displayDeployedDAppStatus();
-      localStorage.setItem("erc721contract", commands[2]);
-      localStorage.setItem("erc1155contract", commands[3]);
-    default:
-      break;
-  }
+function displayNewMessageOnTerminal(msg) {
+  let msgToDisplay = `${new Date().toLocaleTimeString()} - ${msg}`;
+  terminal.innerHTML += msgToDisplay + "<br/>";
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+function finalizeDeployment() {
+  localStorage.setItem(
+    "deploymentStatus",
+    `${localStorage
+      .getItem("deploymentStatus")
+      .slice(0, -1)}, "finished": true}`
+  );
+
+  const deploymentDetails = {
+    network: document
+      .getElementById("select-network")
+      .getAttribute("selected-value"),
+    version: document
+      .getElementById("select-version")
+      .getAttribute("selected-value"),
+    deployer: window.ethereum.selectedAddress,
+    admin: window.ethereum.selectedAddress, //TODO change to actual admin (fetch from gbm contract)
+  };
+  localStorage.setItem("deploymentDetails", JSON.stringify(deploymentDetails));
+  displayDeployedDAppStatus();
+}
+
+function displayDeployedDAppStatus() {
+  let details = JSON.parse(localStorage.getItem("deploymentDetails"));
+
+  // Display the values from the previous deployment
+  document.getElementById("deployed-network").innerHTML = details.network;
+  document.getElementById("deployed-version").innerHTML = details.version;
+  document.getElementById("deployed-deployer").innerHTML = details.deployer;
+  document.getElementById("deployed-admin").innerHTML = details.admin;
 }
 
 function initReset() {

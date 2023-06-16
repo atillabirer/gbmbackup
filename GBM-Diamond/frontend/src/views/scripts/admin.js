@@ -6,9 +6,7 @@ async function onScriptLoad() {
   const diamondLabel = document.getElementById("diamond-address");
   const adminLabel = document.getElementById("admin-address");
 
-  diamondLabel.innerHTML = `Smart Contract: ${localStorage.getItem(
-    "diamondAddress"
-  )}`;
+  diamondLabel.innerHTML = `Smart Contract: ${deploymentStatus.deployedFacets["Diamond"]}`;
   adminLabel.innerHTML = `GBM Admin: ${await getGBMAdmin()}`;
 
   await fetchPresets();

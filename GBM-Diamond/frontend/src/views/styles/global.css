@@ -5,6 +5,9 @@
   --background: #085f63;
   --text: white;
   --border-secondary: #49beb74d;
+  --selection: #FACF5A;
+  --disabled: #C4C4C4;
+  --disabled-text: #F1F1F1;
 }
 
 @import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
@@ -576,4 +579,22 @@ input:checked + .gbm-slider:before {
 
 .bold {
   font-weight: 700;
+}
+
+.footer {
+  width: 100%;
+  text-align: left;
+  margin-top: 5rem;
+}
+
+.section-divider-bottom {
+  margin-left: -8rem;
+  transform: rotate(180deg);
+}
+
+.copyright {
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--primary);
+  margin-top: 3rem;
 }

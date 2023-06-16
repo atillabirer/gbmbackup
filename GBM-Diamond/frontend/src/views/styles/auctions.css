@@ -452,7 +452,7 @@
   color: #085f63;
   margin-bottom: 0;
   font-size: 24px;
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -522,5 +522,5 @@
 .nft-image {
   height: 150px;
   width: 150px;
-  border-radius: 30px;
+  border-radius: 11px;
 }

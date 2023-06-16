@@ -192,7 +192,7 @@ async function createAuctionAndRedirect() {
       erc721contractAddress,
       presetNumber,
       startTime,
-      0,
+      1,
       window.ethereum.selectedAddress,
       finalMinBid
     );
@@ -204,7 +204,7 @@ async function createAuctionAndRedirect() {
       parseInt(document.getElementById("quantity-input").value),
       presetNumber,
       startTime,
-      0,
+      1,
       window.ethereum.selectedAddress,
       finalMinBid
     );

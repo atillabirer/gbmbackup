@@ -1,0 +1,24 @@
+{
+    "demo": {
+        "displayName" : "Demo Showcase",
+        "deploymentSteps" : [
+            "d_h_b_metamask",
+            "f_d_DiamondCutFacet",
+            "d_d",
+            "f_d_DiamondInitFacet",
+            "f_d_DiamondLoupeFacet",
+            "f_d_OwnershipFacet",
+            "f_d_GBMAdminFacet",
+            "f_d_GBMAuctionBiddingFacet",
+            "f_d_GBMCurrencyFacet",
+            "f_d_GBMEscrowFacet_Tracking",
+            "f_d_GBMGettersFacet",
+            "f_d_GBMPrimaryAndSecondaryAuctionRegistrationFacet",
+            "f_d_GBMDirectSalePrimaryAndSecondaryFacet",
+            "d_c",
+            "s_p_+26",
+            "s_c_1",
+            "d_t_l_+43"
+        ]
+    }
+}
