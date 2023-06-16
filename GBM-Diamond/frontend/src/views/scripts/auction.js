@@ -129,7 +129,7 @@ async function generateSaleElements(_sale) {
       "incentive-text"
     )[0].innerHTML = `The first bidder will earn <strong>${
       parseFloat(_sale.gbmPreset.incentiveMin) / 100
-    }%</strong> if outbid.`;
+    } ${_localPageAuction.currencyName}%</strong> if outbid.`;
 
   document.getElementsByClassName(
     "media-container"
@@ -185,7 +185,7 @@ const stateSwitcher = {
         "incentive-text"
       )[0].innerHTML = `You will earn <strong>${web3.utils.fromWei(
         _localPageAuction.highestBidIncentive
-      )}</strong> if outbid or the sale is cancelled by the seller.`;
+      )} ${_localPageAuction.currencyName}</strong> if outbid or the sale is cancelled by the seller.`;
     } else {
       document.getElementById("bids-enabled").style.display = "block";
       document.getElementsByClassName("bid-btn")[0].style.display = "block";
@@ -216,7 +216,7 @@ const stateSwitcher = {
         "incentive-text"
       )[0].innerHTML = `You will earn ${web3.utils.fromWei(
         _localPageAuction.highestBidIncentive
-      )} if the sale is cancelled.`;
+      )} ${_localPageAuction.currencyName} if the sale is cancelled.`;
     } else {
       document.getElementById("bids-disabled-upper-msg").innerHTML =
         "Auction ended";
@@ -359,6 +359,7 @@ function subscribeToNewBids(callback, callback2) {
       // console.log(event);
     })
     .on("data", function (event) {
+      console.log(event.returnValues);
       if (saleId !== event.returnValues.saleID) return;
       _localPageAuction.highestBidBidder = event.returnValues.bidder;
       _localPageAuction.highestBidIncentive = event.returnValues.incentivesDue;
