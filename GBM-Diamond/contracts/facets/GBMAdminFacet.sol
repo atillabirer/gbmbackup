@@ -65,6 +65,8 @@ contract GBMAdminFacet is IGBMEventsFacet, IGBMAdminFacet {
 
         require((s.GBMPresetsAmount+1) >= presetIndex, "Preset doesn't exist or is too far ahead in the index to be added");
 
+        require(stepMin >= incentiveMax, "To guarantee liquidity, please make so that stepMin >= incentiveMax");
+
         // Setting the preset
         s.GBMPresets[presetIndex] = GBM_preset({
             auctionDuration:auctionDuration,                
