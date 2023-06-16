@@ -201,6 +201,11 @@ interface IGBMGettersFacet {
     /// @return debt The amount of currency distributed in incentives
     function getSale_Debt(uint256 saleID) external view returns(uint256);
 
+    /// @notice Get the aution minimal first bid
+    /// @param saleID The ID of the sale you wish to know the details of
+    /// @return startingBid What amount of currency will be accapted as a minimal first bid
+    function getSale_StartingBid(uint256 saleID) external view returns(uint256);
+
     /// @notice Get the sale's specified bid value
     /// @param saleID The ID of the sale you wish to know the details of
     /// @param bidIndex The position of the bid you wish to know the details of. Starts at 1.
