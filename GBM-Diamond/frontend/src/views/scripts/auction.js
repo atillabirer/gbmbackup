@@ -104,7 +104,7 @@ async function generateSaleElements(_sale) {
     deploymentStatus.registeredPresets
   ).find((preset) => {
     return (
-      preset.incentiveMin === `${_sale.gbmPreset.incentiveMin}` &&
+      preset.incentiveMin === `${_sale.gbmPreset.incentiveMin.toString()}` &&
       preset.incentiveMax === `${_sale.gbmPreset.incentiveMax.toString()}` &&
       preset.incentiveGrowthMultiplier ===
         `${_sale.gbmPreset.incentiveGrowthMultiplier.toString()}`
@@ -112,7 +112,7 @@ async function generateSaleElements(_sale) {
   });
 
   document.getElementById("incentive-box-type").innerHTML =
-    presetDetected === undefined ? "English" : presetDetected.incentivePrefix;
+    presetDetected === undefined ? "English" : presetDetected.name.split("_")[0];
 
   minimumBid =
     parseFloat(_sale.highestBidValue) !== 0

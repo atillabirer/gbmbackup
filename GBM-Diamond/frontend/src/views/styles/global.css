@@ -44,18 +44,18 @@ body {
 }
 
 .link-leave {
-  color: #fff;
+  color: var(--text);
   cursor: pointer;
 }
 
 .link-stay {
-  color: #49beb7;
+  color: var(--primary);
 }
 
 .page-title {
   font-size: 64px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   padding-bottom: 3rem;
   letter-spacing: -0.03em;
 }
@@ -96,7 +96,7 @@ input::-webkit-input-placeholder {
 .gbm-select {
   font-size: large;
   width: 100%;
-  background-color: var(--primary);
+  background-color: var(--secondary);
   color: var(--text);
   border: none;
   border-radius: 50px;

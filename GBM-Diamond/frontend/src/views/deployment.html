@@ -133,7 +133,7 @@
                       <span class="gbm-slider round"></span>
                     </label>
                     <p class="left-column-slider-description">
-                      Customise default auction parameters (advanced)
+                      Customise dApp colors (advanced)
                     </p>
                   </div>
                 </div>
@@ -146,82 +146,60 @@
                     Default auction parameters
                   </div>
                   <div class="configuration-default-preset-group">
-                    <div class="configuration-default-preset-label">Name</div>
-                    <input
-                      id="preset-name"
-                      class="gbm-input-boxed configuration-default-preset-input"
-                      type="text"
-                    />
+                    <div class="configuration-default-preset-label">
+                      Primary Button
+                    </div>
+                    <input type="color" id="color-primary" value="#49beb7">
                   </div>
                   <div class="configuration-default-preset-group">
                     <div class="configuration-default-preset-label">
-                      Auction Duration (sec)
+                      Secondary Button
                     </div>
-                    <input
-                      id="preset-auction-duration"
-                      class="gbm-input-boxed configuration-default-preset-input"
-                      type="text"
-                    />
+                    <input type="color" id="color-selection" value="#FACF5A">
                   </div>
                   <div class="configuration-default-preset-group">
                     <div class="configuration-default-preset-label">
-                      Cancellation period (sec)
+                      Text fields & dropdowns
                     </div>
-                    <input
-                      id="preset-cancellation"
-                      class="gbm-input-boxed configuration-default-preset-input"
-                      type="text"
-                    />
+                    <input type="color" id="color-secondary" value="#05848a">
                   </div>
                   <div class="configuration-default-preset-group">
                     <div class="configuration-default-preset-label">
-                      Hammer time (sec)
+                      Important actions
                     </div>
-                    <input
-                      id="preset-hammer"
-                      class="gbm-input-boxed configuration-default-preset-input"
-                      type="text"
-                    />
+                    <input type="color" id="color-tertiary" value="#ff5959">
                   </div>
                   <div class="configuration-default-preset-group">
                     <div class="configuration-default-preset-label">
-                      Incentive multiplier
+                      Background
                     </div>
-                    <input
-                      id="preset-incentive-mul"
-                      class="gbm-input-boxed configuration-default-preset-input"
-                      type="text"
-                    />
+                    <input type="color" id="color-background" value="#085f63">
                   </div>
                   <div class="configuration-default-preset-group">
                     <div class="configuration-default-preset-label">
-                      Incentive max
+                      Font & lines
                     </div>
-                    <input
-                      id="preset-incentive-max"
-                      class="gbm-input-boxed configuration-default-preset-input"
-                      type="text"
-                    />
+                    <input type="color" id="color-text" value="#ffffff">
                   </div>
                   <div class="configuration-default-preset-group">
                     <div class="configuration-default-preset-label">
-                      Incentive min
+                      Logo
                     </div>
-                    <input
-                      id="preset-incentive-min"
-                      class="gbm-input-boxed configuration-default-preset-input"
-                      type="text"
-                    />
+                      <input id="image-upload" type="file" />
+                      <button
+                        class="gbm-btn transparent"
+                        id="image-upload-btn"
+                        onclick="imageUpload()"
+                      >
+                        Upload
+                      </button>
+                    </label>
                   </div>
-                  <div class="configuration-default-preset-group">
+                  <div id="display-logo" style="display: none;" class="configuration-default-preset-group">
                     <div class="configuration-default-preset-label">
-                      Step min
+                      Logo preview
                     </div>
-                    <input
-                      id="preset-step-min"
-                      class="gbm-input-boxed configuration-default-preset-input"
-                      type="text"
-                    />
+                    <img id="logoPreview"/>
                   </div>
                 </div>
               </div>

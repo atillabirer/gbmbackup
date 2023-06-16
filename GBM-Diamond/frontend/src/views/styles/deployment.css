@@ -6,6 +6,7 @@
   border: 2px solid white;
   background-color: #555753;
   border-radius: 10px;
+  height: 100vh
 }
 
 .configuration-terminal-text {
@@ -17,7 +18,7 @@
   word-wrap: break-word;
   word-break: break-word;
   overflow: auto;
-  height: 100vh;
+  height: 85vh;
 }
 
 .configuration-default-preset {
@@ -64,4 +65,22 @@
 
 input[type="file"] {
   display: none;
+}
+
+input[type="color"] {
+  margin-left: auto;
+  margin-right: 1.5rem;
+}
+
+#image-upload-btn {
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+#logoPreview {
+  max-width: 6rem;
+  max-height: 3rem;
+  margin-top: 1rem;
+  margin-left: auto;
+  margin-right: 2rem;
 }

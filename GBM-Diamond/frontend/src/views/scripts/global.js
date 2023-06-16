@@ -8,12 +8,14 @@ let erc1155contractAddress;
 let diamondAddress;
 let metamaskEnabled;
 let metamaskTrigger;
+let logo = './images/gbm-logo.png';
 
 // Functions to run on page load
 
 const pageInitializer = {
   init: async function () {
     this.loadContractAddresses();
+    this.loadCustomCss();
     this.addNavBar();
     this.addFooter();
     this.setUpMetamask();
@@ -28,8 +30,17 @@ const pageInitializer = {
     erc1155contractAddress = deploymentStatus.ERC1155[0];
   },
   loadCustomCss: function () {
+    if (!deploymentStatus) return;
+    if (!deploymentStatus.colours) return;
+
     const r = document.querySelector(":root");
-    r.style.setProperty("--background", "purple");
+    r.style.setProperty("--primary", deploymentStatus.colours.primary);
+    r.style.setProperty("--secondary", deploymentStatus.colours.secondary);
+    r.style.setProperty("--tertiary", deploymentStatus.colours.tertiary);
+    r.style.setProperty("--background", deploymentStatus.colours.background);
+    r.style.setProperty("--selection", deploymentStatus.colours.selection);
+    r.style.setProperty("--text", deploymentStatus.colours.text);
+    logo = deploymentStatus.logo;
   },
   addNavBar: function () {
     let navBar = document.createElement("div");
@@ -37,7 +48,7 @@ const pageInitializer = {
     navBar.innerHTML = `
       <div class="flex-row opposite-ends pad-vertical-2">
         <div>
-            <img class="h-3" src="./images/gbm-logo.png" />
+            <img id="nav-bar-logo" class="h-3" src="${logo}" />
         </div>
         <div class="nav-metamask">
             <div class="metamask-missing">

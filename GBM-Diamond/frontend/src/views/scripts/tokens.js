@@ -329,28 +329,29 @@ const cardGenerator = {
           </div>
           <div class="flex-row" style="margin-top: 15px;">
           ${
-            _amount !== undefined && _className == 'nft-escrowed' ? `<button
-            class="gbm-btn quantity-control"
-            onclick="changeQuantity(-1)"
-            style="margin-left: 10px;"
-          >
-            -
-          </button>
-          <div>
-            <input
-              id="quantity-input"
-              class="gbm-input-boxed quantity-box"
-              type="text"
-              value="1"
-              disabled
-            />
-          </div>
-          <button
-            class="gbm-btn quantity-control"
-            onclick="changeQuantity(1)"
-          >
-            +
-          </button>` : ''}
+          //   _amount !== undefined && _className == 'nft-escrowed' ? `<button
+          //   class="gbm-btn quantity-control"
+          //   onclick="changeQuantity(-1)"
+          //   style="margin-left: 10px;"
+          // >
+          //   -
+          // </button>
+          // <div>
+          //   <input
+          //     id="quantity-input"
+          //     class="gbm-input-boxed quantity-box"
+          //     type="text"
+          //     value="1"
+          //     disabled
+          //   />
+          // </div>
+          // <button
+          //   class="gbm-btn quantity-control"
+          //   onclick="changeQuantity(1)"
+          // >
+          //   +
+          // </button>` : ''
+        ''}
           ${
             _buttonCallback !== "none"
               ? `<button class="gbm-btn nft-btn" onclick="${_buttonCallback}">${_buttonText}</button>`
