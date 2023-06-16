@@ -135,7 +135,6 @@ async function connectToDeployer() {
         break;
       case "STEP_DONE":
         step++;
-        localStorage.setItem("currentDeploymentStep", step);
         if (step >= deploymentSteps.length) {
           displayNewMessageOnTerminal("Deployment done ✅");
           finalizeDeployment();
