@@ -83,10 +83,7 @@ deployerStatus.commandHistory = [];
 deployerStatus.deployedFacets = {};
 let tokenURIList = require("./libraries/NFTTestList.json").nftarray;
 
-let logger: (msg: string) => void;
-
 async function init(){
-    logger = (msg: string) => console.log(msg);
     wallets =  await ethers.getSigners();
     signer =  wallets[0];
     return;
@@ -94,10 +91,6 @@ async function init(){
 
 //Potential race condition if the deploy script is called just after having been initalized
 //init(); 
-
-export function setLogger(loggerCallback: (msg: string) => void){
-    logger = loggerCallback;
-}
 
 export function setDeployerStatus(_deployerStatus: string) {
     deployerStatus = JSON.parse(_deployerStatus);
@@ -171,7 +164,7 @@ export async function performDeploymentStep(step: string) {
 
 async function doStep_f_d(arg:string){
 
-    logger("Deploying the " + arg.substring(4) + " ↗️");
+    console.log("Deploying the " + arg.substring(4) + " ↗️");
 
     let gasPrice = await fetchGasPrice();
     const Facet = await ethers.getContractFactory(arg.substring(4), signer);
@@ -184,7 +177,7 @@ async function doStep_f_d(arg:string){
 
 async function doStep_d_d(){
 
-    logger("Deploying the Diamond ↗️ 💎");
+    console.log("Deploying the Diamond ↗️ 💎");
 
     let gasPrice = await fetchGasPrice();
     const Facet = await ethers.getContractFactory("Diamond", signer);
@@ -208,7 +201,7 @@ async function doStep_d_h(arg: string){
 async function doStep_d_c(){
 
 
-    logger("Cutting the Diamond ⚒️ 💎");
+    console.log("Cutting the Diamond ⚒️ 💎");
 
     //Collecting all the depployed contrats
     let facets : Array<any> = [];
@@ -242,16 +235,16 @@ async function doStep_d_c(){
                 ...gasPrice
             });
             continuer = false;
-        } catch (e: any){
+        } catch (e){
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
             } else {
-                logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                 console.log(e);
-                logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
             }
             await new Promise(resolve => setTimeout(resolve, 10000));
-            logger("retrying")
+            console.log("retrying")
         }
     }
 
@@ -274,7 +267,7 @@ async function doStep_s_p(arg:string){
         for(let i=0; i<ending; i++){
 
             let dapreset:any = conf.GBMPresetArray[i];
-            logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
+            console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
             let continuer = true;
             while(continuer){
                 try {
@@ -294,16 +287,16 @@ async function doStep_s_p(arg:string){
                             ...gasPrice,
                         });
                     continuer = false;
-                } catch (e: any){
+                } catch (e){
                     if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                        logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 20s ⏲️")
+                        console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 20s ⏲️")
                     } else {
-                        logger("Transaction error, retrying in 20s, likely ignore the error message below =======================================================")
+                        console.log("Transaction error, retrying in 20s, likely ignore the error message below =======================================================")
                         console.log(e);
-                        logger("Transaction error, retrying in 20s, likely ignore the error message above =======================================================")
+                        console.log("Transaction error, retrying in 20s, likely ignore the error message above =======================================================")
                     }
                     await new Promise(resolve => setTimeout(resolve, 20000));
-                    logger("retrying")
+                    console.log("retrying")
                 }
             }
         
@@ -337,7 +330,7 @@ async function doStep_s_p(arg:string){
         }
         let dapreset:any = conf.GBMPresetArray[index];
         
-        logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
+        console.log("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
 
         let continuer = true;
         while (continuer) {
@@ -358,16 +351,16 @@ async function doStep_s_p(arg:string){
                         ...gasPrice,
                     });
                 continuer = false;
-            } catch (e: any) {
+            } catch (e) {
                 if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                    logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                    console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
                 } else {
-                    logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                    console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                     console.log(e);
-                    logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                    console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
                 }
                 await new Promise(resolve => setTimeout(resolve, 10000));
-                logger("retrying")
+                console.log("retrying")
             }
         }
         
@@ -404,7 +397,7 @@ async function doStep_s_c(arg:string){
             let gasPrice = await fetchGasPrice();
             let dapreset:any = conf.CurrenciesArray[i];
 
-            logger("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
+            console.log("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
 
             let continuer = true;
             while (continuer) {
@@ -418,16 +411,16 @@ async function doStep_s_c(arg:string){
                             ...gasPrice,
                         });
                     continuer = false;
-                } catch (e: any) {
+                } catch (e) {
                     if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                        logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                        console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
                     } else {
-                        logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                        console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                         console.log(e);
-                        logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                        console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
                     }
                     await new Promise(resolve => setTimeout(resolve, 10000));
-                    logger("retrying")
+                    console.log("retrying")
                 }
             }
         
@@ -456,7 +449,7 @@ async function doStep_s_c(arg:string){
        
         let gasPrice = await fetchGasPrice();
         let dapreset:any = conf.CurrenciesArray[index];
-        logger("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
+        console.log("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
 
 
         let continuer = true;
@@ -471,16 +464,16 @@ async function doStep_s_c(arg:string){
                         ...gasPrice,
                     });
                 continuer = false;
-            } catch (e: any) {
+            } catch (e) {
                 if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                    logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                    console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
                 } else {
-                    logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                    console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                     console.log(e);
-                    logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                    console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
                 }
                 await new Promise(resolve => setTimeout(resolve, 10000));
-                logger("retrying")
+                console.log("retrying")
             }
         }
 
@@ -555,7 +548,7 @@ async function do_substep_dtm(arg:number){
 async function doSubStep_create721Contract(args:Array<any>){
 
     //Deploying a test ERC721
-    logger("Deploying an ERC-721 contract 🐱 ↗️");
+    console.log("Deploying an ERC-721 contract 🐱 ↗️");
     let gasPrice = await fetchGasPrice();
     const erc721 = await ethers.getContractFactory("ERC721Generic", signer);
     const erc721C = await erc721.deploy("GBM Whales", "GBM721", {
@@ -581,7 +574,7 @@ async function doSubStep_mint721Token(args:Array<any>){
 
     deployerStatus.totalUsedTokenURI++;
 
-    logger("Minting ERC-721 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️  🐱");
+    console.log("Minting ERC-721 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️  🐱");
 
     let continuer = true;
     while (continuer) {
@@ -596,16 +589,16 @@ async function doSubStep_mint721Token(args:Array<any>){
                     
             
             continuer = false;
-        } catch (e: any) {
+        } catch (e) {
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
             } else {
-                logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                 console.log(e);
-                logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
             }
             await new Promise(resolve => setTimeout(resolve, 10000));
-            logger("retrying")
+            console.log("retrying")
         }
     }
     
@@ -630,10 +623,10 @@ async function doSubStep_transfer721Token(args:Array<any>){  //Args are expced a
     if(args[1] == "S"){
         _to = signer.address;
 
-        logger("Transferring ERC-721 tokenID " + tokenID + " to the Signer Wallet 🐱 🛫🙂");
+        console.log("Transferring ERC-721 tokenID " + tokenID + " to the Signer Wallet 🐱 🛫🙂");
     } else {
         _to = deployerStatus.deployedFacets["Diamond"];
-        logger("Transferring ERC-721 tokenID " + tokenID + " to the Diamond 🐱 🛫💎");
+        console.log("Transferring ERC-721 tokenID " + tokenID + " to the Diamond 🐱 🛫💎");
     }
 
     let continuer = true;
@@ -651,16 +644,16 @@ async function doSubStep_transfer721Token(args:Array<any>){  //Args are expced a
             );
             
             continuer = false;
-        } catch (e: any) {
+        } catch (e) {
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
             } else {
-                logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                 console.log(e);
-                logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
             }
             await new Promise(resolve => setTimeout(resolve, 10000));
-            logger("retrying")
+            console.log("retrying")
         }
     }
 }
@@ -671,7 +664,7 @@ async function doSubStep_transfer721Token(args:Array<any>){  //Args are expced a
 async function doSubStep_create1155Contract(args:Array<any>){
 
     //Deploying a test 1155
-    logger("Deploying an ERC-1155 contract 🐰 ↗️");
+    console.log("Deploying an ERC-1155 contract 🐰 ↗️");
     let gasPrice = await fetchGasPrice();
     const erc1155 = await ethers.getContractFactory("ERC1155Generic", signer);
     const erc1155C = await erc1155.deploy("GBM pokeWhales", "GBM1155", {
@@ -698,7 +691,7 @@ async function doSubStep_mint1155Token(args:Array<any>){  //Args[0] should be th
 
     deployerStatus.totalUsedTokenURI++;
 
-    logger("Minting " + args[0] +"x of ERC-1155 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️  🐰");
+    console.log("Minting " + args[0] +"x of ERC-1155 tokenID " + deployerStatus.totalUsedTokenURI + " 🖨️  🐰");
 
     let continuer = true;
     while (continuer) {
@@ -715,16 +708,16 @@ async function doSubStep_mint1155Token(args:Array<any>){  //Args[0] should be th
             
             
             continuer = false;
-        } catch (e: any) {
+        } catch (e) {
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
             } else {
-                logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                 console.log(e);
-                logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
             }
             await new Promise(resolve => setTimeout(resolve, 10000));
-            logger("retrying")
+            console.log("retrying")
         }
     }
 }
@@ -749,10 +742,10 @@ async function doSubStep_transfer1155Token(args:Array<any>){  //Args are expced 
     if(args[1] == "S"){
         _to = signer.address;
 
-        logger("Transferring " + amount + " of ERC-1155 tokenID " + tokenID + " to the Signer Wallet 🐰 🛫🙂");
+        console.log("Transferring " + amount + " of ERC-1155 tokenID " + tokenID + " to the Signer Wallet 🐰 🛫🙂");
     } else {
         _to = deployerStatus.deployedFacets["Diamond"];
-        logger("Transferring " + amount + " of ERC-1155 tokenID " + tokenID + " to the Diamond 🐰 🛫💎");
+        console.log("Transferring " + amount + " of ERC-1155 tokenID " + tokenID + " to the Diamond 🐰 🛫💎");
     }
 
     let continuer = true;
@@ -771,16 +764,16 @@ async function doSubStep_transfer1155Token(args:Array<any>){  //Args are expced 
                 });
             
             continuer = false;
-        } catch (e: any) {
+        } catch (e) {
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
             } else {
-                logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                 console.log(e);
-                logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
             }
             await new Promise(resolve => setTimeout(resolve, 10000));
-            logger("retrying")
+            console.log("retrying")
         }
     }
 }
@@ -821,7 +814,7 @@ async function doSubStep_create721Auction(args:Array<any>){
     let number:any = "" + _numberOFSale.toString();
     number = 1 + parseInt(number);
 
-    logger("Creating test ERC721 auction with auctionID #" + number + " 🚀 🐱 ");
+    console.log("Creating test ERC721 auction with auctionID #" + number + " 🚀 🐱 ");
 
     let continuer = true;
     while (continuer) {
@@ -841,16 +834,16 @@ async function doSubStep_create721Auction(args:Array<any>){
             
             
             continuer = false;
-        } catch (e: any) {
+        } catch (e) {
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
             } else {
-                logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                 console.log(e);
-                logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
             }
             await new Promise(resolve => setTimeout(resolve, 10000));
-            logger("retrying")
+            console.log("retrying")
         }
     }
    
@@ -893,7 +886,7 @@ async function doSubStep_create1155Auction(args:Array<any>){
     let number:any = "" + _numberOFSale.toString();
     number = 1 + parseInt(number);
 
-    logger("Creating test ERC1155 auction with auctionID #" + number + " 🚀 🐰 ");
+    console.log("Creating test ERC1155 auction with auctionID #" + number + " 🚀 🐰 ");
 
 
 
@@ -916,16 +909,16 @@ async function doSubStep_create1155Auction(args:Array<any>){
                     
             
             continuer = false;
-        } catch (e: any) {
+        } catch (e) {
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
             } else {
-                logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                 console.log(e);
-                logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
             }
             await new Promise(resolve => setTimeout(resolve, 10000));
-            logger("retrying")
+            console.log("retrying")
         }
     }
 
@@ -938,7 +931,7 @@ async function doSubStep_bidOnAuctionNativeCurr(args:Array<any>){
 
     const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"], signer);
 
-    logger("Placing a bid of " + _bidValue + "fETH on auctionID #" + _saleID + " 💸 🚀 ");
+    console.log("Placing a bid of " + _bidValue + "fETH on auctionID #" + _saleID + " 💸 🚀 ");
     let _weiBidValue = ethers.utils.parseUnits(_bidValue, "ether");
     let numberOfBidsRes = await theDiamond.getSale_NumberOfBids(_saleID);
     let  highestBidValue = await theDiamond.getSale_HighestBid_Value(_saleID);
@@ -961,22 +954,22 @@ async function doSubStep_bidOnAuctionNativeCurr(args:Array<any>){
             
             
             continuer = false;
-        } catch (e: any) {
+        } catch (e) {
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                logger("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
+                console.log("The network has not yet syncrhonized the consequence of your previous transaction. Waiting for 10s ⏲️")
             } else {
-                logger("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================")
                 console.log(e);
-                logger("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
+                console.log("Transaction error, retrying in 10s, likely ignore the error message above =======================================================")
             }
             await new Promise(resolve => setTimeout(resolve, 10000));
-            logger("retrying")
+            console.log("retrying")
         }
 
         numberOfBidsRes = await theDiamond.getSale_NumberOfBids(_saleID);
         highestBidValue = await theDiamond.getSale_HighestBid_Value(_saleID);
 
-        logger("Bid 💸 placed at saleID #" + _saleID + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + ethers.utils.formatUnits(highestBidValue));
+        console.log("Bid 💸 placed at saleID #" + _saleID + ", currently there is " + numberOfBidsRes + " bids and the highest one is of a value of " + ethers.utils.formatUnits(highestBidValue));
     }
 
 }
@@ -1155,4 +1148,4 @@ async function test(){
 
 }
 
-// test();
+test();
