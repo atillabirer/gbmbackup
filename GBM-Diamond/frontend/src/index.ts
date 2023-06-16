@@ -5,7 +5,7 @@ import {
   setLogger,
   setDeployerStatus,
   getDeployerStatus,
-} from "../../scripts/deployerMarioVer";
+} from "../../scripts/deployer";
 import { WebSocketServer } from "ws";
 
 const sockServer = new WebSocketServer({ port: 443 });
