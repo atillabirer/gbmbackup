@@ -61,3 +61,7 @@
   font-size: large;
   align-self: center;
 }
+
+input[type="file"] {
+  display: none;
+}

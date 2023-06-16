@@ -46,6 +46,14 @@
             >
               Clear cache and deploy new contract
             </button>
+            <div>
+              <button
+                class="gbm-btn rounded h-4 left-column mt-2 text-large bold"
+                onclick="downloadObjectAsJson()"
+              >
+                Export dApp configuration
+              </button>
+            </div>
           </div>
         </div>
         <div class="deployment-missing">
@@ -224,6 +232,15 @@
               >
                 Deploy
               </button>
+              <label for="file-upload" id="file-upload-btn" onclick="triggerUpload()">
+                <input id="file-upload" type="file" />
+                <button
+                  class="gbm-btn transparent cover h-4 mt-2 text-large"
+                  onclick=""
+                >
+                  Import dApp configuration
+                </button>
+              </label>
             </div>
             <div class="right-column configuration-terminal">
               <p id="terminal" class="configuration-terminal-text">

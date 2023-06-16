@@ -187,6 +187,37 @@ function displayDeployedDAppStatus() {
   document.getElementById("deployed-admin").innerHTML = details.admin;
 }
 
+document.getElementById('file-upload').addEventListener('change', onChange);
+
+function onChange(event) {
+  var reader = new FileReader();
+  reader.onload = onReaderLoad;
+  reader.readAsText(event.target.files[0]);
+}
+
+function onReaderLoad(event){
+  var obj = JSON.parse(event.target.result);
+  //ToDo check if valid deployment status
+  localStorage.setItem('deploymentStatus', JSON.stringify(obj));
+  window.location.reload();
+}
+
+function triggerUpload() {
+  document.getElementById("file-upload").click();
+}
+
+function downloadObjectAsJson() {
+  var dataStr =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(localStorage.getItem('deploymentStatus'));
+  var downloadAnchorNode = document.createElement("a");
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "GBM-dApp-deployment.json");
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
+
 function initReset() {
   localStorage.clear();
   window.location.reload();
