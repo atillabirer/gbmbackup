@@ -8,14 +8,12 @@ let erc1155contractAddress;
 let diamondAddress;
 let metamaskEnabled;
 let metamaskTrigger;
-let globalConf;
 
 // Functions to run on page load
 
 const pageInitializer = {
   init: async function () {
     this.loadContractAddresses();
-    await this.loadSiteConfigurationJSON();
     this.addNavBar();
     this.addFooter();
     this.setUpMetamask();
@@ -28,9 +26,6 @@ const pageInitializer = {
     diamondAddress = deploymentStatus.deployedFacets["Diamond"];
     erc721contractAddress = deploymentStatus.ERC721[0];
     erc1155contractAddress = deploymentStatus.ERC1155[0];
-  },
-  loadSiteConfigurationJSON: async function () {
-    globalConf = await (await fetch("../config/globalPageConf.json")).json();
   },
   loadCustomCss: function () {
     const r = document.querySelector(":root");
@@ -325,7 +320,7 @@ async function chainZigZag() {
 /*
 
 */
-function generateSelectDropdown(_spanId, _options, _display, _onclick) {
+function generateSelectDropdown(_spanId, _options, _display, _onclick, _checkOverride) {
   var gbmCSS = window.document.styleSheets[0];
   const selectContainer = document.getElementById(_spanId);
   selectContainer.innerHTML = "";
@@ -333,12 +328,12 @@ function generateSelectDropdown(_spanId, _options, _display, _onclick) {
     `#${_spanId}.expanded { height: ${3 * _options.length}rem; }`,
     gbmCSS.cssRules.length
   );
-  selectContainer.setAttribute("selected-value", _options[0]);
-  selectContainer.setAttribute("selected-index", 0);
+  selectContainer.setAttribute("selected-value", _options[_checkOverride ?? 0]);
+  selectContainer.setAttribute("selected-index", _checkOverride ?? 0);
   for (i = 0; i < _options.length; i++) {
     selectContainer.innerHTML += `<input type="radio" name="${_spanId}" index="${i}" value="${
       _options[i]
-    }" id="${_options[i]}" ${i === 0 ? "checked" : ""}/><label for="${
+    }" id="${_options[i]}" ${i === (_checkOverride ?? 0) ? "checked" : ""}/><label for="${
       _options[i]
     }">${_display[i]}</label>`;
   }
@@ -450,6 +445,9 @@ const auctionFunctions = {
       duration: await gbmContracts.methods
         .getSale_GBMPreset_AuctionDuration(_saleID)
         .call(),
+      startingBid: web3.utils.fromWei(await gbmContracts.methods
+        .getSale_StartingBid(_saleID)
+        .call()),
     };
   },
   getNumberOfBids: async function (_saleId) {

@@ -321,8 +321,10 @@ async function doStep_s_p(arg:string){
                 incentiveMax: dapreset.incentiveMax,
                 incentiveGrowthMultiplier: dapreset.incentiveGrowthMultiplier,
                 firstMinBid: dapreset.firstMinBid,
-                name: dapreset.name
-                
+                name: dapreset.name,
+                displayName: dapreset.displayName,
+                displayTime: dapreset.displayTime,
+                potentialTotal: dapreset.potentialTotal
             }
 
             deployerStatus.commandHistory.push("s_p_" + i);
@@ -386,7 +388,10 @@ async function doStep_s_p(arg:string){
             incentiveMax: dapreset.incentiveMax,
             incentiveGrowthMultiplier: dapreset.incentiveGrowthMultiplier,
             firstMinBid: dapreset.firstMinBid,
-            name: dapreset.name
+            name: dapreset.name,
+            displayName: dapreset.displayName,
+            displayTime: dapreset.displayTime,
+            potentialTotal: dapreset.potentialTotal
         }
 
     }

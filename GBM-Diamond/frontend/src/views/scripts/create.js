@@ -36,26 +36,42 @@ async function populatePresets() {
   gbmPresetNames = names;
   gbmPresets = presets;
 
-  let incentivePresets = names.map((_element) => _element.split("_")[0]);
-  let timePresets = names.map((_element) => _element.split("_")[1]);
-  incentivePresets = [...new Set(incentivePresets)].splice(1);
-  timePresets = [...new Set(timePresets)].splice(2);
+  let presetsFromDeployment = Object.values(
+    deploymentStatus.registeredPresets
+  ).splice(2);
+
+  // let incentivePresets = names.map((_element) => _element.split("_")[0]);
+  let incentivePresets = presetsFromDeployment.map(
+    (_element) => _element.name.split("_")[0]
+  );
+  let incentivePresetNames = presetsFromDeployment.map(
+    (_element) => _element.displayName
+  );
+  // let timePresets = names.map((_element) => _element.split("_")[1]);
+  let timePresets = presetsFromDeployment.map(
+    (_element) => _element.name.split("_")[1]
+  );
+  let timePresetNames = presetsFromDeployment.map(
+    (_element) => _element.displayTime
+  );
+
+  incentivePresets = [...new Set(incentivePresets)];
+  incentivePresetNames = [...new Set(incentivePresetNames)];
+  timePresets = [...new Set(timePresets)];
+  timePresetNames = [...new Set(timePresetNames)];
 
   generateSelectDropdown(
     "select-duration",
     timePresets,
-    globalConf[window.ethereum.networkVersion].timePresets.map(
-      (item) => item.displayName
-    ),
+    timePresetNames,
     generateBreakdown
   );
   generateSelectDropdown(
     "select-incentive",
     incentivePresets,
-    globalConf[window.ethereum.networkVersion].incentivePresets.map(
-      (item) => item.displayName
-    ),
-    generateBreakdown
+    incentivePresetNames,
+    generateBreakdown, 
+    2
   );
 }
 
@@ -87,14 +103,16 @@ const convertToPercentage = (_valueInK) => parseInt(_valueInK) / 1000;
 function generateBreakdown() {
   let selectDuration = document.getElementById("select-duration");
   let selectIncentive = document.getElementById("select-incentive");
-  let timePreset =
-    globalConf[window.ethereum.networkVersion].timePresets[
-      parseInt(selectDuration.getAttribute("selected-index"))
-    ];
-  let incentivePreset =
-    globalConf[window.ethereum.networkVersion].incentivePresets[
-      parseInt(selectIncentive.getAttribute("selected-index"))
-    ];
+
+  let preset = Object.values(deploymentStatus.registeredPresets)
+    .splice(2)
+    .find(
+      (element) =>
+        element.name ===
+        `${selectIncentive.getAttribute(
+          "selected-value"
+        )}_${selectDuration.getAttribute("selected-value")}`
+    );
   let startTime = new Date();
 
   if (document.getElementById("start-date-selector").style.display !== "none") {
@@ -119,10 +137,10 @@ function generateBreakdown() {
 
   document.getElementById("time-specifics").innerHTML = `
         End date: ${new Date(
-          startTime.getTime() + parseInt(timePreset.auctionDuration) * 1000
+          startTime.getTime() + parseInt(preset.auctionDuration) * 1000
         ).toUTCString()} </br>
         Hammer time: ${convertToMinutes(
-          timePreset.hammerTimeDuration
+          preset.hammerTimeDuration
         )} minutes <div class="gbm-tooltip">ⓘ
             <span class="gbm-tooltip-text">Any bid placed in the last 20mins of the auction will reset the auction timer to 20mins. This gives everyone a chance to keep bidding and win.</span>
         </div>
@@ -130,23 +148,23 @@ function generateBreakdown() {
 
   document.getElementById("incentive-specifics").innerHTML = `
         Bidders will make between ${convertToPercentage(
-          incentivePreset.incentiveMin
+          preset.incentiveMin
         )}% and ${convertToPercentage(
-    incentivePreset.incentiveMax
+          preset.incentiveMax
   )}% return on their bid. In total, bidders will receive up to ${convertToPercentage(
-    incentivePreset.totalOfWinning
+    preset.potentialTotal
   )}% of the winning bid.
     `;
 
   document.getElementById("cancellation-text1-2").innerHTML = `
         ${convertToPercentage(
-          incentivePreset.incentiveMin
-        )}%-${convertToPercentage(incentivePreset.incentiveMax)}% of winning bid
+          preset.incentiveMin
+        )}%-${convertToPercentage(preset.incentiveMax)}% of winning bid
     `;
 
   document.getElementById("cancellation-text2").innerHTML = `
         If you are not happy with the final sale price, you will have <strong>${convertToMinutes(
-          timePreset.cancellationPeriodDuration
+          preset.cancellationPeriodDuration
         )} minutes</strong> after the end of the auction to cancel, by paying the cancellation fee.
     `;
 }
@@ -184,27 +202,25 @@ async function createAuctionAndRedirect() {
   }
 
   let finalMinBid =
-    minBid.value !== "1" || minBid.value !== "" ? parseInt(minBid.value) : 1;
+    minBid.value !== "1" || minBid.value !== "" ? minBid.value : "1";
   if (tokenStandard !== "ERC1155") {
-    console.log("721");
     await startNewAuction721Custom(
       tokenId,
       erc721contractAddress,
       presetNumber,
       startTime,
-      1,
+      0,
       window.ethereum.selectedAddress,
       finalMinBid
     );
   } else {
-    console.log("1155");
     await startNewAuction1155Custom(
       tokenId,
       erc1155contractAddress,
       parseInt(document.getElementById("quantity-input").value),
       presetNumber,
       startTime,
-      1,
+      0,
       window.ethereum.selectedAddress,
       finalMinBid
     );
@@ -259,7 +275,7 @@ async function startNewAuction721Custom(
       currencyID,
       beneficiary,
       0,
-      minimumBid
+      web3.utils.toWei(minimumBid)
     )
     .send({ from: window.ethereum.selectedAddress });
 }
@@ -284,7 +300,7 @@ async function startNewAuction1155Custom(
       currencyID,
       beneficiary,
       0,
-      minimumBid
+      web3.utils.toWei(minimumBid)
     )
     .send({ from: window.ethereum.selectedAddress });
 }

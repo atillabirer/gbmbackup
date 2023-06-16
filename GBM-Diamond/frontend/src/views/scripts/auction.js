@@ -100,9 +100,9 @@ async function generateSaleElements(_sale) {
     "bidOrPriceAmount"
   ).innerHTML = `${_sale.highestBidValue} ${_sale.highestBidCurrencyName}`;
 
-  let presetDetected = globalConf[
-    window.ethereum.networkVersion
-  ].incentivePresets.find((preset) => {
+  let presetDetected = Object.values(
+    deploymentStatus.registeredPresets
+  ).find((preset) => {
     return (
       preset.incentiveMin === `${_sale.gbmPreset.incentiveMin}` &&
       preset.incentiveMax === `${_sale.gbmPreset.incentiveMax.toString()}` &&
@@ -117,7 +117,7 @@ async function generateSaleElements(_sale) {
   minimumBid =
     parseFloat(_sale.highestBidValue) !== 0
       ? _sale.highestBidValue * (parseFloat(stepMin) / 100000 + 1)
-      : 0.01;
+      : _sale.startingBid;
   document.getElementById(
     "minimum-bid-message"
   ).innerHTML = `Minimum bid: ${minimumBid} ${_sale.highestBidCurrencyName}`;

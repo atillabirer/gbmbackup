@@ -63,7 +63,7 @@
 - [ ] Fix radio buttons to cover full width
 - [ ] Align everything to the left
 - [ ] Change the time from GMT to UTC
-- [ ] Make Medium the default incentive
+- [x] Make Medium the default incentive
 - [ ] Add NFT approval flow
 
 ### Auction 
