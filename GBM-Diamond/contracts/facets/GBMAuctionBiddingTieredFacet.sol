@@ -44,6 +44,7 @@ contract GBMAuctionBiddingTieredFacet is GBMAuctionBiddingFacet{
         if (_baseBid == 0) {
             _baseBid = 1;
         }
+
         //Ratio of newBid compared to expected minBid
         uint256 _decimaledRatio = ((DECIMALSK *
             s.GBMPresets[_presetIndex].incentiveGrowthMultiplier *
@@ -65,7 +66,7 @@ contract GBMAuctionBiddingTieredFacet is GBMAuctionBiddingFacet{
 
     function checkIsPremium(address _user) internal view returns (bool){
       
-        (uint256 _amount, uint256 _b, uint256 _c, uint256  _d) = IPremiumUserSpotting(s.STELLA_dualFarmContract).userInfo(3, _user);
+        (uint256 _amount,,,) = IPremiumUserSpotting(s.STELLA_dualFarmContract).userInfo(3, _user);
 
         _amount += IPremiumUserSpotting(s.STELLA_xStellaContract).balanceOF(_user);
 
