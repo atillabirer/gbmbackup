@@ -1,5 +1,6 @@
 let tokenUris;
-
+let collectionNames1155;
+let tokens1155;
 let auctionTypeCount = {
   live: 0,
   upcoming: 0,
@@ -17,30 +18,35 @@ Array.from(document.getElementsByClassName("filter-btn")).forEach(
 
 const tokenFetcher = {
   getTokens: async function () {
+
+    // tokens1155 = (await Promise.allSettled(erc1155contracts.map(
+    //   async (item, index) => await this.get1155Tokens(index)
+    // ))).map(result => result.value);
+
     return {
       tokens721: await this.get721Tokens(),
-      tokens1155: await this.get1155Tokens(),
+      tokens1155: [await this.get1155Tokens(0)]
     };
   },
   get721Tokens: async function () {
-    const tokenAmount = await erc721contract.methods.totalSupply().call();
+    const tokenAmount = await erc721contracts[0].methods.totalSupply().call();
     const keysArray = [...Array(parseInt(tokenAmount) + 1).keys()].slice(1);
 
     const tokensURIs = Promise.all(
       keysArray.map(
-        async (item) => await erc721contract.methods.tokenURI(item).call()
+        async (item) => await erc721contracts[0].methods.tokenURI(item).call()
       )
     );
     const tokenOwners = Promise.all(
       keysArray.map(
-        async (item) => await erc721contract.methods.ownerOf(item).call()
+        async (item) => await erc721contracts[0].methods.ownerOf(item).call()
       )
     );
     const escrowed = Promise.all(
       keysArray.map(
         async (item) =>
           await gbmContracts.methods
-            .getERC721Token_depositor(erc721contractAddress, item)
+            .getERC721Token_depositor(erc721contractAddresses[0], item)
             .call()
       )
     );
@@ -51,14 +57,17 @@ const tokenFetcher = {
       escrowed721: await escrowed,
     };
   },
-  get1155Tokens: async function () {
-    const keysArray = [11, 12, 13, 14, 15];
-
+  get1155Tokens: async function (_erc1155contractIndex) {
+    // const tokenAmount = await erc1155contracts[_erc1155contractIndex].methods.getTokenIDArray().call();
+    // console.log(tokenAmount);
+    // const keysArray = [...Array(parseInt(tokenAmount) + 1).keys()].slice(1);
     /*
       Missing a way to get the tokens present in the contract (and URIs)
     */
+    const keysArray = [11, 12, 13, 14, 15];
+
     const owned = (
-      await erc1155contract.methods
+      await erc1155contracts[_erc1155contractIndex].methods
         .balanceOfBatch([window.ethereum.selectedAddress], keysArray)
         .call()
     ).map((item, index) => {
@@ -67,27 +76,29 @@ const tokenFetcher = {
         amount: parseInt(item),
       };
     });
-    const escrowed = Promise.all(
-      keysArray.map(async (item) => {
-        return {
-          tokenId: item,
-          amount: parseInt(
-            await gbmContracts.methods
-              .getERC1155Token_depositor(
-                erc1155contractAddress,
-                item,
-                window.ethereum.selectedAddress
-              )
-              .call()
-          ),
-        };
-      })
+
+    let escrowed = await Promise.all(
+      keysArray.map(async (item) => ({
+        tokenId: item,
+        amount: await gbmContracts.methods
+          .getERC1155Token_depositor(
+            deploymentStatus.ERC1155[_erc1155contractIndex],
+            item,
+            window.ethereum.selectedAddress
+          )
+          .call(),
+      }))
     );
 
     return {
       owned1155: owned,
-      escrowed1155: await escrowed,
+      escrowed1155: escrowed,
     };
+  },
+  getCollectionNames: async function () {
+    return Promise.all(
+      erc1155contracts.map(async (contract) => contract.methods.name().call())
+    );
   },
 };
 
@@ -103,9 +114,17 @@ const cardGenerator = {
     container.innerHTML = "";
     await this.generateTokensOnSale(_beneficiaries);
     await this.generateTokensInEscrow721(_escrowed721, _beneficiaries);
-    await this.generateTokensInEscrow1155(_escrowed1155, _beneficiaries);
+    for (x = 0; x < _escrowed1155.length; x++) {
+      await this.generateTokensInEscrow1155(
+        _escrowed1155[x],
+        _beneficiaries,
+        x
+      );
+    }
     await this.generateTokensOwned721(_owners721);
-    await this.generateTokensOwned1155(_owned1155);
+    for (x = 0; x < _owned1155.length; x++) {
+      await this.generateTokensOwned1155(_owned1155[x], x);
+    }
   },
   generateTokensOnSale: async function (_beneficiaries) {
     let ownedTokens = await Promise.all(
@@ -142,10 +161,12 @@ const cardGenerator = {
 
       let tokenToPass = {
         tokenId: ownedTokens[i].tokenId,
-        name: fetchedData.name,
+        name: fetchedData.name || "GBM Whale",
         description: fetchedData.description,
         image: fetchedData.image,
       };
+
+      //TODO Name if 1155
 
       this.generateTokenElement(
         tokenToPass,
@@ -184,7 +205,7 @@ const cardGenerator = {
 
       let tokenToPass = {
         tokenId: ownedTokens[i].tokenId,
-        name: fetchedData.name,
+        name: fetchedData.name || "GBM Whale",
         description: fetchedData.description,
         image: fetchedData.image,
       };
@@ -197,7 +218,11 @@ const cardGenerator = {
       );
     }
   },
-  generateTokensInEscrow1155: async function (_escrowed, _beneficiaries) {
+  generateTokensInEscrow1155: async function (
+    _escrowed,
+    _beneficiaries,
+    index
+  ) {
     let tokensOnSale = (
       await Promise.all(
         _beneficiaries.map(async (item, index) => {
@@ -233,7 +258,7 @@ const cardGenerator = {
 
       let tokenToPass = {
         tokenId: _escrowed[i].tokenId,
-        name: fetchedData.name,
+        name: collectionNames1155[index],
         description: fetchedData.description,
         image: fetchedData.image,
       };
@@ -242,7 +267,7 @@ const cardGenerator = {
         tokenToPass,
         "nft-escrowed",
         "Start new auction",
-        `createNewAuction(${_escrowed[i].tokenId}, 'ERC1155')`,
+        `createNewAuction(${_escrowed[i].tokenId}, 'ERC1155', ${index})`,
         _escrowed[i].amount
       );
     }
@@ -265,7 +290,7 @@ const cardGenerator = {
 
       let tokenToPass = {
         tokenId: ownedTokens[i].tokenId,
-        name: fetchedData.name,
+        name: fetchedData.name || "GBM Whale",
         description: fetchedData.description,
         image: fetchedData.image,
       };
@@ -278,9 +303,8 @@ const cardGenerator = {
       );
     }
   },
-  generateTokensOwned1155: async function (_tokens) {
+  generateTokensOwned1155: async function (_tokens, index) {
     let ownedTokens = _tokens.filter((item) => item.amount > 0);
-
     for (i = 0; i < ownedTokens.length; i++) {
       let fetchedData = await (
         await fetch(`/whale/${ownedTokens[i].tokenId}/json`)
@@ -288,7 +312,7 @@ const cardGenerator = {
 
       let tokenToPass = {
         tokenId: ownedTokens[i].tokenId,
-        name: fetchedData.name,
+        name: collectionNames1155[index],
         description: fetchedData.description,
         image: fetchedData.image,
       };
@@ -297,7 +321,7 @@ const cardGenerator = {
         tokenToPass,
         "nft-owned",
         "Put in NFT Contract Drop",
-        `sendToEscrow(${ownedTokens[i].tokenId})`,
+        `sendToEscrow1155(${ownedTokens[i].tokenId}, ${index})`,
         ownedTokens[i].amount
       );
     }
@@ -322,36 +346,37 @@ const cardGenerator = {
             _amount !== undefined
               ? `<div style="color: var(--primary); font-weight: 400">${_amount}x&nbsp;</div>`
               : ""
-          }GBM Whale #${_token.tokenId}</div>
+          }${_token.name} #${_token.tokenId}</div>
           <div class="nft-company">
               <img class="nft-company-image" src="images/hardhat.svg">
               <div class="nft-company-name">GBM</div>
           </div>
           <div class="flex-row" style="margin-top: 15px;">
           ${
-          //   _amount !== undefined && _className == 'nft-escrowed' ? `<button
-          //   class="gbm-btn quantity-control"
-          //   onclick="changeQuantity(-1)"
-          //   style="margin-left: 10px;"
-          // >
-          //   -
-          // </button>
-          // <div>
-          //   <input
-          //     id="quantity-input"
-          //     class="gbm-input-boxed quantity-box"
-          //     type="text"
-          //     value="1"
-          //     disabled
-          //   />
-          // </div>
-          // <button
-          //   class="gbm-btn quantity-control"
-          //   onclick="changeQuantity(1)"
-          // >
-          //   +
-          // </button>` : ''
-        ''}
+            //   _amount !== undefined && _className == 'nft-escrowed' ? `<button
+            //   class="gbm-btn quantity-control"
+            //   onclick="changeQuantity(-1)"
+            //   style="margin-left: 10px;"
+            // >
+            //   -
+            // </button>
+            // <div>
+            //   <input
+            //     id="quantity-input"
+            //     class="gbm-input-boxed quantity-box"
+            //     type="text"
+            //     value="1"
+            //     disabled
+            //   />
+            // </div>
+            // <button
+            //   class="gbm-btn quantity-control"
+            //   onclick="changeQuantity(1)"
+            // >
+            //   +
+            // </button>` : ''
+            ""
+          }
           ${
             _buttonCallback !== "none"
               ? `<button class="gbm-btn nft-btn" onclick="${_buttonCallback}">${_buttonText}</button>`
@@ -392,10 +417,13 @@ function updateCounters() {
 }
 
 async function generateTokens() {
-  // const test = await tokenFetcher.getTokens();
-  const { tokens721, tokens1155 } = await tokenFetcher.getTokens();
+  let { tokens721, tokens1155 } = await tokenFetcher.getTokens();
+  collectionNames1155 = await tokenFetcher.getCollectionNames();
+  
+  console.log(tokens1155)
   const { uris721, owners721, escrowed721 } = tokens721;
-  const { owned1155, escrowed1155 } = tokens1155;
+  const owned1155All = tokens1155.map((contract) => contract.owned1155);
+  const escrowed1155All = tokens1155.map((contract) => contract.escrowed1155);
 
   tokenUris = uris721;
   const auctions = await getOngoingAuctions();
@@ -404,8 +432,8 @@ async function generateTokens() {
     beneficiaries,
     escrowed721,
     owners721,
-    escrowed1155,
-    owned1155
+    escrowed1155All,
+    owned1155All
   );
 }
 
@@ -435,18 +463,32 @@ const getAuctionBeneficiaries = async (saleIDs) =>
     })
   );
 
-async function createNewAuction(_tokenId, _tokenKind) {
-  location.href = `${window.location.protocol}//${window.location.host}/create?tokenId=${_tokenId}&tokenKind=${_tokenKind}`;
+async function createNewAuction(_tokenId, _tokenKind, _index) {
+  location.href = `${window.location.protocol}//${window.location.host}/create?tokenId=${_tokenId}&tokenKind=${_tokenKind}&contractIndex=${_index}`;
 }
 
 async function sendToEscrow(tokenId) {
-  await erc721contract.methods
+  await erc721contracts[0].methods
     .safeTransferFrom(window.ethereum.selectedAddress, diamondAddress, tokenId)
     .send({ from: window.ethereum.selectedAddress });
 }
 
+//TODO implement amount
+async function sendToEscrow1155(tokenId, index) {
+  await erc1155contracts[index].methods
+    .safeTransferFrom(
+      window.ethereum.selectedAddress,
+      diamondAddress,
+      tokenId,
+      1,
+      0
+    )
+    .send({ from: window.ethereum.selectedAddress });
+}
+
+//TODO apply for 1155
 function subscribeToTransfers() {
-  erc721contract.events
+  erc721contracts[0].events
     .Transfer({}, function (error, event) {
       // console.log(event);
     })
@@ -459,6 +501,22 @@ function subscribeToTransfers() {
       // console.log(event);
     })
     .on("error", console.error);
+
+  for (i = 0; i < erc1155contracts.length; i++) {
+    erc1155contracts[i].events
+      .TransferSingle({}, function (error, event) {
+        // console.log(event);
+      })
+      .on("data", async function (event) {
+        await generateTokens();
+        updateCounters();
+        toggleNFTView(currentView);
+      })
+      .on("changed", function (event) {
+        // console.log(event);
+      })
+      .on("error", console.error);
+  }
 }
 
 function redirectToAuction(number) {

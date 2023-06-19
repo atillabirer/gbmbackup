@@ -145,12 +145,7 @@
           </div>
           <div class="step-container">
             <div class="step-header">
-              Step 2: Token bundle distribution<button
-                class="gbm-btn sale-nav"
-                onclick="moveToStep(0)"
-              >
-                ←
-              </button>
+              Step 2: Token bundle distribution
             </div>
             <div class="step-option">
               <div
@@ -262,7 +257,7 @@
                 <div class="gbm-header step-option-label">
                   Token bundle distribution
                 </div>
-                <div class="gbm-subtitle distribution-text">Some Text Here</div>
+                <div id="token-dist" class="gbm-subtitle distribution-text">Some Text Here</div>
               </div>
               <button class="gbm-btn red width-limiter" onclick="moveToStep(2)">
                 Confirm distribution and mint NFTs
@@ -271,12 +266,7 @@
           </div>
           <div class="step-container">
             <div class="step-header">
-              Step 3: Auctions parameters<button
-                class="gbm-btn sale-nav"
-                onclick="moveToStep(1)"
-              >
-                ←
-              </button>
+              Step 3: Auctions parameters
             </div>
             <div class="step-option">
               <div class="gbm-header step-option-label">Currency</div>
@@ -284,19 +274,19 @@
                 <p class="step-description">
                   Go to admin panel to add other currencies.
                 </p>
-                <select id="select-currency" class="gbm-select width-limiter">
-                  <option value="ETH">Ether (ETH)</option>
-                  <option value="fETH">Fake Ether (fETH)</option>
-                </select>
+                <div class="width-limiter">
+                  <span id="select-currency" class="gbm-select"></span>
+                </div>
               </div>
             </div>
             <div class="step-option">
               <div class="gbm-header step-option-label">Starting Bid</div>
               <div class="step-option-fields">
                 <input
-                  id="token-for-sale"
-                  class="gbm-input-boxed width-limiter rounded"
+                  id="min-bid"
+                  class="gbm-input-boxed width-limiter"
                   type="text"
+                  value="1"
                 />
               </div>
             </div>
@@ -305,13 +295,22 @@
               <div class="step-option-fields">
                 <div class="gbm-radio width-limiter">
                   <label>
-                    <input type="radio" name="radio" checked />
+                    <input
+                      type="radio"
+                      name="radio2"
+                      onclick="creationFunctions.toggleStartDateSelection(false)"
+                      checked
+                    />
                     <div class="first-choice box">
                       <p>Now</p>
                     </div>
                   </label>
                   <label>
-                    <input type="radio" name="radio" />
+                    <input
+                      type="radio"
+                      name="radio2"
+                      onclick="creationFunctions.toggleStartDateSelection(true)"
+                    />
                     <div class="second-choice box">
                       <p>Later</p>
                     </div>
@@ -319,14 +318,31 @@
                 </div>
               </div>
             </div>
+            <div id="start-date-selector" class="left-column-option flex-row">
+              <div id="date-time-header">Date & time:</div>
+              <div class="flex-row opposite-ends">
+                <input
+                  class="gbm-time-picker"
+                  type="time"
+                  onchange="creationFunctions.generateBreakdown()"
+                />
+                <input
+                  class="gbm-date-picker"
+                  type="date"
+                  onchange="creationFunctions.generateBreakdown()"
+                />
+              </div>
+            </div>
             <div class="step-option">
               <div class="gbm-header step-option-label">Duration</div>
               <div class="step-option-fields">
-                <select id="select-duration" class="gbm-select width-limiter">
-                  <option value="1">24 Hours</option>
-                  <option value="2">7 Days</option>
-                </select>
-                <p class="step-description under width-limiter">
+                <div class="width-limiter">
+                  <span id="select-duration" class="gbm-select"></span>
+                </div>
+                <p
+                  id="time-specifics"
+                  class="step-description under width-limiter"
+                >
                   End date: Jun 01, 2023 at 12:00am UTC - 4 Hammer time: 20
                   minutes
                 </p>
@@ -335,11 +351,10 @@
             <div class="step-option">
               <div class="gbm-header step-option-label">GBM incentives</div>
               <div class="step-option-fields">
-                <select id="select-currency" class="gbm-select width-limiter">
-                  <option value="1">Low (0-1%)</option>
-                  <option value="2">Medium (1-10%)</option>
-                </select>
-                <p class="step-description under width-limiter">
+                <div class="width-limiter">
+                  <span id="select-incentive" class="gbm-select"></span>
+                </div>
+                <p id="incentive-specifics" class="step-description under width-limiter">
                   Bidders will make between 1% and 10% return on their bid. In
                   total, bidders will receive up to 15% of the winning bid.
                 </p>

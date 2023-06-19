@@ -598,3 +598,12 @@ input:checked + .gbm-slider:before {
   color: var(--primary);
   margin-top: 3rem;
 }
+
+@media only screen and (max-width: 600px) {
+  body {
+    margin: 0;
+  }
+  .flex-row {
+    flex-direction: column;
+  }
+}

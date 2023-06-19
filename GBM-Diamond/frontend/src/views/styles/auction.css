@@ -51,11 +51,17 @@
   margin: 50px 0;
   position: relative;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
+}
+
+.auction-status div { 
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
 .status-container {
   padding-right: 50px;
+  width: 50%
 }
 
 .label {
@@ -355,4 +361,37 @@
   font-size: medium;
   font-weight: 700;
   margin-bottom: 20px;
+}
+
+@media only screen and (max-width: 600px) {
+  * {
+    font-size: medium;
+  }
+
+  .token-name {
+    font-weight: 400;
+  }
+
+  .status-container {
+    padding-right: 10px;
+    width: 50%;
+  }
+  
+  .label {
+    font-size: medium;
+  }
+  
+  .info-value {
+    padding: 20px 0;
+    font-size: large;
+    font-weight: bolder;
+  }
+
+  #bids-disabled-upper-msg {
+    font-size: small;
+  }
+
+  #bids-disabled-lower-msg {
+    font-size: small;
+  }
 }

@@ -26,8 +26,8 @@
 }
 
 .step-description {
+  font-family: inherit;
   color: white;
-  font-style: normal;
   font-weight: 400;
   font-size: 16px;
   line-height: 25px;
@@ -58,7 +58,6 @@
 }
 
 .metadata-json {
-  font-family: "Roboto", sans-serif;
   font-size: medium;
   resize: none;
   height: 390px;
@@ -82,4 +81,19 @@
 
 .sale-nav {
   margin-left: 10px;
+}
+
+.metadata-trigger {
+  font-family: inherit;
+}
+
+#date-time-header {
+  font-size: larger;
+  font-weight: lighter;
+  margin: auto 1rem auto 0;
+  color: var(--text);
+}
+
+#start-date-selector {
+  display: none;
 }

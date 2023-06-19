@@ -24,9 +24,16 @@ async function onScriptLoad() {
   const auction = await auctionFunctions.getAuctionInfo(saleId);
   _localPageAuction = auction;
   console.log(auction);
-  fetchedMetadata = await (
-    await fetch(`/whale/${auction.tokenID}/json`)
-  ).json();
+  try {
+    fetchedMetadata = await (
+      await fetch(`/whale/${auction.tokenID}/json`)
+    ).json();
+  } catch {
+    fetchedMetadata = await (
+      await fetch(`/whale/1/json`)
+    ).json();
+  }
+  
   await generateSaleElements(auction);
   populateNFTDetails(auction, fetchedMetadata);
   finalizeLoading();
@@ -81,8 +88,8 @@ async function generateSaleElements(_sale) {
 
   let collectionName =
     standards[_sale.tokenKind] === "ERC-721"
-      ? await erc721contract.methods.name().call()
-      : "GBM Whales 1155";
+      ? await erc721contracts[0].methods.name().call()
+      : await erc1155contracts[deploymentStatus.ERC1155.indexOf(_sale.tokenAddress)].methods.name().call();
   document.getElementsByClassName(
     "collection-and-id"
   )[0].innerHTML = `${collectionName}`;
@@ -90,7 +97,7 @@ async function generateSaleElements(_sale) {
     standards[_sale.tokenKind] === "ERC-1155"
       ? `<div style="color: var(--primary); margin-right: 10px;">${_sale.tokenAmount}x</div> `
       : ""
-  }GBM Whale #${_sale.tokenID}`;
+  } #${_sale.tokenID}`;
 
   document.getElementById("description-container").innerHTML = "Welcome to the GBM Whales collection, a captivating world of unique and adorable NFT whales. Each meticulously crafted with love and imagination, these one-of-a-kind digital creatures possess their own charm, vibrant colors, and delightful details. As proud owners of these scarce and authenticated NFTs, immerse yourself in the magic of these cute whales, connect with a passionate community, and embark on an enchanting journey filled with wonder and joy."
     // fetchedMetadata.description;
@@ -139,7 +146,7 @@ async function generateSaleElements(_sale) {
 }
 
 async function populateNFTDetails(_sale, _metadata) {
-  let tokenURI = await erc721contract.methods.tokenURI(_sale.tokenID).call();
+  let tokenURI = await erc721contracts[0].methods.tokenURI(_sale.tokenID).call();
 
   document.getElementById("details-token-id").innerHTML = _sale.tokenID;
   document.getElementById("details-mint-date").innerHTML = "-";
@@ -147,7 +154,7 @@ async function populateNFTDetails(_sale, _metadata) {
     standards[_sale.tokenKind];
   document.getElementById("details-blockchain").innerHTML = "Local Hardhat";
   document.getElementById("details-smart-contract").innerHTML =
-    deploymentStatus.ERC721[0]; //TODO pick the correct contract
+    _sale.tokenAddress
   document.getElementById(
     "details-token-uri"
   ).innerHTML = `${tokenURI.substring(0, 25)}...${tokenURI.substring(

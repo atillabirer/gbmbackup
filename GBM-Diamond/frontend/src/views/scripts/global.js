@@ -1,14 +1,15 @@
 let deploymentStatus = localStorage.getItem("deploymentStatus");
 let web3;
+let abis;
 let gbmContracts;
-let erc721contract;
-let erc721contractAddress;
-let erc1155contract;
-let erc1155contractAddress;
+let erc721contracts;
+let erc721contractAddresses;
+let erc1155contracts;
+let erc1155contractAddresses;
 let diamondAddress;
 let metamaskEnabled;
 let metamaskTrigger;
-let logo = './images/gbm-logo.png';
+let logo = "./images/gbm-logo.png";
 
 // Functions to run on page load
 
@@ -26,8 +27,8 @@ const pageInitializer = {
     if (!deploymentStatus) return;
     deploymentStatus = JSON.parse(deploymentStatus);
     diamondAddress = deploymentStatus.deployedFacets["Diamond"];
-    erc721contractAddress = deploymentStatus.ERC721[0];
-    erc1155contractAddress = deploymentStatus.ERC1155[0];
+    erc721contractAddresses = deploymentStatus.ERC721;
+    erc1155contractAddresses = deploymentStatus.ERC1155;
   },
   loadCustomCss: function () {
     if (!deploymentStatus) return;
@@ -203,18 +204,20 @@ const pageInitializer = {
     }
   },
   loadContracts: async function () {
-    let abis = await (await fetch("../config/abis.json")).json();
+    abis = await (await fetch("../config/abis.json")).json();
 
     web3 = new Web3(window.ethereum);
     gbmContracts = new web3.eth.Contract(abis["gbm"], diamondAddress);
-    erc721contract = new web3.eth.Contract(
-      abis["erc721"],
-      erc721contractAddress
-    );
-    erc1155contract = new web3.eth.Contract(
-      abis["erc1155"],
-      erc1155contractAddress
-    );
+    erc721contracts = erc721contractAddresses
+      ? erc721contractAddresses.map(
+          (_address) => new web3.eth.Contract(abis["erc721"], _address)
+        )
+      : undefined;
+    erc1155contracts = erc1155contractAddresses
+      ? erc1155contractAddresses.map(
+          (_address) => new web3.eth.Contract(abis["erc1155"], _address)
+        )
+      : undefined;
   },
   checkDeploymentState: function () {
     if (deploymentStatus?.finished) this.flipVisibility();
@@ -331,7 +334,13 @@ async function chainZigZag() {
 /*
 
 */
-function generateSelectDropdown(_spanId, _options, _display, _onclick, _checkOverride) {
+function generateSelectDropdown(
+  _spanId,
+  _options,
+  _display,
+  _onclick,
+  _checkOverride
+) {
   var gbmCSS = window.document.styleSheets[0];
   const selectContainer = document.getElementById(_spanId);
   selectContainer.innerHTML = "";
@@ -344,9 +353,9 @@ function generateSelectDropdown(_spanId, _options, _display, _onclick, _checkOve
   for (i = 0; i < _options.length; i++) {
     selectContainer.innerHTML += `<input type="radio" name="${_spanId}" index="${i}" value="${
       _options[i]
-    }" id="${_options[i]}" ${i === (_checkOverride ?? 0) ? "checked" : ""}/><label for="${
-      _options[i]
-    }">${_display[i]}</label>`;
+    }" id="${_options[i]}" ${
+      i === (_checkOverride ?? 0) ? "checked" : ""
+    }/><label for="${_options[i]}">${_display[i]}</label>`;
   }
 
   document.getElementById(_spanId).onclick = function (e) {
@@ -456,9 +465,9 @@ const auctionFunctions = {
       duration: await gbmContracts.methods
         .getSale_GBMPreset_AuctionDuration(_saleID)
         .call(),
-      startingBid: web3.utils.fromWei(await gbmContracts.methods
-        .getSale_StartingBid(_saleID)
-        .call()),
+      startingBid: web3.utils.fromWei(
+        await gbmContracts.methods.getSale_StartingBid(_saleID).call()
+      ),
     };
   },
   getNumberOfBids: async function (_saleId) {
@@ -517,6 +526,147 @@ const auctionFunctions = {
     await gbmContracts.methods
       .claim(_saleId)
       .send({ from: window.ethereum.selectedAddress });
+  },
+};
+
+const convertToMinutes = (_secondsString) => parseInt(_secondsString) / 60;
+const convertToPercentage = (_valueInK) => parseInt(_valueInK) / 1000;
+
+const creationFunctions = {
+  pageInitSpecifics: async function () {
+    document.getElementById("start-date-selector").style.display = "none";
+    await this.populatePresets();
+    this.generateBreakdown();
+  },
+  populatePresets: async function () {
+    const { names, presets } = await this.getPresets();
+    gbmPresetNames = names;
+    gbmPresets = presets;
+
+    let presetsFromDeployment = Object.values(
+      deploymentStatus.registeredPresets
+    ).splice(2);
+
+    // let incentivePresets = names.map((_element) => _element.split("_")[0]);
+    let incentivePresets = presetsFromDeployment.map(
+      (_element) => _element.name.split("_")[0]
+    );
+    let incentivePresetNames = presetsFromDeployment.map(
+      (_element) => _element.displayName
+    );
+    // let timePresets = names.map((_element) => _element.split("_")[1]);
+    let timePresets = presetsFromDeployment.map(
+      (_element) => _element.name.split("_")[1]
+    );
+    let timePresetNames = presetsFromDeployment.map(
+      (_element) => _element.displayTime
+    );
+
+    incentivePresets = [...new Set(incentivePresets)];
+    incentivePresetNames = [...new Set(incentivePresetNames)];
+    timePresets = [...new Set(timePresets)];
+    timePresetNames = [...new Set(timePresetNames)];
+
+    generateSelectDropdown(
+      "select-duration",
+      timePresets,
+      timePresetNames,
+      this.generateBreakdown
+    );
+    generateSelectDropdown(
+      "select-incentive",
+      incentivePresets,
+      incentivePresetNames,
+      this.generateBreakdown,
+      2
+    );
+  },
+  getPresets: async function () {
+    const presetAmount = await gbmContracts.methods
+      .getGBMPresetsAmount()
+      .call();
+
+    const presetsArray = Promise.all(
+      [...Array(parseInt(presetAmount) + 1).keys()].map(
+        async (item, index) =>
+          await gbmContracts.methods.getGBMPreset(index).call()
+      )
+    );
+    const presetsNames = Promise.all(
+      [...Array(parseInt(presetAmount) + 1).keys()].map(
+        async (item, index) =>
+          await gbmContracts.methods.getGBMPreset_Name(index).call()
+      )
+    );
+
+    return {
+      presets: (await presetsArray).slice(1),
+      names: (await presetsNames).slice(1),
+    };
+  },
+  generateBreakdown: function () {
+    let selectDuration = document.getElementById("select-duration");
+    let selectIncentive = document.getElementById("select-incentive");
+
+    let preset = Object.values(deploymentStatus.registeredPresets)
+      .splice(2)
+      .find(
+        (element) =>
+          element.name ===
+          `${selectIncentive.getAttribute(
+            "selected-value"
+          )}_${selectDuration.getAttribute("selected-value")}`
+      );
+
+    let startTime = new Date();
+
+    if (
+      document.getElementById("start-date-selector").style.display !== "none"
+    ) {
+      let timePicker =
+        document.getElementsByClassName("gbm-time-picker")[0].value;
+      let datePicker =
+        document.getElementsByClassName("gbm-date-picker")[0].value;
+      let time = timePicker === "" ? ["23", "00"] : timePicker.split(":");
+      let date =
+        datePicker === ""
+          ? [startTime.getFullYear(), startTime.getMonth(), startTime.getDate()]
+          : datePicker.split("-");
+
+      startTime = new Date(
+        parseInt(date[0]),
+        parseInt(date[1]) - 1,
+        parseInt(date[2]),
+        parseInt(time[0]),
+        parseInt(time[1])
+      );
+    }
+    document.getElementById("time-specifics").innerHTML = `
+        End date: ${new Date(
+          startTime.getTime() + parseInt(preset.auctionDuration) * 1000
+        ).toUTCString()} </br>
+        Hammer time: ${convertToMinutes(
+          preset.hammerTimeDuration
+        )} minutes <div class="gbm-tooltip">ⓘ
+            <span class="gbm-tooltip-text">Any bid placed in the last 20mins of the auction will reset the auction timer to 20mins. This gives everyone a chance to keep bidding and win.</span>
+        </div>
+    `;
+
+    document.getElementById("incentive-specifics").innerHTML = `
+        Bidders will make between ${convertToPercentage(
+          preset.incentiveMin
+        )}% and ${convertToPercentage(
+      preset.incentiveMax
+    )}% return on their bid. In total, bidders will receive up to ${convertToPercentage(
+      preset.potentialTotal
+    )}% of the winning bid.
+    `;
+  },
+  toggleStartDateSelection: function (_visible) {
+    document.getElementById("start-date-selector").style.display = _visible
+      ? "flex"
+      : "none";
+    this.generateBreakdown();
   },
 };
 

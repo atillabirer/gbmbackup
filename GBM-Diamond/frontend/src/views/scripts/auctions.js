@@ -85,6 +85,7 @@ async function getAuctionInfoMinimal(saleID) {
   return {
     saleKind: await gbmContracts.methods.getSale_SaleKind(saleID).call(),
     tokenID: await gbmContracts.methods.getSale_TokenID(saleID).call(),
+    tokenAddress: await gbmContracts.methods.getSale_TokenAddress(saleID).call(),
     tokenAmount: await gbmContracts.methods.getSale_TokenAmount(saleID).call(),
     tokenKind: await gbmContracts.methods.getSale_TokenKind(saleID).call(),
     currencyName: await gbmContracts.methods
@@ -109,13 +110,17 @@ async function getAuctionInfoMinimal(saleID) {
   };
 }
 
-function generateAuctionElement(auction, index) {
+async function generateAuctionElement(auction, index) {
   const auctionsContainer = document.getElementsByClassName(
     "auction-grid-rows-container"
   );
   const auctionEl = document.createElement("div");
   auctionEl.classList.add(`auction-${index}`);
 
+  console.log(erc1155contracts)
+  console.log(auction.tokenAddress)
+  console.log(deploymentStatus.ERC1155.indexOf(auction.tokenAddress))
+  await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()
   const auctionInnerHTML = `
         <div class="auction-grid-row auction-grid-item">
             <div class="auction-item-flex"><img src="/whale/${
@@ -124,7 +129,7 @@ function generateAuctionElement(auction, index) {
             <div>
                 <div class="auction-item-name">${
                   auction.tokenAmount > 1 ? `${auction.tokenAmount}x ` : ""
-                }GBM Whale #${auction.tokenID}</div>
+                }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
                 <div class="auction-item-flex subtitle"><img src="images/hardhat.svg" loading="lazy" alt="" class="company-icon">
                 <div class="text-block">GBM</div>
                 </div>

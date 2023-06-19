@@ -1,6 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const tokenId = urlParams.get("tokenId");
 const tokenStandard = urlParams.get("tokenKind");
+const contractIndex = urlParams.get("contractIndex");
 let latestAuction;
 let gbmPresetNames;
 let gbmPresets;
@@ -96,9 +97,6 @@ async function getPresets() {
     names: (await presetsNames).slice(1),
   };
 }
-
-const convertToMinutes = (_secondsString) => parseInt(_secondsString) / 60;
-const convertToPercentage = (_valueInK) => parseInt(_valueInK) / 1000;
 
 function generateBreakdown() {
   let selectDuration = document.getElementById("select-duration");
@@ -206,7 +204,7 @@ async function createAuctionAndRedirect() {
   if (tokenStandard !== "ERC1155") {
     await startNewAuction721Custom(
       tokenId,
-      erc721contractAddress,
+      erc721contractAddresses[0],
       presetNumber,
       startTime,
       0,
@@ -216,7 +214,7 @@ async function createAuctionAndRedirect() {
   } else {
     await startNewAuction1155Custom(
       tokenId,
-      erc1155contractAddress,
+      erc1155contractAddresses[contractIndex],
       parseInt(document.getElementById("quantity-input").value),
       presetNumber,
       startTime,
@@ -321,7 +319,6 @@ function changeQuantity(_toAdd) {
 }
 
 async function get1155TokenAvailableQuantity() {
-  console.log(gbmContracts);
   const auctions = await getOngoingAuctions();
   const beneficiaries = await getAuctionBeneficiaries(auctions);
   let tokensOnSale = (
@@ -353,7 +350,7 @@ async function get1155TokenAvailableQuantity() {
   let escrowedQuantity = parseInt(
     await gbmContracts.methods
       .getERC1155Token_depositor(
-        erc1155contractAddress,
+        erc1155contractAddresses[contractIndex],
         tokenId,
         window.ethereum.selectedAddress
       )
