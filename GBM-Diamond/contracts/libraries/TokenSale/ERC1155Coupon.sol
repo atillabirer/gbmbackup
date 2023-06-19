@@ -107,7 +107,7 @@ contract ERC1155Coupon is IERC1155, IERC165 {
             //Adjusting the balances
             balanceOfVar[_from][_ids[tmp]] = balanceOfVar[_from][_ids[tmp]] - _values[tmp];
             balanceOfVar[_to][_ids[tmp]] = balanceOfVar[_to][_ids[tmp]] + _values[tmp];
-            tmp++:
+            tmp++;
         }
 
         //Emitting the event
