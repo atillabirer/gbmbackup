@@ -121,7 +121,6 @@ async function connectToDeployer() {
   if(document.getElementById("select-network").getAttribute("selected-value") == "hardhat"){
     deploymentSteps = [("d_h_b_" + window.ethereum.selectedAddress)].concat(deploymentSteps);
   }
-  
 
 
   let step = deploymentStatus ? deploymentStatus.commandHistory.length : 0;
