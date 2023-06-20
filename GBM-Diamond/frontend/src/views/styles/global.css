@@ -5,9 +5,9 @@
   --background: #085f63;
   --text: white;
   --border-secondary: #49beb74d;
-  --selection: #FACF5A;
-  --disabled: #C4C4C4;
-  --disabled-text: #F1F1F1;
+  --selection: #facf5a;
+  --disabled: #c4c4c4;
+  --disabled-text: #f1f1f1;
 }
 
 @import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
@@ -265,6 +265,7 @@ input::-webkit-input-placeholder {
 }
 
 .gbm-slider {
+  min-width: 60px;
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -540,6 +541,10 @@ input:checked + .gbm-slider:before {
   padding-bottom: 2rem;
 }
 
+.mt-1 {
+  margin-top: 1rem;
+}
+
 .mt-2 {
   margin-top: 2rem;
 }
@@ -553,6 +558,11 @@ input:checked + .gbm-slider:before {
 }
 
 .flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-row-mobile-friendly {
   display: flex;
   flex-direction: row;
 }
@@ -599,11 +609,32 @@ input:checked + .gbm-slider:before {
   margin-top: 3rem;
 }
 
-@media only screen and (max-width: 600px) {
+.description-display-mobile {
+  display: none;
+}
+
+@media only screen and (max-width: 768px) {
   body {
     margin: 0;
   }
   .flex-row {
     flex-direction: column;
+  }
+  .nav-metamask {
+    display: none;
+  }
+  .nav-bottom-row {
+    display: none;
+  }
+  .nav-bar {
+    padding-bottom: 0;
+  }
+  .footer {
+    /* width: 100%; */
+    text-align: left;
+    margin: 5rem 0 2rem 0.5rem;
+  }
+  .copyright {
+    font-size: 14px;
   }
 }
