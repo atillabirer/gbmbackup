@@ -82,10 +82,51 @@ async function getAuctionInfoMinimal(saleID) {
     .getSale_HighestBid_Value(saleID)
     .call();
 
+  let tokenAddressFetched = await gbmContracts.methods
+    .getSale_TokenAddress(saleID)
+    .call();
+  let tokenIDFetched = await gbmContracts.methods
+    .getSale_TokenID(saleID)
+    .call();
+  let imageLink = tokenImages[tokenAddressFetched];
+  if (imageLink === undefined) {
+    if (deploymentStatus.ERC1155.indexOf(tokenAddressFetched) > 0) {
+      let tokenContract = new web3.eth.Contract(
+        abis["tokenCoupon"],
+        tokenAddressFetched
+      );
+      let tokenURI = await tokenContract.methods.tokenURI(0).call();
+      let fetched = await getNFTAndCacheMedia(tokenURI);
+      tokenImages[tokenAddressFetched] = fetched.image;
+      imageLink = tokenImages[tokenAddressFetched];
+    } else {
+      tokenImages[
+        `${tokenAddressFetched}-${tokenIDFetched}`
+      ] = `/whale/${tokenIDFetched}/image`;
+      imageLink = tokenImages[`${tokenAddressFetched}-${tokenIDFetched}`];
+    }
+  }
+  let tokenName = tokenNames[tokenAddressFetched];
+  if (tokenName === undefined) {
+    if (deploymentStatus.ERC1155.indexOf(tokenAddressFetched) > -1) {
+      tokenName = await erc1155contracts[
+        deploymentStatus.ERC1155.indexOf(tokenAddressFetched)
+      ].methods
+        .name()
+        .call();
+      tokenNames[tokenAddressFetched] = tokenName;
+    } else {
+      tokenNames[tokenAddressFetched] = `GBM Whales`;
+      tokenName = `GBM Whales`;
+    }
+  }
+
   return {
     saleKind: await gbmContracts.methods.getSale_SaleKind(saleID).call(),
-    tokenID: await gbmContracts.methods.getSale_TokenID(saleID).call(),
-    tokenAddress: await gbmContracts.methods.getSale_TokenAddress(saleID).call(),
+    tokenID: tokenIDFetched,
+    tokenImage: imageLink,
+    tokenAddress: tokenAddressFetched,
+    tokenName,
     tokenAmount: await gbmContracts.methods.getSale_TokenAmount(saleID).call(),
     tokenKind: await gbmContracts.methods.getSale_TokenKind(saleID).call(),
     currencyName: await gbmContracts.methods
@@ -117,20 +158,16 @@ async function generateAuctionElement(auction, index) {
   const auctionEl = document.createElement("div");
   auctionEl.classList.add(`auction-${index}`);
 
-  // console.log(erc1155contracts)
-  // console.log(auction.tokenAddress)
-  // console.log(deploymentStatus.ERC1155.indexOf(auction.tokenAddress))
-  // await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()
   const auctionInnerHTML = `
         <div class="auction-grid-row auction-grid-item">
-            <div class="auction-item-flex"><img src="/whale/${
-              auction.tokenID
-            }/image" loading="lazy" alt="" class="nft-image">
+            <div class="auction-item-flex"><img src="${
+              auction.tokenImage
+            }" loading="lazy" alt="" class="nft-image">
             <div>
                 <div class="auction-item-name">${
                   auction.tokenAmount > 1 ? `${auction.tokenAmount}x ` : ""
-                // }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
-                }GBM Whale #${auction.tokenID}</div>
+                  // }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
+                }${auction.tokenName} #${auction.tokenID}</div>
                 <div class="auction-item-flex subtitle"><img src="images/hardhat.svg" loading="lazy" alt="" class="company-icon">
                 <div class="text-block">GBM</div>
                 </div>
