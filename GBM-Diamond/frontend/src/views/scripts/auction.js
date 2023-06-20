@@ -119,7 +119,7 @@ async function generateSaleElements(_sale) {
   });
 
   document.getElementById("incentive-box-type").innerHTML =
-    presetDetected === undefined ? "English" : presetDetected.name.split("_")[0];
+    presetDetected === undefined ? "Custom" : presetDetected.name.split("_")[0];
 
   minimumBid =
     parseFloat(_sale.highestBidValue) !== 0
@@ -138,9 +138,23 @@ async function generateSaleElements(_sale) {
       parseFloat(_sale.gbmPreset.incentiveMin) / 100
     } ${_localPageAuction.currencyName}%</strong> if outbid.`;
 
+
+  let imageLink;
+  if (deploymentStatus.ERC1155.indexOf(_sale.tokenAddress) > 0) {
+    let tokenContract = new web3.eth.Contract(
+      abis["tokenCoupon"],
+      _sale.tokenAddress
+    );
+    let tokenURI = await tokenContract.methods.tokenURI(0).call();
+    let fetched = await getNFTAndCacheMedia(tokenURI);
+    imageLink = fetched.image;
+  } else {
+    imageLink = `/whale/${_sale.tokenID}/image`;
+  }
+
   document.getElementsByClassName(
     "media-container"
-  )[0].style = `background-image: url('/whale/${_sale.tokenID}/image')`;
+  )[0].style = `background-image: url('${imageLink}')`;
 
   startElementCountdownTimer(_localPageSale);
 }

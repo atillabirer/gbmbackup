@@ -98,7 +98,7 @@ function initPage() {
     for (i = 0; i < distribution[0].length; i++) {
       distDisplay.innerHTML += `Bundle #${i + 1}: ${
         distribution[1][i]
-      } copies of Token #${distribution[0][i]} </br>`;
+      } copies of a coupon for #${distribution[0][i]} tokens </br>`;
       totalation += distribution[0][i] * distribution[1][i];
       aucCount += distribution[1][i];
     }
@@ -183,7 +183,7 @@ const tokenSaleProcess = {
       arguments: [
         document.getElementById("token-name").value,
         document.getElementById("token-symbol").value,
-        "not_actual_uri",
+        document.getElementById("token-uri").value,
         !document.getElementById("disable-transferability").checked,
         diamondAddress,
       ],

@@ -7,16 +7,37 @@ else initDeploymentPage();
 
 generateSelectDropdown(
   "select-network",
-  ["Local Hardhat", "Ethereum Mainnet"],
-  ["Local Hardhat", "Ethereum Mainnet"],
+  ["hardhat", "mainnet"],
+  ["Local Hardhat", "Live Blockchain - 👷 ⚙️ 🦊"],
   () => {}
 );
-generateSelectDropdown(
-  "select-version",
-  ["Demo Showcase", "NFT Drop (Primary Market Only)"],
-  ["Demo Showcase", "NFT Drop (Primary Market Only)"],
-  () => {}
-);
+
+
+
+
+async function generateTheDeployOptions(){
+  let deploymentConf = await (
+    await fetch("../config/deploymentConf.json")
+  ).json();
+
+  console.log(deploymentConf);
+
+  let idList = Object.keys(deploymentConf);
+  let dispNames = [];
+
+  for(let i = 0; i < idList.length; i++){
+    dispNames[i] = deploymentConf[idList[i]].displayName;
+  }
+
+  generateSelectDropdown(
+    "select-version",
+    idList,
+    dispNames,
+    () => {}
+  );
+}
+
+generateTheDeployOptions();
 
 async function initDeploymentPage() {
   // If logged on to metamask, populate the deployer address
@@ -91,14 +112,16 @@ async function connectToDeployer() {
     await fetch("../config/deploymentConf.json")
   ).json();
 
+  
   const webSocket = new WebSocket("ws://localhost:443/");
 
-  let deploymentSteps = deploymentConf["demo"].deploymentSteps;
+  let deploymentSteps = deploymentConf[document.getElementById("select-version").getAttribute("selected-value")].deploymentSteps;
 
-  deploymentSteps[0] = deploymentSteps[0].replace(
-    "metamask",
-    window.ethereum.selectedAddress
-  );
+
+  if(document.getElementById("select-network").getAttribute("selected-value") == "hardhat"){
+    deploymentSteps = [("d_h_b_" + window.ethereum.selectedAddress)].concat(deploymentSteps);
+  }
+
 
   let step = deploymentStatus ? deploymentStatus.commandHistory.length : 0;
 

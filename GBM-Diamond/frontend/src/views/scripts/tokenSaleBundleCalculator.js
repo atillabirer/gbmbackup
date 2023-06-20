@@ -73,14 +73,31 @@ function getSalesDistributionMath(_totalTokens, _distrib, _whale_factor){
         reminder_tokens -= localAmount * _distrib[i];
     }
 
-    //Adding the leftover to the smallest banknote
+    /*
+        //Adding the leftover to the cascade of banknotes
     if(reminder_tokens != 0){
         let localAmount = Math.floor( reminder_tokens / _distrib[0]) ;
         saleBundling[saleBundling.length -1] = {"value":_distrib[0], "amount":(localAmount + saleBundling[saleBundling.length -1].amount)};
         reminder_tokens -= localAmount;
+    }*/
+
+    //Adding the leftover to as high banknote as possible, by increasing the whale factor for every tier we go trough again
+    let filler = 0;
+    while(reminder_tokens >= _distrib[0]){
+        filler++;
+        let localWhale = _whale_factor;
+        for(let i = _distrib.length-1; i >= 0; i--){
+            localWhale += (filler * _whale_factor/_distrib.length);
+            if(localWhale > 1){
+                localWhale = 1;
+            }
+            let localAmount = Math.floor((localWhale * reminder_tokens / _distrib[i]));
+            saleBundling[saleBundling.length - i - 1] = ({"value":_distrib[i], "amount":(localAmount + saleBundling[saleBundling.length - i - 1].amount)});
+            reminder_tokens -= localAmount * _distrib[i];
+    
+        }
     }
     
-    //console.log(saleBundling);
     return( {saleBundling, reminder_tokens});
 }
 

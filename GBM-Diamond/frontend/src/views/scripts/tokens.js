@@ -18,14 +18,13 @@ Array.from(document.getElementsByClassName("filter-btn")).forEach(
 
 const tokenFetcher = {
   getTokens: async function () {
-
     // tokens1155 = (await Promise.allSettled(erc1155contracts.map(
     //   async (item, index) => await this.get1155Tokens(index)
     // ))).map(result => result.value);
 
     return {
       tokens721: await this.get721Tokens(),
-      tokens1155: [await this.get1155Tokens(0)]
+      tokens1155: [await this.get1155Tokens(0)],
     };
   },
   get721Tokens: async function () {
@@ -132,6 +131,9 @@ const cardGenerator = {
         return {
           owner: item.beneficiary,
           saleId: item.saleId,
+          tokenAddress: await gbmContracts.methods
+            .getSale_TokenAddress(item.saleId)
+            .call(),
           tokenId: await gbmContracts.methods
             .getSale_TokenID(item.saleId)
             .call(),
@@ -144,12 +146,14 @@ const cardGenerator = {
         };
       })
     );
-    // .filter(
-    //   (item) =>
-    //     item.owner.toLowerCase() ===
-    //       window.ethereum.selectedAddress.toLowerCase() &&
-    //     item.tokenKind === "0x73ad2146"
-    // );
+
+    console.log(ownedTokens);
+    ownedTokens = ownedTokens.filter(
+      (item) =>
+        item.owner.toLowerCase() ===
+          window.ethereum.selectedAddress.toLowerCase() &&
+        deploymentStatus.ERC1155.indexOf(item.tokenAddress) < 1
+    );
 
     for (i = 0; i < ownedTokens.length; i++) {
       // let fetchedData = await getNFTAndCacheMedia(
@@ -347,12 +351,13 @@ const cardGenerator = {
               ? `<div style="color: var(--primary); font-weight: 400">${_amount}x&nbsp;</div>`
               : ""
           }${_token.name} #${_token.tokenId}</div>
-          <div class="nft-company">
-              <img class="nft-company-image" src="images/hardhat.svg">
-              <div class="nft-company-name">GBM</div>
-          </div>
           <div class="flex-row" style="margin-top: 15px;">
           ${
+            //     <div class="nft-company">
+            //     <img class="nft-company-image" src="images/hardhat.svg">
+            //     <div class="nft-company-name">GBM</div>
+            // </div>
+
             //   _amount !== undefined && _className == 'nft-escrowed' ? `<button
             //   class="gbm-btn quantity-control"
             //   onclick="changeQuantity(-1)"
@@ -419,8 +424,8 @@ function updateCounters() {
 async function generateTokens() {
   let { tokens721, tokens1155 } = await tokenFetcher.getTokens();
   collectionNames1155 = await tokenFetcher.getCollectionNames();
-  
-  console.log(tokens1155)
+
+  console.log(tokens1155);
   const { uris721, owners721, escrowed721 } = tokens721;
   const owned1155All = tokens1155.map((contract) => contract.owned1155);
   const escrowed1155All = tokens1155.map((contract) => contract.escrowed1155);

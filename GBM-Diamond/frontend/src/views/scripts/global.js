@@ -9,6 +9,8 @@ let erc1155contractAddresses;
 let diamondAddress;
 let metamaskEnabled;
 let metamaskTrigger;
+let tokenImages = {};
+let tokenNames = {};
 let logo = "./images/gbm-logo.png";
 
 // Functions to run on page load
