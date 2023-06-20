@@ -21,10 +21,10 @@ generateSelectDropdown(
 initPage();
 
 function initPage() {
-  document.getElementById("smallest-bundle").value = 50;
-  document.getElementById("smallest-bundle-display").value = 50;
-  document.getElementById("biggest-bundle").value = 50;
-  document.getElementById("biggest-bundle-display").value = 50;
+  document.getElementById("smallest-bundle").value = 15;
+  document.getElementById("smallest-bundle-display").value = 1;
+  document.getElementById("biggest-bundle").value = 21;
+  document.getElementById("biggest-bundle-display").value = 100;
   document.getElementById("whale-factor").value = 50;
   document.getElementById("whale-factor-display").value = 50;
 
@@ -35,11 +35,22 @@ function initPage() {
   );
   document.getElementById("smallest-bundle").onchange = function (event) {
     document.getElementById("smallest-bundle-display").value =
-      event.target.value;
+      convertStepToValue(event.target.value);
+    if(parseInt(document.getElementById("biggest-bundle").value) < parseInt(event.target.value)){
+      document.getElementById("biggest-bundle").value = event.target.value;
+      document.getElementById("biggest-bundle-display").value =
+        convertStepToValue(event.target.value);
+    }
   };
   document.getElementById("biggest-bundle").onchange = function (event) {
     document.getElementById("biggest-bundle-display").value =
-      event.target.value;
+      convertStepToValue(event.target.value);
+
+    if(parseInt(document.getElementById("smallest-bundle").value) > parseInt(event.target.value)){
+      document.getElementById("smallest-bundle").value = event.target.value;
+      document.getElementById("smallest-bundle-display").value =
+        convertStepToValue(event.target.value);
+    }
   };
   document.getElementById("whale-factor").onchange = function (event) {
     document.getElementById("whale-factor-display").value = event.target.value;
@@ -248,4 +259,17 @@ async function moveToStep(_step) {
   steps.forEach((_element) => _element.classList.remove("active"));
   steps[_step].classList.add("active");
   window.scrollTo({ left: 0, top: 200, behavior: "smooth" });
+}
+
+//Mapping faster than redoing the calcs
+let mappingStepis = [];
+for(let i = 0; i<=60; i+=3){
+  let exponent = Math.floor(i/3) - 5;
+  mappingStepis.push( 1.0 * (10 ** exponent));
+  mappingStepis.push( 2.0 * (10 ** exponent));
+  mappingStepis.push( 5.0 * (10 ** exponent));
+}
+
+function convertStepToValue(_step){
+  return mappingStepis[_step];
 }
