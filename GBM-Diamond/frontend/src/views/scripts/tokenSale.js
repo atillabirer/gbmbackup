@@ -94,16 +94,46 @@ function initPage() {
     distDisplay.innerHTML = "";
 
     let totalation = 0;
+    let aucCount = 0;
     for (i = 0; i < distribution[0].length; i++) {
       distDisplay.innerHTML += `Bundle #${i + 1}: ${
         distribution[1][i]
       } copies of Token #${distribution[0][i]} </br>`;
       totalation += distribution[0][i] * distribution[1][i];
+      aucCount += distribution[1][i];
     }
-    distDisplay.innerHTML += "</br> Total: " + totalation +" distributed out of " + saleNumber + " desired </br>"; 
+    distDisplay.innerHTML += "</br> Total: " + totalation +" distributed out of " + saleNumber + " desired sold over " + aucCount + " separate auctions</br>"; 
     if(totalation != saleNumber) {
       distDisplay.innerHTML += "⚠️ " + (saleNumber - totalation) + " tokens could not be fitted in a bundle. ⚠️  </br>";
     }
+    distDisplay.innerHTML += "</br></br>"
+
+    /* Plot stuff */
+    //let plot = Plot.rectY({length: 10000}, Plot.binX({y: "count"}, {x: Math.random})).plot();
+
+    let _plotData = [];
+    for(let i = 0; i < resu.saleBundling.length; i++){
+      _ids.push(resu.saleBundling[i].value);
+      _amounts.push(resu.saleBundling[i].amount);
+
+      _plotData.push({"bundleSize":resu.saleBundling[i].value, "shareOfTokens":(((resu.saleBundling[i].amount * resu.saleBundling[i].value)/saleNumber))})
+    }
+    let plot = Plot.plot({
+      width: 960,
+      height: 500,
+      y: {percent: true},
+      marks: [
+        Plot.barY(_plotData, {x: "bundleSize", y: "shareOfTokens", fill: "steelblue"}),
+        Plot.ruleY([0])
+      ]
+    })
+    plot.id = "plotted";
+    if(document.querySelector("#plotted") != null){
+      document.querySelector("#plotted").remove();
+    }
+    let div = document.querySelector("#the-plot");
+    div.append(plot);
+    
 
 
     document.getElementById("after-generation").hidden = false;
