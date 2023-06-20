@@ -117,3 +117,45 @@ h3 {
   padding: 10px;
   font-size: larger;
 }
+
+.configuration-default-preset {
+}
+
+.configuration-default-preset-header {
+  padding-bottom: 1.5rem;
+}
+
+.configuration-default-preset-group {
+  display: flex;
+  flex-direction: row;
+  padding: 0.25rem 0;
+  justify-content: space-between;
+}
+
+.configuration-default-preset-label {
+  font-size: large;
+  color: var(--text);
+  align-self: center;
+}
+
+.configuration-default-preset-input {
+  width: 45%;
+  height: 2.5rem;
+}
+
+.color-picker {
+  width: 7rem;
+}
+
+.color-preview {
+  height: 3rem;
+  width: 7rem;
+  border-radius: 3px;
+  border: 2px solid white;
+  background-color: transparent;
+  margin-left: 5px;
+}
+
+#logo-upload-success {
+  color: var(--primary);
+}

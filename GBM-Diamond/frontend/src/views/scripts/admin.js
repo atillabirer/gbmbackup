@@ -1,5 +1,3 @@
-onScriptLoad();
-
 let presetsLength = 0;
 
 async function onScriptLoad() {
@@ -10,70 +8,6 @@ async function onScriptLoad() {
   adminLabel.innerHTML = `GBM Admin: ${await getGBMAdmin()}`;
 
   await fetchPresets();
-}
-
-async function fetchPresets() {
-  const { names, presets } = await getPresets();
-  const presetContainer = document.getElementById("preset-container");
-
-  presetsLength = presets.length;
-
-  for (i = 0; i < presets.length; i++) {
-    const presetEl = document.createElement("div");
-    presetEl.classList.add("preset");
-
-    const presetInnerHTML = `
-        <div class="preset-id">${i + 1} - ${names[i].replace("_", " ")}</div>
-        <div class="separator"></div>
-        <div class="preset-field">
-            <div class="description">Auction Duration</div>
-            <input class="preset-input preset${i}" value="${
-      presets[i].auctionDuration
-    }"></input>
-        </div>
-        <div class="preset-field">
-            <div class="description">Cancellation Period Duration</div>
-            <input class="preset-input preset${i}" value="${
-      presets[i].cancellationPeriodDuration
-    }"></input>
-        </div>
-        <div class="preset-field">
-            <div class="description">Hammer Time Duration</div>
-            <input class="preset-input preset${i}" value="${
-      presets[i].hammerTimeDuration
-    }"></input>
-        </div>
-        <div class="preset-field">
-            <div class="description">Incentive Growth Multiplier</div>
-            <input class="preset-input preset${i}" value="${
-      presets[i].incentiveGrowthMultiplier
-    }"></input>
-        </div>
-        <div class="preset-field">
-            <div class="description">Incentive Max</div>
-            <input class="preset-input preset${i}" value="${
-      presets[i].incentiveMax
-    }"></input>
-        </div>
-        <div class="preset-field">
-            <div class="description">Incentive Min</div>
-            <input class="preset-input preset${i}" value="${
-      presets[i].incentiveMin
-    }"></input>
-        </div>
-        <div class="preset-field">
-            <div class="description">Step Min</div>
-            <input class="preset-input preset${i}" value="${
-      presets[i].stepMin
-    }"></input>
-        </div>
-        <button class="update-btn" onclick="callUpdatePreset('${
-          names[i]
-        }', ${i})">Update Preset</button>`;
-
-    presetEl.innerHTML = presetInnerHTML;
-    presetContainer.appendChild(presetEl);
-  }
 }
 
 async function callUpdatePreset(newName, index) {
@@ -106,32 +40,6 @@ async function callUpdatePreset(newName, index) {
   updateBtn.disabled = false;
 }
 
-async function getGBMAdmin() {
-  return await gbmContracts.methods.getGBMAdmin().call();
-}
-
-async function getPresets() {
-  const presetAmount = await gbmContracts.methods.getGBMPresetsAmount().call();
-
-  const presetsArray = Promise.all(
-    [...Array(parseInt(presetAmount) + 1).keys()].map(
-      async (item, index) =>
-        await gbmContracts.methods.getGBMPreset(index).call()
-    )
-  );
-  const presetsNames = Promise.all(
-    [...Array(parseInt(presetAmount) + 1).keys()].map(
-      async (item, index) =>
-        await gbmContracts.methods.getGBMPreset_Name(index).call()
-    )
-  );
-
-  return {
-    presets: (await presetsArray).slice(1),
-    names: (await presetsNames).slice(1),
-  };
-}
-
 async function addPreset() {
   var newPreset = document.getElementsByClassName("configuration-input");
 
@@ -156,3 +64,267 @@ async function addPreset() {
 
   window.location.reload();
 }
+
+function storeNewDeploymentStatus() {
+  localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
+}
+
+const adminAddressActions = {
+  init: async function () {
+    document.getElementById("admin-address").value = await this.getGBMAdmin();
+    document.getElementById("current-admin-address").value =
+      await this.getGBMAdmin();
+  },
+  getGBMAdmin: async function () {
+    return await gbmContracts.methods.getGBMAdmin().call();
+  },
+  toggleChangeAdminView: function () {
+    document.getElementById("main-view").hidden =
+      !document.getElementById("main-view").hidden;
+    document.getElementById("admin-change").hidden =
+      !document.getElementById("admin-change").hidden;
+  },
+  setGBMAdmin: async function () {
+    // ToDo: Add valid hex check (although the contract side also does one too)
+    await gbmContracts.methods
+      .setGBMAdmin(document.getElementById("new-admin-address").value)
+      .send({ from: window.ethereum.selectedAddress });
+  },
+};
+
+const logoActions = {
+  init: async function () {
+    document.getElementById("logo-update-first").checked = true;
+    document.getElementById("logo-update-second").false = false;
+    document.getElementById("logo-url").hidden = false;
+    document.getElementById("logo-upload").hidden = true;
+    document.getElementById("logo-url").value = deploymentStatus.logo;
+    document
+      .getElementById("image-upload")
+      .addEventListener("change", this.imgFound);
+  },
+  toggleLogoUploadField: function () {
+    document.getElementById("logo-url").hidden =
+      !document.getElementById("logo-url").hidden;
+    document.getElementById("logo-upload").hidden =
+      !document.getElementById("logo-upload").hidden;
+  },
+  updateLogoByLink: function () {
+    deploymentStatus.logo = document.getElementById("logo-url").value;
+    document.getElementById("logo-upload-success").hidden = false;
+    storeNewDeploymentStatus();
+  },
+  imageUpload: function () {
+    document.getElementById("image-upload").click();
+  },
+  imgFound: function (event) {
+    var reader = new FileReader();
+    reader.onload = function (event) {
+      deploymentStatus.logo = event.target.result;
+      document.getElementById("logo-upload-success").hidden = false;
+      storeNewDeploymentStatus();
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  },
+};
+
+const colorActions = {
+  currentColors: {},
+  colourMapping: {
+    "color-background": "background",
+    "color-font": "text",
+    "color-primary": "primary",
+    "color-secondary": "selection",
+    "color-fields": "secondary",
+    "color-important": "tertiary",
+  },
+  initDone: false,
+  init: async function () {
+    this.currentColors = deploymentStatus.colours;
+    const colourElements = Array.from(
+      document.getElementsByClassName("color-picker")
+    );
+    colourElements.forEach((element) => this.pairFieldToPreview(element));
+
+    this.initializeColours(colourElements);
+    this.initDone = true;
+  },
+  initializeColours: function (elements) {
+    for (i = 0; i < elements.length; i++) {
+      elements[i].value =
+        this.currentColors[this.colourMapping[elements[i].id]].toUpperCase();
+      elements[i].dispatchEvent(new Event("change"));
+    }
+  },
+  pairFieldToPreview: function (element) {
+    element.onchange = function () {
+      if (colorActions.initDone) {
+        colorActions.currentColors[colorActions.colourMapping[element.id]] =
+          element.value;
+        deploymentStatus.colours = colorActions.currentColors;
+        storeNewDeploymentStatus();
+        pageInitializer.loadCustomCss();
+      }
+      document.getElementById(`${element.id}-preview`).style.backgroundColor =
+        element.value;
+    };
+  },
+};
+
+const currencyActions = {
+  init: async function () {},
+};
+
+const sliderActions = {
+  init: async function () {},
+};
+
+const presetActions = {
+  currentPresets: [],
+  currentPresetNames: [],
+  currentIncentivePresets: [],
+  currentIncentivePresetNames: [],
+  init: async function () {
+    await this.fetchPresets();
+  },
+  getPresetDetailsFromDiamond: async function () {
+    const presetAmount = await gbmContracts.methods
+      .getGBMPresetsAmount()
+      .call();
+
+    const presetsArray = Promise.all(
+      [...Array(parseInt(presetAmount) + 1).keys()].map(
+        async (item, index) =>
+          await gbmContracts.methods.getGBMPreset(index).call()
+      )
+    );
+    const presetsNames = Promise.all(
+      [...Array(parseInt(presetAmount) + 1).keys()].map(
+        async (item, index) =>
+          await gbmContracts.methods.getGBMPreset_Name(index).call()
+      )
+    );
+
+    return {
+      presets: (await presetsArray).slice(1),
+      names: (await presetsNames).slice(1),
+    };
+  },
+  fetchPresets: async function () {
+    const { names, presets } = await this.getPresetDetailsFromDiamond();
+    this.currentPresetNames = names;
+    this.currentPresets = presets;
+
+    let presetsFromDeployment = Object.values(
+      deploymentStatus.registeredPresets
+    ).splice(2);
+
+    let incentivePresets = presetsFromDeployment.map(
+      (_element) => _element.name.split("_")[0]
+    );
+    let incentivePresetNames = presetsFromDeployment.map(
+      (_element) => _element.displayName
+    );
+
+    this.currentIncentivePresets = [...new Set(incentivePresets)];
+    this.currentIncentivePresetNames = [...new Set(incentivePresetNames)];
+
+    generateSelectDropdown(
+      "select-preset",
+      [...Array(names.length).keys()],
+      names,
+      () => this.displaySelectedPreset(),
+      1
+    );
+
+    this.displaySelectedPreset();
+  },
+  displaySelectedPreset: function () {
+    const selectedPresetIndex = document
+      .getElementById("select-preset")
+      .getAttribute("selected-value");
+    document.getElementById("preset-name").value =
+      this.currentPresetNames[selectedPresetIndex];
+    document.getElementById("preset-auction-duration").value =
+      this.currentPresets[selectedPresetIndex].auctionDuration;
+    document.getElementById("preset-cancellation").value =
+      this.currentPresets[selectedPresetIndex].cancellationPeriodDuration;
+    document.getElementById("preset-hammertime").value =
+      this.currentPresets[selectedPresetIndex].hammerTimeDuration;
+
+    let correctIndexPosition = this.currentIncentivePresetNames.indexOf(
+      Object.values(deploymentStatus.registeredPresets).find((preset) => {
+        return (
+          preset.incentiveMin ===
+            `${this.currentPresets[
+              selectedPresetIndex
+            ].incentiveMin.toString()}` &&
+          preset.incentiveMax ===
+            `${this.currentPresets[
+              selectedPresetIndex
+            ].incentiveMax.toString()}` &&
+          preset.incentiveGrowthMultiplier ===
+            `${this.currentPresets[
+              selectedPresetIndex
+            ].incentiveGrowthMultiplier.toString()}`
+        );
+      }).displayName
+    );
+
+    generateSelectDropdown(
+      "select-incentive-preset",
+      this.currentIncentivePresetNames,
+      this.currentIncentivePresetNames,
+      () => {},
+      correctIndexPosition
+    );
+  },
+  updatePreset: async function () {
+    const updateBtn = document.getElementById("preset-update-btn");
+    updateBtn.innerHTML = "Updating...";
+    updateBtn.disabled = true;
+
+    let incentivePresetToUse = Object.values(deploymentStatus.registeredPresets).find(
+      (preset) =>
+        preset.displayName ===
+        document.getElementById("select-incentive-preset").getAttribute("selected-value")
+    );
+
+
+    await gbmContracts.methods
+      .setGBMPreset(
+        parseInt(
+          document
+            .getElementById("select-preset")
+            .getAttribute("selected-value")
+        ) + 1,
+        document.getElementById("preset-auction-duration").value, // Auction Duration
+        document.getElementById("preset-hammertime").value, // Hammer Time Duration
+        document.getElementById("preset-cancellation").value, // Cancellation Period Duration
+        incentivePresetToUse.stepMin, // Step Min
+        incentivePresetToUse.incentiveMin, // Incentive Min
+        incentivePresetToUse.incentiveMax, // Incentive Max
+        incentivePresetToUse.incentiveGrowthMultiplier, // Incentive Growth Multiplier
+        0, // Minimum bid
+        document.getElementById("preset-name").value
+      )
+      .send({
+        from: window.ethereum.selectedAddress,
+        to: diamondAddress,
+        gasLimit: 300000,
+      });
+
+      window.location.reload();
+  },
+};
+
+async function pageInit() {
+  await adminAddressActions.init();
+  await logoActions.init();
+  await colorActions.init();
+  await currencyActions.init();
+  await sliderActions.init();
+  await presetActions.init();
+}
+
+pageInit();
