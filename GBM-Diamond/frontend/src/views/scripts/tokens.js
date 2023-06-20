@@ -152,7 +152,6 @@ const cardGenerator = {
       (item) =>
         item.owner.toLowerCase() ===
           window.ethereum.selectedAddress.toLowerCase() &&
-        item.tokenKind === "0x73ad2146" &&
         deploymentStatus.ERC1155.indexOf(item.tokenAddress) < 1
     );
 
