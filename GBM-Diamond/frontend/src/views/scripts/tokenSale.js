@@ -21,10 +21,10 @@ generateSelectDropdown(
 initPage();
 
 function initPage() {
-  document.getElementById("smallest-bundle").value = 15;
-  document.getElementById("smallest-bundle-display").value = 1;
-  document.getElementById("biggest-bundle").value = 21;
-  document.getElementById("biggest-bundle-display").value = 100;
+  document.getElementById("smallest-bundle").value = 3;
+  document.getElementById("smallest-bundle-display").value = 10;
+  document.getElementById("biggest-bundle").value = 11;
+  document.getElementById("biggest-bundle-display").value = 5000;
   document.getElementById("whale-factor").value = 50;
   document.getElementById("whale-factor-display").value = 50;
 
@@ -286,8 +286,8 @@ async function moveToStep(_step) {
 
 //Mapping faster than redoing the calcs
 let mappingStepis = [];
-for(let i = 0; i<=60; i+=3){
-  let exponent = Math.floor(i/3) - 5;
+for(let i = 0; i<=30; i+=3){
+  let exponent = Math.floor(i/3) - 0;
   mappingStepis.push( 1.0 * (10 ** exponent));
   mappingStepis.push( 2.0 * (10 ** exponent));
   mappingStepis.push( 5.0 * (10 ** exponent));
