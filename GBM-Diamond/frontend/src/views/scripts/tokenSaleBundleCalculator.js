@@ -23,11 +23,9 @@ function get_bundlesMath(_minCoeff, _minExp, _maxCoeff, _maxExp) {
     let distrib = [];
 
     if (range > 0) {
-
         for (let i = faces.indexOf(_minCoeff); i < 3; i++) {         //Adding the lower values of faces
             distrib.push(faces[i] * multiplier);
         }
-
         multiplier = multiplier * 10;
 
         let i = 1;   
@@ -43,15 +41,11 @@ function get_bundlesMath(_minCoeff, _minExp, _maxCoeff, _maxExp) {
         for (let i = 0; i <= faces.indexOf(_maxCoeff); i++) {
             distrib.push(faces[i] * multiplier);
         }
-
     } else {
-
         for (let i = faces.indexOf(_minCoeff); i <= faces.indexOf(_maxCoeff); i++) {
             distrib.push(faces[i] * multiplier);
         }
-
     }
-
     return distrib;
 
 }
@@ -68,7 +62,7 @@ function getSalesDistributionMath(_totalTokens, _distrib, _whale_factor){
 
     let reminder_tokens = _totalTokens;
     let saleBundling = [];
-    console.log(_distrib);
+    //console.log(_distrib);
     for(let i = _distrib.length-1; i >= 0; i--){
         let localAmount = Math.floor( //Must be an integer
                 _whale_factor * ( //Control how top-heavy the distribution is
@@ -85,8 +79,9 @@ function getSalesDistributionMath(_totalTokens, _distrib, _whale_factor){
         saleBundling[saleBundling.length -1] = {"value":_distrib[0], "amount":(localAmount + saleBundling[saleBundling.length -1].amount)};
         reminder_tokens -= localAmount;
     }
-      
-    return(saleBundling, reminder_tokens);
+    
+    //console.log(saleBundling);
+    return( {saleBundling, reminder_tokens});
 }
 
 

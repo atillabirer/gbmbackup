@@ -65,31 +65,46 @@ function initPage() {
 
   document.getElementById("generate-btn").onclick = function (event) {
     let saleNumber = parseInt(document.getElementById("token-for-sale").value);
-    let smallest = parseInt(
+    let smallest = parseFloat(
       document.getElementById("smallest-bundle-display").value
     );
-    let largest = parseInt(
+    let largest = parseFloat(
       document.getElementById("biggest-bundle-display").value
     );
-    let whaleFactor = parseInt(
+    let whaleFactor = parseFloat(
       document.getElementById("whale-factor-display").value
     );
 
-    // ToDo insert distribution here (Missing python to javascript conversion)
+    let resu = generateDistributionFromNotesAndTokenAmount(saleNumber, smallest, largest, (whaleFactor * 0.01));
 
-    distribution = [
-      [10, 10, 50, 50, 100, 100],
-      [50,50,50,50,50,50],
-    ];
+
+    let _ids = [];
+    let _amounts = [];
+
+
+    for(let i = 0; i < resu.saleBundling.length; i++){
+      _ids.push(resu.saleBundling[i].value);
+      _amounts.push(resu.saleBundling[i].amount);
+    }
+    distribution = {};
+    distribution[0] = _ids.slice();
+    distribution[1] = _amounts.slice();
 
     let distDisplay = document.getElementById("token-dist");
     distDisplay.innerHTML = "";
 
+    let totalation = 0;
     for (i = 0; i < distribution[0].length; i++) {
       distDisplay.innerHTML += `Bundle #${i + 1}: ${
         distribution[1][i]
       } copies of Token #${distribution[0][i]} </br>`;
+      totalation += distribution[0][i] * distribution[1][i];
     }
+    distDisplay.innerHTML += "</br> Total: " + totalation +" distributed out of " + saleNumber + " desired </br>"; 
+    if(totalation != saleNumber) {
+      distDisplay.innerHTML += "⚠️ " + (saleNumber - totalation) + " tokens could not be fitted in a bundle. ⚠️  </br>";
+    }
+
 
     document.getElementById("after-generation").hidden = false;
     window.scrollTo({
@@ -97,7 +112,6 @@ function initPage() {
       top: document.body.scrollHeight,
       behavior: "smooth",
     });
-    // Generate distribution text here
   };
 
   creationFunctions.pageInitSpecifics();
@@ -243,10 +257,9 @@ async function moveToStep(_step) {
       break;
     case 2:
       await tokenSaleProcess.mintBatchFromDistribution(
-        [10, 50, 100],
-        [100, 100, 100]
+        distribution
       );
-      await tokenSaleProcess.transferBatchToDiamond([10, 50, 100], [100, 100, 100]);
+      await tokenSaleProcess.transferBatchToDiamond(distribution);
       break;
     case 3:
       await tokenSaleProcess.startAuctionBatch();
