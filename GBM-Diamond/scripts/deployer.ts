@@ -85,15 +85,20 @@ let tokenURIList = require("./libraries/NFTTestList.json").nftarray;
 
 let logger: (msg: string) => void;
 
+logger = (msg: string) => console.log(msg);
+
+
 async function init(){
-    logger = (msg: string) => console.log(msg);
+
+    console.log(ethers);
     wallets =  await ethers.getSigners();
     signer =  wallets[0];
     return;
 }
 
+//console.log(ethers.providers.getSigners());
 //Potential race condition if the deploy script is called just after having been initalized
-init(); 
+//init(); 
 
 export function setLogger(loggerCallback: (msg: string) => void){
     logger = loggerCallback;
@@ -110,6 +115,11 @@ export function getDeployerStatus(){
 
 export async function performDeploymentStep(step: string) {
     console.log("" + step + "?");
+
+    //Special case for hardhat signer
+    if(step.substring(0,3) != "d_h" && signer == undefined){
+        await init();
+    }
 
     switch(step.substring(0,3)){
         case "f_d":
@@ -172,7 +182,6 @@ export async function performDeploymentStep(step: string) {
 async function doStep_f_d(arg:string){
 
     logger("Deploying the " + arg.substring(4) + " ↗️");
-
     let gasPrice = await fetchGasPrice();
     const Facet = await ethers.getContractFactory(arg.substring(4), signer);
     const facet = await Facet.deploy({
@@ -200,9 +209,13 @@ async function doStep_d_d(){
 
 async function doStep_d_h(arg: string){
     await hardhatHelpers.impersonateAccount(arg.substring(6));
-    signer = await ethers.getSigner(arg.substring(6));
+    signer = await ethers.getImpersonatedSigner(arg.substring(6));
 
     await hardhatHelpers.setBalance(arg.substring(6), 10 ** 24);
+
+    logger("Hardhat impersonating signer " + signer.address + " 👷 🖋️");
+
+
 }
 
 async function doStep_d_c(){

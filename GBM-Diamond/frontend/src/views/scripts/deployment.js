@@ -8,7 +8,7 @@ else initDeploymentPage();
 generateSelectDropdown(
   "select-network",
   ["hardhat", "mainnet"],
-  ["Local Hardhat", "Live Blockchain - Add 🦊 pkey to hardhat conf"],
+  ["Local Hardhat", "Live Blockchain - 👷 ⚙️ 🦊"],
   () => {}
 );
 
