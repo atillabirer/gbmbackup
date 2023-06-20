@@ -77,13 +77,15 @@ const colorActions = {
     "color-fields": "secondary",
     "color-important": "tertiary",
   },
-  defaults: {
-    background: "#085F63",
-    text: "#FFFFFF",
-    primary: "#49BEB7",
-    selection: "#FACF5A",
-    secondary: "#05848A",
-    tertiary: "#FF5959",
+  returnDefaultColours: function () {
+    return {
+      background: "#085F63",
+      text: "#FFFFFF",
+      primary: "#49BEB7",
+      selection: "#FACF5A",
+      secondary: "#05848A",
+      tertiary: "#FF5959",
+    };
   },
   initDone: false,
   init: async function () {
@@ -117,7 +119,7 @@ const colorActions = {
     };
   },
   resetToDefault: function () {
-    deploymentStatus.colours = this.defaults;
+    deploymentStatus.colours = this.returnDefaultColours();
     this.currentColors = deploymentStatus.colours;
     storeNewDeploymentStatus();
     pageInitializer.loadCustomCss();

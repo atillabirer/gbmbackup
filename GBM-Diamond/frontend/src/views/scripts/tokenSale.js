@@ -183,7 +183,7 @@ const tokenSaleProcess = {
       arguments: [
         document.getElementById("token-name").value,
         document.getElementById("token-symbol").value,
-        "not_actual_uri",
+        document.getElementById("token-uri").value,
         !document.getElementById("disable-transferability").checked,
         diamondAddress,
       ],
