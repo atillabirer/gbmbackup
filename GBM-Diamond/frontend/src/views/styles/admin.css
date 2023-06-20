@@ -159,3 +159,11 @@ h3 {
 #logo-upload-success {
   color: var(--primary);
 }
+
+.reset-text {
+  color: var(--text);
+  text-decoration: underline;
+  font-size: medium;
+  margin-top: 5px;
+  cursor: pointer;
+}

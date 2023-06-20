@@ -1,70 +1,3 @@
-let presetsLength = 0;
-
-async function onScriptLoad() {
-  const diamondLabel = document.getElementById("diamond-address");
-  const adminLabel = document.getElementById("admin-address");
-
-  diamondLabel.innerHTML = `Smart Contract: ${deploymentStatus.deployedFacets["Diamond"]}`;
-  adminLabel.innerHTML = `GBM Admin: ${await getGBMAdmin()}`;
-
-  await fetchPresets();
-}
-
-async function callUpdatePreset(newName, index) {
-  const updateBtn = document.getElementsByClassName("update-btn")[index];
-  updateBtn.innerHTML = "Updating...";
-  updateBtn.disabled = true;
-
-  const inputs = document.getElementsByClassName(`preset${[index]}`);
-
-  await gbmContracts.methods
-    .setGBMPreset(
-      index + 1,
-      inputs[0].value, // Auction Duration
-      inputs[2].value, // Hammer Time Duration
-      inputs[1].value, // Cancellation Period Duration
-      inputs[6].value, // Step Min
-      inputs[5].value, // Incentive Min
-      inputs[4].value, // Incentive Max
-      inputs[3].value, // Incentive Growth Multiplier
-      0, // Minimum bid
-      newName
-    )
-    .send({
-      from: window.ethereum.selectedAddress,
-      to: diamondAddress,
-      gasLimit: 300000,
-    });
-
-  updateBtn.innerHTML = "Update Preset";
-  updateBtn.disabled = false;
-}
-
-async function addPreset() {
-  var newPreset = document.getElementsByClassName("configuration-input");
-
-  await gbmContracts.methods
-    .setGBMPreset(
-      presetsLength + 1,
-      newPreset[1].value, // Auction Duration
-      newPreset[3].value, // Hammer Time Duration
-      newPreset[2].value, // Cancellation Period Duration
-      newPreset[7].value, // Step Min
-      newPreset[6].value, // Incentive Min
-      newPreset[5].value, // Incentive Max
-      newPreset[4].value, // Incentive Growth Multiplier
-      0, // Minimum bid
-      newPreset[0].value
-    )
-    .send({
-      from: window.ethereum.selectedAddress,
-      to: diamondAddress,
-      gasLimit: 300000,
-    });
-
-  window.location.reload();
-}
-
 function storeNewDeploymentStatus() {
   localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
 }
@@ -126,6 +59,12 @@ const logoActions = {
     };
     reader.readAsDataURL(event.target.files[0]);
   },
+  resetToDefault: function () {
+    document.getElementById("logo-url").value = "./images/gbm-logo.png";
+    deploymentStatus.logo = document.getElementById("logo-url").value;
+    document.getElementById("logo-upload-success").hidden = false;
+    storeNewDeploymentStatus();
+  },
 };
 
 const colorActions = {
@@ -137,6 +76,14 @@ const colorActions = {
     "color-secondary": "selection",
     "color-fields": "secondary",
     "color-important": "tertiary",
+  },
+  defaults: {
+    background: "#085F63",
+    text: "#FFFFFF",
+    primary: "#49BEB7",
+    selection: "#FACF5A",
+    secondary: "#05848A",
+    tertiary: "#FF5959",
   },
   initDone: false,
   init: async function () {
@@ -168,6 +115,18 @@ const colorActions = {
       document.getElementById(`${element.id}-preview`).style.backgroundColor =
         element.value;
     };
+  },
+  resetToDefault: function () {
+    deploymentStatus.colours = this.defaults;
+    this.currentColors = deploymentStatus.colours;
+    storeNewDeploymentStatus();
+    pageInitializer.loadCustomCss();
+    const colourElements = Array.from(
+      document.getElementsByClassName("color-picker")
+    );
+    this.initDone = false;
+    this.initializeColours(colourElements);
+    this.initDone = true;
   },
 };
 
