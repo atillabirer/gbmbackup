@@ -117,10 +117,10 @@ async function generateAuctionElement(auction, index) {
   const auctionEl = document.createElement("div");
   auctionEl.classList.add(`auction-${index}`);
 
-  console.log(erc1155contracts)
-  console.log(auction.tokenAddress)
-  console.log(deploymentStatus.ERC1155.indexOf(auction.tokenAddress))
-  await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()
+  // console.log(erc1155contracts)
+  // console.log(auction.tokenAddress)
+  // console.log(deploymentStatus.ERC1155.indexOf(auction.tokenAddress))
+  // await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()
   const auctionInnerHTML = `
         <div class="auction-grid-row auction-grid-item">
             <div class="auction-item-flex"><img src="/whale/${
@@ -129,7 +129,8 @@ async function generateAuctionElement(auction, index) {
             <div>
                 <div class="auction-item-name">${
                   auction.tokenAmount > 1 ? `${auction.tokenAmount}x ` : ""
-                }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
+                // }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
+                }GBM Whale #${auction.tokenID}</div>
                 <div class="auction-item-flex subtitle"><img src="images/hardhat.svg" loading="lazy" alt="" class="company-icon">
                 <div class="text-block">GBM</div>
                 </div>

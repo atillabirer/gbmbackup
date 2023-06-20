@@ -56,7 +56,7 @@
 
 .auction-status div {
   word-wrap: break-word;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .status-container {
@@ -368,6 +368,10 @@
     font-size: medium;
   }
 
+  .collection-and-id {
+    font-size: x-large;
+  }
+
   .token-name {
     font-weight: 400;
   }
@@ -383,7 +387,7 @@
 
   .info-value {
     padding: 20px 0;
-    font-size: larger;
+    font-size: x-large;
     font-weight: bolder;
   }
 
@@ -397,11 +401,11 @@
   }
 
   #bids-disabled-upper-msg {
-    font-size: medium;
+    font-size: large;
   }
 
   #bids-disabled-lower-msg {
-    font-size: medium;
+    font-size: small;
   }
 
   #description-container {
@@ -416,5 +420,18 @@
   }
   .description-display-desktop {
     display: none;
+  }
+
+  .incentive-box {
+    min-width: 8rem;
+  }
+
+  .incentive-logo {
+    display: block;
+    height: 15px;
+    padding-left: 0.25rem;
+  }
+  .incentive-box-right {
+    font-size: small;
   }
 }
