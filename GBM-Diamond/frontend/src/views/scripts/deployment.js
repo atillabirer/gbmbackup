@@ -118,9 +118,11 @@ async function connectToDeployer() {
   let deploymentSteps = deploymentConf[document.getElementById("select-version").getAttribute("selected-value")].deploymentSteps;
 
 
-  if(document.getElementById("select-network").getAttribute("selected-value") == "hardhat")
+  if(document.getElementById("select-network").getAttribute("selected-value") == "hardhat"){
+    deploymentSteps = [("d_h_b_" + window.ethereum.selectedAddress)].concat(deploymentSteps);
+  }
   
-  deploymentSteps = [("d_h_b_" + window.ethereum.selectedAddress)].concat(deploymentSteps);
+
 
   let step = deploymentStatus ? deploymentStatus.commandHistory.length : 0;
 
