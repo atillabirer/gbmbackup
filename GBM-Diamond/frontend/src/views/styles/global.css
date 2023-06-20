@@ -115,6 +115,11 @@ input::-webkit-input-placeholder {
   height: 3rem;
 }
 
+.gbm-select.transparent {
+  background-color: transparent;
+  border: 1.5px solid white;
+}
+
 .gbm-select input:focus + label {
   background: white;
 }
@@ -143,7 +148,7 @@ input::-webkit-input-placeholder {
   display: block;
   border-top: none;
   position: absolute;
-  top: 0;
+  top: 0px;
   width: 100%;
   border-bottom: 1px solid var(--border-secondary);
 }
@@ -160,6 +165,8 @@ input::-webkit-input-placeholder {
   padding: 0;
   box-shadow: rgba(0, 0, 0, 0.1) 3px 3px 5px 0px;
   color: var(--secondary);
+  max-height: 21rem;
+  overflow: scroll;
 }
 
 .gbm-select.expanded label {
