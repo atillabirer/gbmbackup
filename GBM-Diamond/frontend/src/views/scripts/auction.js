@@ -119,7 +119,7 @@ async function generateSaleElements(_sale) {
   });
 
   document.getElementById("incentive-box-type").innerHTML =
-    presetDetected === undefined ? "English" : presetDetected.name.split("_")[0];
+    presetDetected === undefined ? "Custom" : presetDetected.name.split("_")[0];
 
   minimumBid =
     parseFloat(_sale.highestBidValue) !== 0
