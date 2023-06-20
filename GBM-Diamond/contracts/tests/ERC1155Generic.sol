@@ -18,6 +18,9 @@ contract ERC1155Generic is IERC1155, IERC165 {
     mapping(address => mapping(uint256 => uint256)) internal balanceOfVar; // owner => id => balance
     mapping(address => mapping(address => bool)) internal isApprovedForAllVar; // owner => oprator => isapproved ?
 
+    mapping(uint256 => bool) internal occupiedTokenID;
+    uint256[] public tokenIDArray;
+
     mapping(bytes4 => bool) supportedInterfaces;
     
     /// @notice Constructor
@@ -91,6 +94,7 @@ contract ERC1155Generic is IERC1155, IERC165 {
             //Adjusting the balances
             balanceOfVar[_from][_ids[tmp]] = balanceOfVar[_from][_ids[tmp]] - _values[tmp];
             balanceOfVar[_to][_ids[tmp]] = balanceOfVar[_to][_ids[tmp]] + _values[tmp];
+            tmp++;
         }
 
         //Emitting the event
@@ -116,7 +120,7 @@ contract ERC1155Generic is IERC1155, IERC165 {
     /// @notice Get the balance of multiple account/token pairs
     /// @param _owners The addresses of the token holders
     /// @param _ids    ID of the tokens
-    /// @return        The _owner's balance of the token types requested (i.e. balance for each (owner, id) pair)
+    /// @return balances  The _owner's balance of the token types requested (i.e. balance for each (owner, id) pair)
     function balanceOfBatch(address[] calldata _owners, uint256[] calldata _ids) external override view returns (uint256[] memory){
 
         //Making value readable from stack directly instead of having to read the stack as pointer to get length = less gas when looping
@@ -191,6 +195,11 @@ contract ERC1155Generic is IERC1155, IERC165 {
             require(IERC1155TokenReceiver(msg.sender).onERC1155Received(msg.sender, msg.sender, _id, _value, "") == bytes4(0xf23a6e61));
         }
 
+        if(!occupiedTokenID[_id]){
+            occupiedTokenID[_id] = true;
+            tokenIDArray.push(_id);
+        }
+
         emit URI(_uri, _id);
     }
 
@@ -199,6 +208,10 @@ contract ERC1155Generic is IERC1155, IERC165 {
         emit URI(_uri, _id);
     }
 
+
+    function getTokenIDArray() external view returns(uint256[] memory){
+
+    }
 
     /// @notice Check if an address is a contract
     /// @param _address The adress you want to test

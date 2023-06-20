@@ -1,220 +1,378 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
-        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-      ></script>
-    </head>
-    <body>
-        <div class="page-content">
-            <div class="page-title">GBM Token Sale</div>
-            <div class="metamask-missing">
-                <p class="gbm-header">Please connect your MetaMask wallet.</p>
+  <head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+      integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <div class="page-content">
+      <div class="page-title">GBM Token Sale</div>
+      <div class="metamask-missing">
+        <p class="gbm-header">Please connect your MetaMask wallet.</p>
+      </div>
+      <div class="metamask-found" hidden>
+        <p class="gbm-subtitle">
+          This tool allows you to create and start a GBM token sale. The token
+          bundles being auctioned will be represented as ERC-1155 NFTs. The
+          tokenID of each ERC-1155 will represent the size of the bundle (i.e.
+          tokenID 10000 represent a bundle of 10,000 tokens being auctioned),
+          and each auction winner will receive one of these NFTs.
+        </p>
+        <div class="steps-wrapper">
+          <div class="step-container active">
+            <div class="step-header">Step 1: Create NFT contract</div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Token name</div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  The name of the token you are selling in the GBM token sale.
+                  The same name will be used for the bundle NFTs.
+                </p>
+                <input
+                  id="token-name"
+                  class="gbm-input-boxed width-limiter metadata-trigger"
+                  type="text"
+                  placeholder="Enter name"
+                />
+              </div>
             </div>
-            <div class="metamask-found" hidden>
-                <p class="gbm-subtitle">This tool allows you to create and start a GBM token sale. The token bundles being auctioned will be represented as ERC-1155 NFTs. The tokenID of each ERC-1155 will represent the size of the bundle (i.e. tokenID 10000 represent a bundle of 10,000 tokens being auctioned), and each auction winner will receive one of these NFTs.</p>
-                <div class="steps-wrapper">
-                    <div class="step-container active">
-                        <div class="step-header">Step 1: Create NFT contract</div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Token name</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    The name of the token you are selling in the GBM token sale. The same name will be used for the bundle NFTs.
-                                </p>
-                                <input id="token-name" class="gbm-input-boxed width-limiter metadata-trigger" type="text" placeholder="Enter name"/>
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Token symbol</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    The name of the token you are selling in the GBM token sale. The same name will be used for the bundle NFTs.
-                                </p>
-                                <input id="token-symbol" class="gbm-input-boxed width-limiter metadata-trigger" type="text" placeholder="Enter symbol e.g. PEPE"/>
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Token image</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    Please enter an URL for the image of the token which will be displayed on the auction page and on third-party application for the bundle NFTs.
-                                </p>
-                                <input id="token-image" class="gbm-input-boxed width-limiter metadata-trigger" type="text" placeholder="Enter URL"/>
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Bundle description</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    The token bundles NFT description, which will be displayed on on the auction page and on third-party application for the bundle NFTs.
-                                </p>
-                                <textarea id="token-description" class="gbm-input-boxed width-limiter gbm-textarea metadata-trigger" placeholder="Enter Description" maxlength="190"></textarea>
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Metadata JSON</div>
-                            <div class="step-option-fields">
-                                <textarea id="token-metadata" class="gbm-input-boxed width-limiter metadata-json" disabled> </textarea>
-                            </div>
-                            <button class="gbm-btn transparent width-limiter" onclick="downloadMetadataJSON()">Download JSON</button>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">JSON hosted file</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    Please upload the JSON file generated above (e.g. IPFS, your own website), and enter the URL below.
-                                </p>
-                                <input id="token-image" class="gbm-input-boxed width-limiter" type="text" placeholder="Enter URL"/>
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">NFT Transferability</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    Choose whether the winner of a token bundle auction can transfer the NFT after receiving it.
-                                </p>
-                                <div class="step-slider">
-                                    <label class="gbm-switch">
-                                        <input id="disable-transferability" type="checkbox">
-                                        <span class="gbm-slider round"></span>
-                                    </label>
-                                    <p class="step-slider-description">
-                                        Make the NFT non-transferable
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="gbm-btn red width-limiter" onclick="moveToStep(1)">Create contract</button>
-                    </div>
-                    <div class="step-container">
-                        <div class="step-header">Step 2: Token bundle distribution<button class="gbm-btn sale-nav" onclick="moveToStep(0)">←</button> </div>
-                        <div class="step-option">
-                            <div id="tokens-for-sale-header" class="gbm-header step-option-label">Number of $TOKEN tokens for sale</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    This is the total number of tokens for sale in your GBM token sale
-                                </p>
-                                <input id="token-for-sale" class="gbm-input-boxed width-limiter metadata-trigger" type="text" placeholder="Enter number"/>
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Smallest bundle size (tokens)</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    The number of tokens that comprise the smallest bundle size.
-                                </p>
-                                <div class="rangecontainer">
-                                    <input type="range" min="0" max="100" value="50" step="10" class="gbm-range" id="smallest-bundle">
-                                </div>
-                                <input id="smallest-bundle-display" class="gbm-input-boxed width-limiter" type="text" disabled/>
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Biggest bundle size (tokens)</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    The number of tokens that comprise the biggest bundle size.
-                                </p>
-                                <div class="rangecontainer">
-                                    <input type="range" min="0" max="100" value="50" step="10" class="gbm-range" id="biggest-bundle">
-                                </div>
-                                <input id="biggest-bundle-display" class="gbm-input-boxed width-limiter" type="text" disabled/>
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Whale factor</div>
-                            <div class="step-option-fields">
-                                <p class="step-description width-limiter">
-                                    A higher whale factor results in a higher percentage of the total amount of tokens being allocated to higher-size bundles, whereas a lower whale factor results in a higher number of tokens being allocated to smaller-size bundles.
-                                </p>
-                                <div class="rangecontainer">
-                                    <input type="range" min="0" max="100" value="50" step="10" class="gbm-range" id="whale-factor">
-                                </div>
-                                <input id="whale-factor-display" class="gbm-input-boxed width-limiter" type="text" disabled/>
-                            </div>
-                        </div>
-                        <button id="generate-btn" class="gbm-btn width-limiter">Generate distribution</button>
-                        <div id="after-generation" hidden>
-                            <div class="step-option">
-                                <div class="gbm-header step-option-label">Token bundle distribution</div>
-                                <div class="gbm-subtitle distribution-text">Some Text Here</div>
-                            </div>
-                            <button class="gbm-btn red width-limiter" onclick="moveToStep(2)">Confirm distribution and mint NFTs</button>
-                        </div>
-                    </div>
-                    <div class="step-container">
-                        <div class="step-header">Step 3: Auctions parameters<button class="gbm-btn sale-nav" onclick="moveToStep(1)">←</button></div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Currency</div>
-                            <div class="step-option-fields">
-                                <p class="step-description">
-                                    Go to admin panel to add other currencies.
-                                </p>
-                                <select id="select-currency" class="gbm-select width-limiter">
-                                    <option value="ETH">Ether (ETH)</option>
-                                    <option value="fETH">Fake Ether (fETH)</option>
-                                </select>                            
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Starting Bid</div>
-                            <div class="step-option-fields">
-                                <input id="token-for-sale" class="gbm-input-boxed width-limiter rounded" type="text"/>                      
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Start date</div>
-                            <div class="step-option-fields">   
-                                <div class="gbm-radio width-limiter">
-                                    <label>
-                                        <input type="radio" name="radio" checked/>
-                                        <div class="first-choice box">
-                                           <p>Now</p>
-                                        </div>
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="radio"/>
-                                        <div class="second-choice box">
-                                            <p>Later</p>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div> 
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">Duration</div>
-                            <div class="step-option-fields">
-                                <select id="select-duration" class="gbm-select width-limiter">
-                                    <option value="1">24 Hours</option>
-                                    <option value="2">7 Days</option>
-                                </select>                   
-                                <p class="step-description under width-limiter">
-                                    End date: Jun 01, 2023 at 12:00am UTC - 4
-                                    Hammer time: 20 minutes
-                                </p>         
-                            </div>
-                        </div>
-                        <div class="step-option">
-                            <div class="gbm-header step-option-label">GBM incentives</div>
-                            <div class="step-option-fields">
-                                <select id="select-currency" class="gbm-select width-limiter">
-                                    <option value="1">Low (0-1%)</option>
-                                    <option value="2">Medium (1-10%)</option>
-                                </select>                   
-                                <p class="step-description under width-limiter">
-                                    Bidders will make between 1% and 10% return on their bid. In total, bidders will receive up to 15% of the winning bid.
-                                </p>         
-                            </div>
-                        </div>
-                        <button class="gbm-btn red width-limiter" onclick="moveToStep(3)">Start token sale</button>
-                    </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Token symbol</div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  The name of the token you are selling in the GBM token sale.
+                  The same name will be used for the bundle NFTs.
+                </p>
+                <input
+                  id="token-symbol"
+                  class="gbm-input-boxed width-limiter metadata-trigger"
+                  type="text"
+                  placeholder="Enter symbol e.g. PEPE"
+                />
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Token image</div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  Please enter an URL for the image of the token which will be
+                  displayed on the auction page and on third-party application
+                  for the bundle NFTs.
+                </p>
+                <input
+                  id="token-image"
+                  class="gbm-input-boxed width-limiter metadata-trigger"
+                  type="text"
+                  placeholder="Enter URL"
+                />
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Bundle description</div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  The token bundles NFT description, which will be displayed on
+                  on the auction page and on third-party application for the
+                  bundle NFTs.
+                </p>
+                <textarea
+                  id="token-description"
+                  class="gbm-input-boxed width-limiter gbm-textarea metadata-trigger"
+                  placeholder="Enter Description"
+                  maxlength="190"
+                ></textarea>
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Metadata JSON</div>
+              <div class="step-option-fields">
+                <textarea
+                  id="token-metadata"
+                  class="gbm-input-boxed width-limiter metadata-json"
+                  disabled
+                >
+                </textarea>
+              </div>
+              <button
+                class="gbm-btn transparent width-limiter"
+                onclick="downloadMetadataJSON()"
+              >
+                Download JSON
+              </button>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">JSON hosted file</div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  Please upload the JSON file generated above (e.g. IPFS, your
+                  own website), and enter the URL below.
+                </p>
+                <input
+                  id="token-image"
+                  class="gbm-input-boxed width-limiter"
+                  type="text"
+                  placeholder="Enter URL"
+                />
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">
+                NFT Transferability
+              </div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  Choose whether the winner of a token bundle auction can
+                  transfer the NFT after receiving it.
+                </p>
+                <div class="step-slider">
+                  <label class="gbm-switch">
+                    <input id="disable-transferability" type="checkbox" />
+                    <span class="gbm-slider round"></span>
+                  </label>
+                  <p class="step-slider-description">
+                    Make the NFT non-transferable
+                  </p>
                 </div>
+              </div>
             </div>
+            <button class="gbm-btn red width-limiter" onclick="moveToStep(1)">
+              Create contract
+            </button>
+          </div>
+          <div class="step-container">
+            <div class="step-header">
+              Step 2: Token bundle distribution
+            </div>
+            <div class="step-option">
+              <div
+                id="tokens-for-sale-header"
+                class="gbm-header step-option-label"
+              >
+                Number of $TOKEN tokens for sale
+              </div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  This is the total number of tokens for sale in your GBM token
+                  sale
+                </p>
+                <input
+                  id="token-for-sale"
+                  class="gbm-input-boxed width-limiter metadata-trigger"
+                  type="text"
+                  placeholder="Enter number"
+                />
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">
+                Smallest bundle size (tokens)
+              </div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  The number of tokens that comprise the smallest bundle size.
+                </p>
+                <div class="rangecontainer">
+                  <input
+                    type="range"
+                    min="0"
+                    max="25"
+                    value="3"
+                    step="1"
+                    class="gbm-range"
+                    id="smallest-bundle"
+                  />
+                </div>
+                <input
+                  id="smallest-bundle-display"
+                  class="gbm-input-boxed width-limiter"
+                  type="text"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">
+                Biggest bundle size (tokens)
+              </div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  The number of tokens that comprise the biggest bundle size.
+                </p>
+                <div class="rangecontainer">
+                  <input
+                    type="range"
+                    min="0"
+                    max="25"
+                    value="14"
+                    step="1"
+                    class="gbm-range"
+                    id="biggest-bundle"
+                  />
+                </div>
+                <input
+                  id="biggest-bundle-display"
+                  class="gbm-input-boxed width-limiter"
+                  type="text"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Whale factor</div>
+              <div class="step-option-fields">
+                <p class="step-description width-limiter">
+                  A higher whale factor results in a higher percentage of the
+                  total amount of tokens being allocated to higher-size bundles,
+                  whereas a lower whale factor results in a higher number of
+                  tokens being allocated to smaller-size bundles.
+                </p>
+                <div class="rangecontainer">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="50"
+                    step="1"
+                    class="gbm-range"
+                    id="whale-factor"
+                  />
+                </div>
+                <input
+                  id="whale-factor-display"
+                  class="gbm-input-boxed width-limiter"
+                  type="text"
+                  disabled
+                />
+              </div>
+            </div>
+            <button id="generate-btn" class="gbm-btn width-limiter">
+              Generate distribution
+            </button>
+            <div id="after-generation" hidden>
+              <div class="step-option">
+                <div class="gbm-header step-option-label">
+                  Token bundle distribution
+                </div>
+                <div id="token-dist" class="gbm-subtitle distribution-text">Some Text Here</div>
+                <div id="the-plot"></div>
+              </div>
+              <button class="gbm-btn red width-limiter" onclick="moveToStep(2)">
+                Confirm distribution and mint NFTs
+              </button>
+            </div>
+          </div>
+          <div class="step-container">
+            <div class="step-header">
+              Step 3: Auctions parameters
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Currency</div>
+              <div class="step-option-fields">
+                <p class="step-description">
+                  Go to admin panel to add other currencies.
+                </p>
+                <div class="width-limiter">
+                  <span id="select-currency" class="gbm-select"></span>
+                </div>
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Starting Bid</div>
+              <div class="step-option-fields">
+                <input
+                  id="min-bid"
+                  class="gbm-input-boxed width-limiter"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Start date</div>
+              <div class="step-option-fields">
+                <div class="gbm-radio width-limiter">
+                  <label>
+                    <input
+                      type="radio"
+                      name="radio2"
+                      onclick="creationFunctions.toggleStartDateSelection(false)"
+                      checked
+                    />
+                    <div class="first-choice box">
+                      <p>Now</p>
+                    </div>
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="radio2"
+                      onclick="creationFunctions.toggleStartDateSelection(true)"
+                    />
+                    <div class="second-choice box">
+                      <p>Later</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div id="start-date-selector" class="left-column-option flex-row">
+              <div id="date-time-header">Date & time:</div>
+              <div class="flex-row opposite-ends">
+                <input
+                  class="gbm-time-picker"
+                  type="time"
+                  onchange="creationFunctions.generateBreakdown()"
+                />
+                <input
+                  class="gbm-date-picker"
+                  type="date"
+                  onchange="creationFunctions.generateBreakdown()"
+                />
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">Duration</div>
+              <div class="step-option-fields">
+                <div class="width-limiter">
+                  <span id="select-duration" class="gbm-select"></span>
+                </div>
+                <p
+                  id="time-specifics"
+                  class="step-description under width-limiter"
+                >
+                  End date: Jun 01, 2023 at 12:00am UTC - 4 Hammer time: 20
+                  minutes
+                </p>
+              </div>
+            </div>
+            <div class="step-option">
+              <div class="gbm-header step-option-label">GBM incentives</div>
+              <div class="step-option-fields">
+                <div class="width-limiter">
+                  <span id="select-incentive" class="gbm-select"></span>
+                </div>
+                <p id="incentive-specifics" class="step-description under width-limiter">
+                  Bidders will make between 1% and 10% return on their bid. In
+                  total, bidders will receive up to 15% of the winning bid.
+                </p>
+              </div>
+            </div>
+            <button class="gbm-btn red width-limiter" onclick="moveToStep(3)">
+              Start token sale
+            </button>
+          </div>
         </div>
-        <script type="text/javascript" src="scripts/global.js"></script>
-    </body>
+      </div>
+    </div>
+    <script type="text/javascript" src="scripts/global.js"></script>
+    <script type="text/javascript" src="scripts/tokenSaleBundleCalculator.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
+
+
+  </body>
 </html>

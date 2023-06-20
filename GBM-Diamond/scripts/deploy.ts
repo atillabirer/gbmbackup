@@ -32,6 +32,7 @@ let facets: any[] = [];
 let diamondCutFacetAddress: string;
 let diamondAddress: string;
 let savedERC721Address: string;
+let savedERC1155Address: string;
 
 export function setDiamondAddress(address: string) {
     diamondAddress = address
@@ -80,14 +81,14 @@ export async function performDeploymentStep(step: number) {
             {
                 if (automatedTesting) {
                     await runTestAuction();
-                    return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
+                    return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address} || ${savedERC1155Address}`];
                 } else 
 
                 if (conf.RunTestAuction) {
                     await runTestAuctionManual();
-                    return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address}`];
+                    return [`SERVER || MSG || Successfully performed a test auction`, `SERVER || TST || ${savedERC721Address} || ${savedERC1155Address}`];
                 }
-                else return [`SERVER || MSG || No test werere configugred to be ran`, `SERVER || TST || ${savedERC721Address}`];
+                else return [`SERVER || MSG || No test werere configugred to be ran`, `SERVER || TST || ${savedERC721Address} || ${savedERC1155Address}`];
             }
 
         default:
@@ -380,7 +381,7 @@ async function runTestAuction() {
     console.log("Creating an ERC-721 🐱 token");
     gasPrice = await fetchGasPrice();
     const erc721 = await ethers.getContractFactory("ERC721Generic");
-    const erc721C = await erc721.deploy("GBM Whales", "GBM721", {
+    const erc721C = await erc721.deploy("GBM Whales 721", "GBM721", {
         gasPrice: gasPrice
     });
     await erc721C.deployed();
@@ -389,7 +390,7 @@ async function runTestAuction() {
     console.log("Creating an ERC-1155 🐰 token");
     gasPrice = await fetchGasPrice();
     const erc1155 = await ethers.getContractFactory("ERC1155Generic");
-    const erc1155C = await erc1155.deploy("GBM-TEST-1155", "GBM1155", {
+    const erc1155C = await erc1155.deploy("GBM Whales 1155", "GBM1155", {
         gasPrice: gasPrice
     });
     await erc1155C.deployed();
@@ -705,7 +706,7 @@ async function runTestAuctionManual() {
     console.log("Creating an ERC-721 🐱 token");
     gasPrice = await fetchGasPrice();
     const erc721 = await ethers.getContractFactory("ERC721Generic",  metamaske);
-    const erc721C = await erc721.deploy("GBM Whales", "GBM721", {
+    const erc721C = await erc721.deploy("GBM Whales 721", "GBM721", {
         gasPrice: gasPrice
     });
     await erc721C.deployed();
@@ -714,7 +715,7 @@ async function runTestAuctionManual() {
     console.log("Creating an ERC-1155 🐰 token");
     gasPrice = await fetchGasPrice();
     const erc1155 = await ethers.getContractFactory("ERC1155Generic",  metamaske);
-    const erc1155C = await erc1155.deploy("GBM-TEST-1155", "GBM1155", {
+    const erc1155C = await erc1155.deploy("GBM Whales 1155", "GBM1155", {
         gasPrice: gasPrice
     });
     await erc1155C.deployed();
@@ -786,6 +787,8 @@ async function runTestAuctionManual() {
             gasPrice: gasPrice,
         });
 
+    console.log(metamaske.address);
+    savedERC1155Address = erc1155C.address;
     savedERC721Address = erc721C.address;
     //Fetching the latest auctionID :
 

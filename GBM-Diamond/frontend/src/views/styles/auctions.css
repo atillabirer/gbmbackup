@@ -1,8 +1,8 @@
 .auctions-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 
@@ -140,7 +140,7 @@
   border-radius: 20px;
   margin-top: -140px;
   padding: 36px 43px;
-  box-shadow: 0 4px 27px rgba(0, 0, 0, .15);
+  box-shadow: 0 4px 27px rgba(0, 0, 0, 0.15);
 }
 
 .grid {
@@ -216,7 +216,7 @@
   background-color: #fff;
   border-radius: 20px;
   padding: 36px 43px;
-  box-shadow: 0 4px 27px rgba(0, 0, 0, .15);
+  box-shadow: 0 4px 27px rgba(0, 0, 0, 0.15);
 }
 
 .filter-btn {
@@ -229,7 +229,7 @@
   padding-left: 1.25rem;
   background-color: transparent;
   border: 1.5px solid white;
-  transition: all .2s cubic-bezier(.455, .03, .515, .955);
+  transition: all 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
 
 .filter-btn.active {
@@ -237,7 +237,8 @@
   border: none;
 }
 
-.filter-btn:hover, .filter-btn.active:hover {
+.filter-btn:hover,
+.filter-btn.active:hover {
   color: #49beb7;
   background-color: #fff;
   border: 1px solid #49beb7;
@@ -265,7 +266,7 @@
   font-weight: 500;
   line-height: 160%;
   text-decoration: none;
-  transition: all .3s ease-in;
+  transition: all 0.3s ease-in;
   display: flex;
 }
 
@@ -274,7 +275,8 @@
   background-color: #fff;
 }
 
-.filter-button:active, .filter-button:focus {
+.filter-button:active,
+.filter-button:focus {
   background-color: #ff5959;
   border-color: #ff5959;
 }
@@ -282,7 +284,7 @@
 .filter-button.red {
   background-color: #ff5959;
   border-color: #ff5959;
-  transition-duration: .3s;
+  transition-duration: 0.3s;
   transition-timing-function: ease-in;
 }
 
@@ -392,7 +394,7 @@
   font-size: large;
   font-weight: 400;
   width: 120px;
-  transition: all .2s cubic-bezier(.455, .03, .515, .955);
+  transition: all 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
 
 .bid-now-btn:hover {
@@ -431,7 +433,7 @@
   font-size: 20px;
   font-weight: 700;
   line-height: 30px;
-  transition: all .2s cubic-bezier(.455, .03, .515, .955);
+  transition: all 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
   text-decoration: none;
 }
 
@@ -450,7 +452,7 @@
   color: #085f63;
   margin-bottom: 0;
   font-size: 24px;
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -468,7 +470,7 @@
 
 .select-field.sort {
   padding: 12px 20px;
-  transition: all .3s ease-in;
+  transition: all 0.3s ease-in;
 }
 
 .select-field.sort:hover {
@@ -479,7 +481,7 @@
 .select-field.filter {
   max-height: 48px;
   padding: 12px 20px;
-  transition: all .3s ease-in;
+  transition: all 0.3s ease-in;
 }
 
 .select-field.filter:hover {
@@ -520,5 +522,5 @@
 .nft-image {
   height: 150px;
   width: 150px;
-  border-radius: 30px;
+  border-radius: 11px;
 }

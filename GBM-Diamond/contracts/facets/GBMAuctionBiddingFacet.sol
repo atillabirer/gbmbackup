@@ -58,12 +58,16 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             _presetIndex = s.defaultPreset;
         }
 
-        //Checking if there was a min BID requirement
-        require(s.GBMPresets[_presetIndex].firstMinBid <= newBidAmount,
-            "You need to bid higher or equal than the minimum preset bid for this preset");
-        
-        require(s.saleToPrice[auctionID] <= newBidAmount,
-            "You need to bid higher or equal than the minimum bid for this auction");
+        if(s.saleToPrice[auctionID]  != 0){        
+            require(s.saleToPrice[auctionID] <= newBidAmount,
+                "You need to bid higher or equal than the minimum bid for this auction");
+
+        } else {
+             //Checking if there was a min BID requirement
+            require(s.GBMPresets[_presetIndex].firstMinBid <= newBidAmount,
+                "You need to bid higher or equal than the minimum preset bid for this preset");
+        }
+       
 
         //Check the kind of currency used by the auction:
         uint256 _currencyID = s.saleTocurrencyID[auctionID];

@@ -17,11 +17,13 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.marketPlaceRoyalty;
     }
 
+
     /// @notice get how much the marketplace take as a percentkage in case of a settled GBM auction
     /// @return mPlaceGBMFeePercentKage
     function getmPlaceGBMFeePercentKage() external view returns(uint256){
         return s.mPlaceGBMFeePercentKage;
     }
+
 
     /// @notice get how much the marketplace take as a percentkage in case of a settled GBM auction
     /// @return mPlaceEnglishFeePercentKage
@@ -29,11 +31,13 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.mPlaceEnglishFeePercentKage;
     }
 
+
     /// @notice get the address to which the GBM License fee is being paid
     /// @return GBMAccount
     function getGBMFeesAccount() external view returns(address){
         return s.GBMAccount;
     }
+
 
     /// @notice get the boolean controlling if the license fee is paid at settlement time in tokens or separately off-chain
     /// @return isLicensePaidOnChain
@@ -41,17 +45,20 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.isLicensePaidOnChain;
     }
 
+
     /// @notice get how much %k is the GBM license fee of a settled auction
     /// @return GBMFeePercentKage
     function getGBMFeePercentKage() external view returns(uint256){
         return s.GBMFeePercentKage;
     }
 
+
     /// @notice All calculation granularity are done to the 10th of basis point (DECIMALSK parts per unit)
     /// @return percentKage
     function getpercentKage() external pure returns(uint256){
         return 100000;
     }
+
 
     /// @notice Get a preset usable by auctions on the marketplace
     /// @param index The index of the preset you wish to inspect
@@ -60,11 +67,13 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.GBMPresets[index];
     }
 
+
     /// @notice Get the total number of presets registered in the GBM diamond
     /// @return amount the gbm presets amount
     function getGBMPresetsAmount() external view returns(uint256){
         return s.GBMPresetsAmount;
     }
+
 
     /// @notice Get a preset's name: 
     /// @param index The index of the preset you wish to inspect
@@ -73,12 +82,14 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.GBMPresetName[index];
     }
 
+
     /// @notice Get a preset's auctionDuration: 
     /// @param index The index of the preset you wish to inspect
     /// @return auctionDuration How long will the auction last at the minimum
     function getGBMPreset_AuctionDuration(uint256 index) external view returns(uint256){
         return s.GBMPresets[index].auctionDuration;
     }
+
 
     /// @notice Get a preset's hammerTimeDuration
     /// @param index The index of the preset you wish to inspect
@@ -87,12 +98,14 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.GBMPresets[index].hammerTimeDuration;
     }
 
+
     /// @notice Get a preset's cancellationPeriodDuration
     /// @param index The index of the preset you wish to inspect
     /// @return cancellationPeriodDuration How much time does the seller has to cancel the auction at the end of it
     function getGBMPreset_CancellationPeriodDuration(uint256 index) external view returns(uint256){
         return s.GBMPresets[index].cancellationPeriodDuration;
     }
+
 
     /// @notice Get a preset's stepMin
     /// @param index The index of the preset you wish to inspect
@@ -101,12 +114,14 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.GBMPresets[index].stepMin;
     }
 
+
     /// @notice Get a preset's incentiveMin
     /// @param index The index of the preset you wish to inspect
     /// @return incentiveMin The minimal %k incentive reward from a bid
     function getGBMPreset_IncentiveMin(uint256 index) external view returns(uint256){
         return s.GBMPresets[index].incentiveMin;
     }
+
 
     /// @notice Get a preset's incentiveMax
     /// @param index The index of the preset you wish to inspect
@@ -123,6 +138,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.GBMPresets[index].incentiveGrowthMultiplier;
     }
  
+
     /// @notice get which preset is the default one used by auctions if none is specified
     /// @return defaultPreset
     function getGBMPresetDefault() external view returns(uint256){
@@ -136,12 +152,14 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.totalNumberOfSales;
     }
 
+
     /// @notice get the kind of sale (GBM, English or direct) a sale is
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return saleKind  0x0 = GBM sale, 0x1 = English Auction, 0x2 = Direct Sale
     function getSale_SaleKind(uint256 saleID) external view returns(bytes4){
         return s.saleToSaleKind[saleID];
     }
+
 
     /// @notice get the address of the NFT tokens that are being sold in a sale
     /// @param saleID The ID of the sale you wish to know the details of
@@ -150,12 +168,14 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToTokenAddress[saleID];
     }
 
+
     /// @notice get the tokenID of the NFT tokens that are being sold in a sale
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return tokenID the tokenID of the NFT tokens that are being sold in a sale
     function getSale_TokenID(uint256 saleID) external view returns(uint256){
         return s.saleToTokenId[saleID];
     }
+
 
     /// @notice get the amount of the NFT tokens that are being sold in a sale
     /// @param saleID The ID of the sale you wish to know the details of
@@ -164,6 +184,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToTokenAmount[saleID];
     }
 
+
     /// @notice get the kind (ERC721 or 1155) of the NFT tokens that are being sold in a sale
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return kind 0x73ad2146 if the token is ERC721, 0x973bb640 if the token is ERC1155
@@ -171,12 +192,14 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToTokenKind[saleID];
     }
 
+
     /// @notice get the index of the GBM preset used by the sale
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return GBMPresetIndex 0 mean that the sale is using the default GBM preset
     function getSale_GBMPresetIndex(uint256 saleID) external view returns(uint256){
         return s.saleToGBMPreset[saleID];
     }
+
 
     /// @notice get the index of the GBM preset used by the sale
     /// @param saleID The ID of the sale you wish to know the details of
@@ -193,6 +216,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return  s.GBMPresets[_index];
     }
 
+
     /// @notice Get an auction preset's auctionDuration
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return auctionDuration How long will the auction last at the minimum
@@ -207,6 +231,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         }
         return s.GBMPresets[_index].auctionDuration;
     }
+
 
     /// @notice Get an auction preset's hammerTimeDuration
     /// @param saleID The ID of the sale you wish to know the details of
@@ -223,6 +248,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.GBMPresets[_index].hammerTimeDuration;
     }
 
+
     /// @notice Get an auction preset's cancellationPeriodDuration
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return cancellationPeriodDuration How much time does the seller has to cancel the auction at the end of it
@@ -238,6 +264,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.GBMPresets[_index].cancellationPeriodDuration;
     }
 
+
     /// @notice Get an auction preset's stepMin
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return stepMin The minimal %k increase between two successive bids   
@@ -252,6 +279,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         }
         return s.GBMPresets[_index].stepMin;
     }
+
 
     /// @notice Get an auction preset's incentiveMin
     /// @param saleID The ID of the sale you wish to know the details of
@@ -283,6 +311,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.GBMPresets[_index].incentiveMax;
     }
 
+
     /// @notice Get an auction preset's incentiveGrowthMultiplier
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return incentiveGrowthMultiplier The growth factor in a GBM auction
@@ -298,12 +327,14 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.GBMPresets[_index].incentiveGrowthMultiplier;
     }
 
+
     /// @notice Get the sale's currencyID
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return currencyID The currencyID bsed by the auction. 0 for default.
     function getSale_CurrencyID(uint256 saleID) external view returns(uint256){
         return s.saleTocurrencyID[saleID];
     }
+
 
     /// @notice Get the sale's currencyID
     /// @param saleID The ID of the sale you wish to know the details of
@@ -321,6 +352,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.currencyNames[_index];
     }
 
+
     /// @notice Get the sale's currency token address
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return currencyAddress The currencyAddress used by the auction. 0x0 mean base currency (ETH/MATIC/GLMR)
@@ -337,6 +369,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.currencyAddress[_index];
     }
 
+
     /// @notice Get the sale's startTimestamp
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return startTimestamp When is a sale starting to accept bids/offers
@@ -344,12 +377,30 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToStartTimestamp[saleID];
     }
 
+
+    /// @notice Get the aution minimal first bid
+    /// @param saleID The ID of the sale you wish to know the details of
+    /// @return startingBid What amount of currency will be accapted as a minimal first bid
+    function getSale_StartingBid(uint256 saleID) external view returns(uint256){
+        if(s.saleToPrice[saleID]  != 0){
+            return s.saleToPrice[saleID];
+        } else {
+            uint256 _presetIndex = s.saleToGBMPreset[saleID];
+            if (_presetIndex == 0) {
+                _presetIndex = s.defaultPreset;
+            }
+            return s.GBMPresets[_presetIndex].firstMinBid;
+        }
+    }
+
+
     /// @notice Get the sale's endTimestamp
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return endTimestamp When is a refusing any more bids
     function getSale_EndTimestamp(uint256 saleID) external view returns(uint256){
         return s.saleToEndTimestamp[saleID];
     }
+
 
     /// @notice Get the sale's beneficiary (usually the seller)
     /// @param saleID The ID of the sale you wish to know the details of
@@ -366,6 +417,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToDebt[saleID];
     }
 
+
     /// @notice Get the sale's specified bid value
     /// @param saleID The ID of the sale you wish to know the details of
     /// @param bidIndex The position of the bid you wish to know the details of. Starts at 1.
@@ -373,6 +425,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
     function getSale_Bid_Value(uint256 saleID, uint256 bidIndex) external view returns(uint256){
         return s.saleToBidValues[saleID][bidIndex];
     }
+
 
     /// @notice Get the sale's specified bid bidder
     /// @param saleID The ID of the sale you wish to know the details of
@@ -382,6 +435,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToBidders[saleID][bidIndex];
     }
 
+
     /// @notice Get the sale's specified bid due incentive
     /// @param saleID The ID of the sale you wish to know the details of
     /// @param bidIndex The position of the bid you wish to know the details of. Starts at 1.
@@ -389,6 +443,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
     function getSale_Bid_Incentive(uint256 saleID, uint256 bidIndex) external view returns(uint256){
         return s.saleToBidIncentives[saleID][bidIndex];
     }
+
 
     /// @notice Get the sale's bid currency index
     /// @param saleID The ID of the sale you wish to know the details of
@@ -398,6 +453,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToBidCurrencies[saleID][bidIndex];
     }
     
+
     /// @notice Get the sale's bid currency address
     /// @param saleID The ID of the sale you wish to know the details of
     /// @param bidIndex The position of the bid you wish to know the details of. Starts at 1.
@@ -414,6 +470,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
 
         return s.currencyAddress[_index];
     }
+
 
     /// @notice Get the sale's bid currency name
     /// @param saleID The ID of the sale you wish to know the details of
@@ -432,6 +489,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.currencyNames[_index];
     }
 
+
     /// @notice Get the sale's highest bid value
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return value The value of the bid at the specified index, expressed in the auction base currency
@@ -439,6 +497,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         uint256 _bidindex = s.saleToNumberOfBids[saleID];
         return s.saleToBidValues[saleID][_bidindex];
     }
+
 
     /// @notice Get the sale's highest bid bidder
     /// @param saleID The ID of the sale you wish to know the details of
@@ -448,6 +507,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToBidders[saleID][_bidindex];
     }
 
+
     /// @notice Get the sale's highest bid due incentive
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return incentive The value of the incentive if outbid of the bid at the specified index, expressed in the auction base currency
@@ -456,6 +516,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToBidIncentives[saleID][_bidindex];
     }
 
+
     /// @notice Get the sale's bid highest index
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return currencyIndex The currency index of the currency the bid was made in.
@@ -463,6 +524,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         uint256 _bidindex = s.saleToNumberOfBids[saleID];
         return s.saleToBidCurrencies[saleID][_bidindex];
     }
+
 
     /// @notice Get the sale's highest bid currency address
     /// @param saleID The ID of the sale you wish to know the details of
@@ -481,6 +543,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.currencyAddress[_index];
     }
 
+
     /// @notice Get the sale's highest bid currency name
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return currencyName The currency index of the currency the bid was made in.
@@ -498,6 +561,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.currencyNames[_index];
     }
 
+
     /// @notice Get the sale's total number of subsequent bids
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return numberOdBids The number of bids made in this auction
@@ -513,6 +577,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.smartContractsUsersNativeCurrencyBalance[smartContract];
     }
 
+
     /// @notice Get the claimed status of a sale
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return claimed Wether or not a sale have already been settled
@@ -520,6 +585,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToClaimed[saleID];
     }
     
+
     /// @notice Get the depositor of a 721 token
     /// @param tokenAddress The address of the token that was deposited 
     /// @param tokenID The tokenID of the deposited token
@@ -527,6 +593,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
     function getERC721Token_depositor(address tokenAddress, uint256 tokenID) external view returns(address){
         return s.erc721tokensAddressAndIDToEscrower[tokenAddress][tokenID];
     }
+
 
     /// @notice Get the sale status of a 721 token
     /// @param tokenAddress The address of the token that was deposited 
@@ -536,6 +603,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.erc721tokensAddressAndIDToUnderSale[tokenAddress][tokenID];
     }
 
+
     /// @notice Get the deposited amount of a 1155 token
     /// @param tokenAddress The address of the token that was deposited 
     /// @param tokenID The tokenID of the deposited token
@@ -544,6 +612,7 @@ contract GBMGettersFacet is IGBMGettersFacet {
     function getERC1155Token_depositor(address tokenAddress, uint256 tokenID, address depositor) external view returns(uint256){
         return s.erc1155tokensAddressAndIDToEscrowerAmount[tokenAddress][tokenID][depositor];
     }
+
 
     /// @notice Get the deposited amount of a 1155 token under sale
     /// @param tokenAddress The address of the token that were deposited and are under sale

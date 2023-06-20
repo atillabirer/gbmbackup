@@ -1,5 +1,4 @@
-
-.config-page { 
+.config-page {
   width: 1000px;
 }
 
@@ -74,7 +73,7 @@ h3 {
 .preset-input {
   margin: auto;
   height: 2rem;
-  background-color: #05848A;
+  background-color: #05848a;
   border-radius: 10px;
   color: #fff;
   border: none;
@@ -83,11 +82,12 @@ h3 {
   width: 45%;
 }
 
-.update-btn, .add-new-btn { 
+.update-btn,
+.add-new-btn {
   margin: 10px 0;
   height: 3rem;
   width: 100%;
-  background-color: #49BEB7;
+  background-color: #49beb7;
   border-radius: 50px;
   color: #fff;
   border: none;
@@ -97,7 +97,7 @@ h3 {
 }
 
 .configuration-spread {
-    display: flex;
+  display: flex;
 }
 
 .configuration-field {
@@ -108,12 +108,54 @@ h3 {
 }
 
 .configuration-input {
-    margin: 14px;
-    height: 2rem;
-    background-color: #05848A;
-    border-radius: 10px;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    font-size: larger;
+  margin: 14px;
+  height: 2rem;
+  background-color: #05848a;
+  border-radius: 10px;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  font-size: larger;
+}
+
+.configuration-default-preset {
+}
+
+.configuration-default-preset-header {
+  padding-bottom: 1.5rem;
+}
+
+.configuration-default-preset-group {
+  display: flex;
+  flex-direction: row;
+  padding: 0.25rem 0;
+  justify-content: space-between;
+}
+
+.configuration-default-preset-label {
+  font-size: large;
+  color: var(--text);
+  align-self: center;
+}
+
+.configuration-default-preset-input {
+  width: 45%;
+  height: 2.5rem;
+}
+
+.color-picker {
+  width: 7rem;
+}
+
+.color-preview {
+  height: 3rem;
+  width: 7rem;
+  border-radius: 3px;
+  border: 2px solid white;
+  background-color: transparent;
+  margin-left: 5px;
+}
+
+#logo-upload-success {
+  color: var(--primary);
 }

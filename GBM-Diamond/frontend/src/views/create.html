@@ -1,110 +1,185 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
-        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-      ></script>
-    </head>
-    <body>
-        <div class="page-content">
-            <div class="page-title">List for sale</div>
-            <div class="metamask-missing">
-                <p class="gbm-header">Please connect your MetaMask wallet.</p>
-            </div>
-            <div class="metamask-found" hidden>
-                <div class="nft-page width-limiter">
-                    <img class="token-media"></img>
-                    <div id="token-title"></div>                    
-                    <div class="parameter-container">
-                        <div class="parameter-option">
-                            <div class="gbm-radio width-limiter">
-                                <label>
-                                    <input type="radio" name="radio" checked/>
-                                    <div class="first-choice box">
-                                       <p>GBM Auction</p>
-                                    </div>
-                                </label>
-                                <label>
-                                    <input type="radio" name="radio"/>
-                                    <div class="second-choice box">
-                                        <p>Fixed Price</p>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Currency</div>
-                            <div class="parameter-option-fields">
-                                <select class="gbm-select">
-                                    <option>Fake Ether (fETH)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Starting bid</div>
-                            <div class="parameter-option-fields">
-                                <input id="min-bid" class="auction-input gbm-input-boxed width-limiter" type="text" value="1"/>
-                            </div>
-                        </div>
-                        <div class="parameter-option">
-                            <div class="gbm-radio width-limiter">
-                                <label>
-                                    <input type="radio" name="radio2" onclick="toggleStartDateSelection(false)" checked/>
-                                    <div class="first-choice box">
-                                       <p>Now</p>
-                                    </div>
-                                </label>
-                                <label>
-                                    <input type="radio" name="radio2" onclick="toggleStartDateSelection(true)"/>
-                                    <div class="second-choice box">
-                                        <p>Later</p>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        <div id="start-date-selector" class="parameter-option flex-row">
-                            <div style="margin: auto 1rem auto 0;">Date & time: </div>
-                            <div class="flex-row opposite-ends">
-                                <input class="gbm-time-picker" type="time" onchange="generateBreakdown()">
-                                <input class="gbm-date-picker" type="date" onchange="generateBreakdown()">
-                            </div>
-                        </div>
-                        <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Duration</div>
-                            <div class="parameter-option-fields">
-                                <span id="select-duration" class="gbm-select-neo"></span>
-                            </div>
-                            <div id='time-specifics' class="parameter-description">
-                                End date: Jun 01, 2023 at 12:00am UTC - 4 </br>
-                                Hammer time: 20 minutes </br>
-                                Cancellation period: 30 minutes
-                            </div>
-                        </div>
-                        <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">GBM incentives</div>
-                            <div class="parameter-option-fields">
-                                <span id="select-incentive" class="gbm-select-neo"></span>
-                            </div>
-                            <div id='incentive-specifics' class="parameter-description">
-                                Bidders will make between 0.5% and 5% return on their bid. In total, bidders will receive up to 10% of the winning bid.
-                            </div>
-                        </div>
-                        <div class="parameter-option">
-                            <div class="gbm-header parameter-option-label">Cancellation</div>
-                            <div id="cancellation-text1" class="parameter-description flex-row opposite-ends">
-                                <div id="cancellation-text1-1">Cancellation fee</div>
-                                <div id="cancellation-text1-2"></div>
-                            </div>
-                            <div id="cancellation-text2" class="parameter-description"></div>
-                        </div>
-                    </div>
-                    <button class="auction-btn" onclick="createAuctionAndRedirect()">Confirm Auction Creation</button>
+  <head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+      integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <div class="page-content">
+      <div class="page-title">List for sale</div>
+      <div class="metamask-missing">
+        <p class="gbm-header">Please connect your MetaMask wallet.</p>
+      </div>
+      <div class="metamask-found" hidden>
+        <div class="nft-page left-column">
+          <img class="token-media" />
+          <div id="token-title"></div>
+          <div>
+            <div id="quantity-container" class="left-column-option">
+              <div class="gbm-header left-column-option-label">Quantity</div>
+              <div id="quantity-fields" class="left-column-fields flex-row">
+                <button
+                  class="gbm-btn quantity-control"
+                  onclick="changeQuantity(-1)"
+                >
+                  -
+                </button>
+                <div>
+                  <input
+                    id="quantity-input"
+                    class="gbm-input-boxed quantity-box"
+                    type="text"
+                    value="1"
+                    disabled
+                  />
                 </div>
+                <button
+                  class="gbm-btn quantity-control"
+                  onclick="changeQuantity(1)"
+                >
+                  +
+                </button>
+              </div>
+              <div id="quantity-owned">You own X</div>
             </div>
+            <div class="left-column-option">
+              <div class="gbm-radio">
+                <label>
+                  <input type="radio" name="radio" checked />
+                  <div class="first-choice box">
+                    <p>GBM Auction</p>
+                  </div>
+                </label>
+                <label>
+                  <input type="radio" name="radio" />
+                  <div class="second-choice box">
+                    <p>Fixed Price</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="left-column-option">
+              <div class="gbm-header left-column-option-label">Currency</div>
+              <div class="left-column-fields">
+                <span id="select-currency" class="gbm-select"></span>
+              </div>
+            </div>
+            <div class="left-column-option">
+              <div class="gbm-header left-column-option-label">
+                Starting bid
+              </div>
+              <div class="left-column-option-fields">
+                <input
+                  id="min-bid"
+                  class="gbm-input-boxed"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+            <div class="left-column-option">
+              <div class="gbm-header left-column-option-label">Start date</div>
+              <div class="gbm-radio">
+                <label>
+                  <input
+                    type="radio"
+                    name="radio2"
+                    onclick="toggleStartDateSelection(false)"
+                    checked
+                  />
+                  <div class="first-choice box">
+                    <p>Now</p>
+                  </div>
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="radio2"
+                    onclick="toggleStartDateSelection(true)"
+                  />
+                  <div class="second-choice box">
+                    <p>Later</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div id="start-date-selector" class="left-column-option flex-row">
+              <div id="date-time-header">Date & time:</div>
+              <div class="flex-row opposite-ends">
+                <input
+                  class="gbm-time-picker"
+                  type="time"
+                  onchange="generateBreakdown()"
+                />
+                <input
+                  class="gbm-date-picker"
+                  type="date"
+                  onchange="generateBreakdown()"
+                />
+              </div>
+            </div>
+            <div class="left-column-option">
+              <div class="gbm-header left-column-option-label">Duration</div>
+              <div class="left-column-option-fields">
+                <span id="select-duration" class="gbm-select"></span>
+              </div>
+              <div
+                id="time-specifics"
+                class="left-column-description pt-1"
+              ></div>
+            </div>
+            <div class="left-column-option">
+              <div class="gbm-header left-column-option-label">
+                GBM incentives
+              </div>
+              <div class="left-column-option-fields">
+                <span id="select-incentive" class="gbm-select"></span>
+              </div>
+              <div
+                id="incentive-specifics"
+                class="left-column-description pt-1"
+              >
+                Bidders will make between 0.5% and 5% return on their bid. In
+                total, bidders will receive up to 10% of the winning bid.
+              </div>
+            </div>
+            <div class="left-column-option">
+              <div class="gbm-header left-column-option-label">
+                Cancellation
+              </div>
+              <div
+                id="cancellation-text1"
+                class="left-column-description flex-row opposite-ends"
+              >
+                <div id="cancellation-text1-1">Cancellation fee</div>
+                <div id="cancellation-text1-2"></div>
+              </div>
+              <div
+                id="cancellation-text2"
+                class="left-column-description"
+              ></div>
+            </div>
+          </div>
+          <button
+            class="gbm-btn h-3 cover text-large red"
+            onclick="createAuctionAndRedirect()"
+          >
+            Create auction
+          </button>
+          <div class="h-1"></div>
+          <button
+            class="gbm-btn h-3 cover text-large transparent"
+            onclick="history.back()"
+          >
+            Discard
+          </button>
         </div>
-        <script type="text/javascript" src="scripts/global.js"></script>
-    </body>
+      </div>
+    </div>
+    <script type="text/javascript" src="scripts/global.js"></script>
+  </body>
 </html>
