@@ -231,10 +231,20 @@ const tokenSaleProcess = {
 
     //ToDo: Add start bid to auciton start
 
+    //unrolling the bundles
+    let tokenIDUnroll = [];
+    let tokenAmountUnroll = [];
+    for(let i =0; i<distribution[0].length; i++){
+      for(let j = 0; j<distribution[1][i]; j++){
+        tokenIDUnroll.push(distribution[0][i]);
+        tokenAmountUnroll.push(1);
+      }
+    }
+
     await gbmContracts.methods
       .safeRegister1155auctionBatch(
-        distribution[0],
-        distribution[1],
+        tokenIDUnroll,
+        tokenAmountUnroll,
         deploymentStatus.ERC1155[deploymentStatus.ERC1155.length - 1],
         presetNumber,
         startTime,
@@ -257,9 +267,9 @@ async function moveToStep(_step) {
       break;
     case 2:
       await tokenSaleProcess.mintBatchFromDistribution(
-        distribution
+        distribution[0], distribution[1]
       );
-      await tokenSaleProcess.transferBatchToDiamond(distribution);
+      await tokenSaleProcess.transferBatchToDiamond(distribution[0], distribution[1]);
       break;
     case 3:
       await tokenSaleProcess.startAuctionBatch();
