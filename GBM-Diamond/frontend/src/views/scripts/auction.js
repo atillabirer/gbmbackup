@@ -153,11 +153,11 @@ async function populateNFTDetails(_sale, _metadata) {
   document.getElementById("details-token-standard").innerHTML =
     standards[_sale.tokenKind];
   document.getElementById("details-blockchain").innerHTML = "Local Hardhat";
-  document.getElementById("details-smart-contract").innerHTML =
-    _sale.tokenAddress
+  document.getElementById("details-smart-contract").innerHTML = 
+    window.screen.availWidth < 768 ? shortenAddress(_sale.tokenAddress) : _sale.tokenAddress
   document.getElementById(
     "details-token-uri"
-  ).innerHTML = `${tokenURI.substring(0, 25)}...${tokenURI.substring(
+  ).innerHTML =  window.screen.availWidth < 768 ? shortenAddress(tokenURI) : `${tokenURI.substring(0, 25)}...${tokenURI.substring(
     tokenURI.length - 20
   )}`;
 }
@@ -317,8 +317,8 @@ function generateBidHistoryElement(_bid, _index) {
   bidEl.classList.add("previous-bid");
 
   const bidInnerHTML = `
-          <div class="previous-bid-row flex-row opposite-ends">
-              <div class="flex-row">
+          <div class="previous-bid-row flex-row-mobile-friendly opposite-ends">
+              <div class="flex-row-mobile-friendly">
                 <div class="green-dot"></div>
                 <div class="previous-bidder">${_bid.bidBidder.substring(
                   0,

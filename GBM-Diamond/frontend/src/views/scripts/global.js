@@ -48,8 +48,8 @@ const pageInitializer = {
     navBar.classList.add("nav-bar");
     navBar.innerHTML = `
       <div class="flex-row opposite-ends pad-vertical-2">
-        <div>
-            <img id="nav-bar-logo" class="h-3" src="${logo}" />
+        <div style="display: flex;">
+            <img id="nav-bar-logo" class="h-3" src="${logo}" style="margin: auto;"/>
         </div>
         <div class="nav-metamask">
             <div class="metamask-missing">

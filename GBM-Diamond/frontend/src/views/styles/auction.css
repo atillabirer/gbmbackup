@@ -54,14 +54,14 @@
   justify-content: space-between;
 }
 
-.auction-status div { 
+.auction-status div {
   word-wrap: break-word;
   word-break: break-all;
 }
 
 .status-container {
   padding-right: 50px;
-  width: 50%
+  width: 50%;
 }
 
 .label {
@@ -376,22 +376,45 @@
     padding-right: 10px;
     width: 50%;
   }
-  
+
   .label {
-    font-size: medium;
+    font-size: large;
   }
-  
+
   .info-value {
     padding: 20px 0;
-    font-size: large;
+    font-size: larger;
     font-weight: bolder;
   }
 
+  .bid-btn {
+    margin-top: 3rem;
+    font-size: large;
+  }
+
+  .share-btn {
+    font-size: large;
+  }
+
   #bids-disabled-upper-msg {
-    font-size: small;
+    font-size: medium;
   }
 
   #bids-disabled-lower-msg {
-    font-size: small;
+    font-size: medium;
+  }
+
+  #description-container {
+    overflow: auto;
+    line-height: 22px;
+    height: auto;
+  }
+
+  .description-display-mobile {
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .description-display-desktop {
+    display: none;
   }
 }
