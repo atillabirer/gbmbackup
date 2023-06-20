@@ -93,7 +93,7 @@ async function init(){
 }
 
 //Potential race condition if the deploy script is called just after having been initalized
-//init(); 
+init(); 
 
 export function setLogger(loggerCallback: (msg: string) => void){
     logger = loggerCallback;
@@ -275,6 +275,13 @@ async function doStep_s_p(arg:string){
 
             let dapreset:any = conf.GBMPresetArray[i];
             logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
+
+            let totalRegisteredPreset = parseInt(await theDiamond.getGBMPresetsAmount());
+            if(parseInt(dapreset.presetIndex) -1 > totalRegisteredPreset){
+                dapreset.presetIndex = totalRegisteredPreset +1;
+            }
+
+
             let continuer = true;
             while(continuer){
                 try {
@@ -340,6 +347,11 @@ async function doStep_s_p(arg:string){
         let dapreset:any = conf.GBMPresetArray[index];
         
         logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
+
+        let totalRegisteredPreset = parseInt(await theDiamond.getGBMPresetsAmount());
+        if(parseInt(dapreset.presetIndex) -1 > totalRegisteredPreset){
+            dapreset.presetIndex = totalRegisteredPreset +1;
+        }
 
         let continuer = true;
         while (continuer) {
