@@ -215,6 +215,8 @@ const presetActions = {
     this.currentPresetNames = names;
     this.currentPresets = presets;
 
+    names.push("Create new preset");
+
     let presetsFromDeployment = Object.values(
       deploymentStatus.registeredPresets
     ).splice(2);
@@ -228,68 +230,115 @@ const presetActions = {
 
     this.currentIncentivePresets = [...new Set(incentivePresets)];
     this.currentIncentivePresetNames = [...new Set(incentivePresetNames)];
-
+    this.currentIncentivePresetNames.push("Custom incentive profile");
     generateSelectDropdown(
       "select-preset",
       [...Array(names.length).keys()],
       names,
       () => this.displaySelectedPreset(),
-      1
+      0
     );
 
     this.displaySelectedPreset();
   },
   displaySelectedPreset: function () {
-    const selectedPresetIndex = document
+    let selectedPresetIndex = document
       .getElementById("select-preset")
       .getAttribute("selected-value");
-    document.getElementById("preset-name").value =
-      this.currentPresetNames[selectedPresetIndex];
-    document.getElementById("preset-auction-duration").value =
-      this.currentPresets[selectedPresetIndex].auctionDuration;
-    document.getElementById("preset-cancellation").value =
-      this.currentPresets[selectedPresetIndex].cancellationPeriodDuration;
-    document.getElementById("preset-hammertime").value =
-      this.currentPresets[selectedPresetIndex].hammerTimeDuration;
 
-    let correctIndexPosition = this.currentIncentivePresetNames.indexOf(
-      Object.values(deploymentStatus.registeredPresets).find((preset) => {
-        return (
-          preset.incentiveMin ===
-            `${this.currentPresets[
-              selectedPresetIndex
-            ].incentiveMin.toString()}` &&
-          preset.incentiveMax ===
-            `${this.currentPresets[
-              selectedPresetIndex
-            ].incentiveMax.toString()}` &&
-          preset.incentiveGrowthMultiplier ===
-            `${this.currentPresets[
-              selectedPresetIndex
-            ].incentiveGrowthMultiplier.toString()}`
+    if (selectedPresetIndex < this.currentPresetNames.length - 1) {
+      document.getElementById("preset-name").value =
+        this.currentPresetNames[selectedPresetIndex];
+      document.getElementById("preset-auction-duration").value =
+        this.currentPresets[selectedPresetIndex].auctionDuration;
+      document.getElementById("preset-cancellation").value =
+        this.currentPresets[selectedPresetIndex].cancellationPeriodDuration;
+      document.getElementById("preset-hammertime").value =
+        this.currentPresets[selectedPresetIndex].hammerTimeDuration;
+      document.getElementById("preset-multiplier").value =
+        this.currentPresets[selectedPresetIndex].incentiveGrowthMultiplier;
+      document.getElementById("preset-incentive-max").value =
+        this.currentPresets[selectedPresetIndex].incentiveMax;
+      document.getElementById("preset-incentive-min").value =
+        this.currentPresets[selectedPresetIndex].incentiveMin;
+      document.getElementById("preset-step").value =
+        this.currentPresets[selectedPresetIndex].stepMin;
+      document.getElementById("preset-update-btn").innerHTML = "Edit preset";
+
+      let correctIndexPosition;
+
+      try {
+        correctIndexPosition = this.currentIncentivePresetNames.indexOf(
+          Object.values(deploymentStatus.registeredPresets).find((preset) => {
+            return (
+              preset.incentiveMin ===
+                `${this.currentPresets[
+                  selectedPresetIndex
+                ].incentiveMin.toString()}` &&
+              preset.incentiveMax ===
+                `${this.currentPresets[
+                  selectedPresetIndex
+                ].incentiveMax.toString()}` &&
+              preset.incentiveGrowthMultiplier ===
+                `${this.currentPresets[
+                  selectedPresetIndex
+                ].incentiveGrowthMultiplier.toString()}`
+            );
+          }).displayName
         );
-      }).displayName
-    );
+      } catch {
+        correctIndexPosition = 5;
+      }
 
-    generateSelectDropdown(
-      "select-incentive-preset",
-      this.currentIncentivePresetNames,
-      this.currentIncentivePresetNames,
-      () => {},
-      correctIndexPosition
-    );
+      generateSelectDropdown(
+        "select-incentive-preset",
+        this.currentIncentivePresetNames,
+        this.currentIncentivePresetNames,
+        () => this.displayCustomIncentive(),
+        correctIndexPosition
+      );
+    } else {
+      document.getElementById("preset-name").value = "";
+      document.getElementById("preset-auction-duration").value = "";
+      document.getElementById("preset-cancellation").value = "";
+      document.getElementById("preset-hammertime").value = "";
+      document.getElementById("preset-multiplier").value = "";
+      document.getElementById("preset-incentive-max").value = "";
+      document.getElementById("preset-incentive-min").value = "";
+      document.getElementById("preset-step").value = "";
+      document.getElementById("preset-update-btn").innerHTML = "Create preset";
+      generateSelectDropdown(
+        "select-incentive-preset",
+        this.currentIncentivePresetNames,
+        this.currentIncentivePresetNames,
+        () => this.displayCustomIncentive()
+      );
+    }
+    this.displayCustomIncentive();
+  },
+  displayCustomIncentive: function () {
+    if (
+      document
+        .getElementById("select-incentive-preset")
+        .getAttribute("selected-value") === "Custom incentive profile"
+    )
+      document.getElementById("custom-incentive-display").hidden = false;
+    else document.getElementById("custom-incentive-display").hidden = true;
   },
   updatePreset: async function () {
     const updateBtn = document.getElementById("preset-update-btn");
     updateBtn.innerHTML = "Updating...";
     updateBtn.disabled = true;
 
-    let incentivePresetToUse = Object.values(deploymentStatus.registeredPresets).find(
+    let incentivePresetToUse = Object.values(
+      deploymentStatus.registeredPresets
+    ).find(
       (preset) =>
         preset.displayName ===
-        document.getElementById("select-incentive-preset").getAttribute("selected-value")
+        document
+          .getElementById("select-incentive-preset")
+          .getAttribute("selected-value")
     );
-
 
     await gbmContracts.methods
       .setGBMPreset(
@@ -301,10 +350,10 @@ const presetActions = {
         document.getElementById("preset-auction-duration").value, // Auction Duration
         document.getElementById("preset-hammertime").value, // Hammer Time Duration
         document.getElementById("preset-cancellation").value, // Cancellation Period Duration
-        incentivePresetToUse.stepMin, // Step Min
-        incentivePresetToUse.incentiveMin, // Incentive Min
-        incentivePresetToUse.incentiveMax, // Incentive Max
-        incentivePresetToUse.incentiveGrowthMultiplier, // Incentive Growth Multiplier
+        document.getElementById("preset-step").value, // Step Min
+        document.getElementById("preset-incentive-min").value, // Incentive Min
+        document.getElementById("preset-incentive-max").value, // Incentive Max
+        document.getElementById("preset-multiplier").value, // Incentive Growth Multiplier
         0, // Minimum bid
         document.getElementById("preset-name").value
       )
@@ -314,7 +363,7 @@ const presetActions = {
         gasLimit: 300000,
       });
 
-      window.location.reload();
+    window.location.reload();
   },
 };
 

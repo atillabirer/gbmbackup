@@ -165,8 +165,6 @@ input::-webkit-input-placeholder {
   padding: 0;
   box-shadow: rgba(0, 0, 0, 0.1) 3px 3px 5px 0px;
   color: var(--secondary);
-  max-height: 21rem;
-  overflow: scroll;
 }
 
 .gbm-select.expanded label {
