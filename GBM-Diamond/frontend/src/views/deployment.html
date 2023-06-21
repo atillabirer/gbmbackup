@@ -64,9 +64,10 @@
                 <div class="left-column-option-fields">
                   <span id="select-network" class="gbm-select"></span>
                   <p class="left-column-description">
-                    <br><b>Live Blockchain</b> : <br>Make sure you have properly edited the 
-                    hardhat.config.ts  👷 ⚙️ file to set the proper defaultNetwork and the associated account private key with the currently 
-                    connected metamask address 🖋️  🦊.
+                    <br /><b>Live Blockchain</b> : <br />Make sure you have
+                    properly edited the hardhat.config.ts 👷 ⚙️ file to set the
+                    proper defaultNetwork and the associated account private key
+                    with the currently connected metamask address 🖋️ 🦊.
                   </p>
                 </div>
               </div>
@@ -147,64 +148,197 @@
                   class="configuration-default-preset"
                   hidden
                 >
-                  <div class="gbm-header configuration-default-preset-header">
-                    dApp colors
-                  </div>
-                  <div class="configuration-default-preset-group">
-                    <div class="configuration-default-preset-label">
-                      Primary Button
-                    </div>
-                    <input type="color" id="color-primary" value="#49beb7">
-                  </div>
-                  <div class="configuration-default-preset-group">
-                    <div class="configuration-default-preset-label">
-                      Secondary Button
-                    </div>
-                    <input type="color" id="color-selection" value="#FACF5A">
-                  </div>
-                  <div class="configuration-default-preset-group">
-                    <div class="configuration-default-preset-label">
-                      Text fields & dropdowns
-                    </div>
-                    <input type="color" id="color-secondary" value="#05848a">
-                  </div>
-                  <div class="configuration-default-preset-group">
-                    <div class="configuration-default-preset-label">
-                      Important actions
-                    </div>
-                    <input type="color" id="color-tertiary" value="#ff5959">
-                  </div>
-                  <div class="configuration-default-preset-group">
-                    <div class="configuration-default-preset-label">
-                      Background
-                    </div>
-                    <input type="color" id="color-background" value="#085f63">
-                  </div>
-                  <div class="configuration-default-preset-group">
-                    <div class="configuration-default-preset-label">
-                      Font & lines
-                    </div>
-                    <input type="color" id="color-text" value="#ffffff">
-                  </div>
-                  <div class="configuration-default-preset-group">
-                    <div class="configuration-default-preset-label">
-                      Logo
-                    </div>
-                      <input id="image-upload" type="file" />
-                      <button
-                        class="gbm-btn transparent"
-                        id="image-upload-btn"
-                        onclick="imageUpload()"
+                  <div class="left-column-option mt-2">
+                    <div class="flex-row opposite-ends">
+                      <div class="gbm-header left-column-option-label">
+                        Logo
+                      </div>
+                      <div
+                        class="reset-text"
+                        onclick="logoActions.resetToDefault()"
                       >
-                        Upload
-                      </button>
-                    </label>
-                  </div>
-                  <div id="display-logo" style="display: none;" class="configuration-default-preset-group">
-                    <div class="configuration-default-preset-label">
-                      Logo preview
+                        Reset to default
+                      </div>
                     </div>
-                    <img id="logoPreview"/>
+                    <div class="left-column-option-fields">
+                      <p class="left-column-description">
+                        Please enter an URL or upload a file for the logo to be
+                        displayed in the navbar on all pages.
+                      </p>
+                      <div class="gbm-radio">
+                        <label>
+                          <input
+                            id="logo-update-first"
+                            type="radio"
+                            name="radio2"
+                            onclick="logoActions.toggleLogoUploadField()"
+                            checked
+                          />
+                          <div class="first-choice box">
+                            <p>URL</p>
+                          </div>
+                        </label>
+                        <label>
+                          <input
+                            id="logo-update-second"
+                            type="radio"
+                            name="radio2"
+                            onclick="logoActions.toggleLogoUploadField()"
+                          />
+                          <div class="second-choice box">
+                            <p>Upload file</p>
+                          </div>
+                        </label>
+                      </div>
+                      <input
+                        id="logo-url"
+                        class="gbm-input-boxed mt-1"
+                        type="text"
+                        onchange="logoActions.updateLogoByLink()"
+                      />
+                      <div id="logo-upload" class="mt-1" hidden>
+                        <input
+                          id="image-upload"
+                          type="file"
+                          accept=".svg, .jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+                          hidden
+                        />
+                        <button
+                          class="gbm-btn transparent cover h-3"
+                          id="image-upload-btn"
+                          onclick="logoActions.imageUpload()"
+                        >
+                          Upload
+                        </button>
+                      </div>
+                      <div
+                        id="logo-upload-success"
+                        class="text-medium mt-1"
+                        hidden
+                      >
+                        The logo has been updated! Please scroll to the top of the page to
+                        see your changes.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="left-column-option mt-2">
+                    <div class="flex-row opposite-ends">
+                      <div class="gbm-header left-column-option-label">
+                        Colors
+                      </div>
+                      <div
+                        class="reset-text"
+                        onclick="colorActions.resetToDefault()"
+                      >
+                        Reset to default
+                      </div>
+                    </div>
+                    <div
+                      id="color-container"
+                    >
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Background
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-background"
+                            class="gbm-input-boxed color-picker"
+                            value="#085F63"
+                          />
+                          <div
+                            id="color-background-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Font and lines
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-font"
+                            class="gbm-input-boxed color-picker"
+                            value="#FFFFFF"
+                          />
+                          <div
+                            id="color-font-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Primary button and selection
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-primary"
+                            class="gbm-input-boxed color-picker"
+                            value="#49BEB7"
+                          />
+                          <div
+                            id="color-primary-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Secondary button and selection
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-secondary"
+                            class="gbm-input-boxed color-picker"
+                            value="#FACF5A"
+                          />
+                          <div
+                            id="color-secondary-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Text fields and dropdowns
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-fields"
+                            class="gbm-input-boxed color-picker"
+                            value="#05848A"
+                          />
+                          <div
+                            id="color-fields-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Important actions and warnings
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-important"
+                            class="gbm-input-boxed color-picker"
+                            value="#FF5959"
+                          />
+                          <div
+                            id="color-important-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -215,7 +349,11 @@
               >
                 Deploy
               </button>
-              <label for="file-upload" id="file-upload-btn" onclick="triggerUpload()">
+              <label
+                for="file-upload"
+                id="file-upload-btn"
+                onclick="triggerUpload()"
+              >
                 <input id="file-upload" type="file" />
                 <button
                   class="gbm-btn transparent cover h-4 mt-2 text-large"
@@ -224,6 +362,12 @@
                   Import dApp configuration
                 </button>
               </label>
+              <button
+                class="gbm-btn rounded cover h-4 mt-2 text-large"
+                onclick="downloadObjectAsJson()"
+              >
+                Export dApp configuration
+              </button>
             </div>
             <div class="right-column configuration-terminal">
               <p id="terminal" class="configuration-terminal-text">

@@ -618,7 +618,10 @@ input:checked + .gbm-slider:before {
   display: none;
 }
 
-@media only screen and (max-width: 768px) {
+@media (max-device-width: 768px), (max-width: 768px) {
+  * {
+    font-size: xx-large;
+  }
   body {
     margin: 0;
   }

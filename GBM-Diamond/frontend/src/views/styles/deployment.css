@@ -84,3 +84,28 @@ input[type="color"] {
   margin-left: auto;
   margin-right: 2rem;
 }
+
+.color-picker {
+  width: 7rem;
+}
+
+.color-preview {
+  height: 3rem;
+  width: 7rem;
+  border-radius: 3px;
+  border: 2px solid white;
+  background-color: transparent;
+  margin-left: 5px;
+}
+
+#logo-upload-success {
+  color: var(--primary);
+}
+
+.reset-text {
+  color: var(--text);
+  text-decoration: underline;
+  font-size: medium;
+  margin-top: 5px;
+  cursor: pointer;
+}

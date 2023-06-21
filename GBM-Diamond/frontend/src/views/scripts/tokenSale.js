@@ -28,8 +28,13 @@ function initPage() {
   document.getElementById("whale-factor").value = 50;
   document.getElementById("whale-factor-display").value = 50;
 
+  
+  let displayedMetadata = newMetadata;
+  displayedMetadata.symbol = undefined;
+  displayedMetadata.name = "";
+
   document.getElementById("token-metadata").value = JSON.stringify(
-    newMetadata,
+    displayedMetadata,
     null,
     "\t"
   );
@@ -155,8 +160,12 @@ function generateMetadata() {
     description: document.getElementById("token-description").value,
   };
 
+  let displayedMetadata = newMetadata;
+  displayedMetadata.symbol = undefined;
+  displayedMetadata.name = "";
+
   document.getElementById("token-metadata").value = JSON.stringify(
-    newMetadata,
+    displayedMetadata,
     null,
     "\t"
   );

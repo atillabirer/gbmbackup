@@ -1,6 +1,5 @@
 let defaultPresets;
 let terminal = document.getElementById("terminal");
-let newImage;
 
 if (deploymentStatus?.finished) displayDeployedDAppStatus();
 else initDeploymentPage();
@@ -12,10 +11,8 @@ generateSelectDropdown(
   () => {}
 );
 
+async function generateTheDeployOptions() {
 
-
-
-async function generateTheDeployOptions(){
   let deploymentConf = await (
     await fetch("../config/deploymentConf.json")
   ).json();
@@ -25,16 +22,12 @@ async function generateTheDeployOptions(){
   let idList = Object.keys(deploymentConf);
   let dispNames = [];
 
-  for(let i = 0; i < idList.length; i++){
+  for (let i = 0; i < idList.length; i++) {
     dispNames[i] = deploymentConf[idList[i]].displayName;
   }
 
-  generateSelectDropdown(
-    "select-version",
-    idList,
-    dispNames,
-    () => {}
-  );
+  generateSelectDropdown("select-version", idList, dispNames, () => {});
+
 }
 
 generateTheDeployOptions();
@@ -60,6 +53,9 @@ async function initDeploymentPage() {
 
   // Set default preset values
   defaultPresets = await (await fetch("/presets")).json();
+
+  await colorActions.init();
+  await logoActions.init();
 }
 
 function isAdminDeployer(_onChangeValue) {
@@ -115,14 +111,19 @@ async function connectToDeployer() {
   
   const webSocket = new WebSocket("ws://localhost:443/");
 
-  let deploymentSteps = deploymentConf[document.getElementById("select-version").getAttribute("selected-value")].deploymentSteps;
+  let deploymentSteps =
+    deploymentConf[
+      document.getElementById("select-version").getAttribute("selected-value")
+    ].deploymentSteps;
 
-
-  if(document.getElementById("select-network").getAttribute("selected-value") == "hardhat"){
-    deploymentSteps = [("d_h_b_" + window.ethereum.selectedAddress)].concat(deploymentSteps);
+  if (
+    document.getElementById("select-network").getAttribute("selected-value") ==
+    "hardhat"
+  ) {
+    deploymentSteps = ["d_h_b_" + window.ethereum.selectedAddress].concat(
+      deploymentSteps
+    );
   }
-
-
   let step = deploymentStatus ? deploymentStatus.commandHistory.length : 0;
 
   webSocket.onopen = (event) => {
@@ -148,7 +149,6 @@ async function connectToDeployer() {
           finalizeDeployment();
           setTimeout(() => {
             pageInitializer.loadCustomCss();
-            document.getElementById('nav-bar-logo').src = newImage ?? './images/gbm-logo.svg';
             pageInitializer.flipVisibility();
           }, 2000);
           webSocket.close();
@@ -176,13 +176,13 @@ function finalizeDeployment() {
   );
 
   const colours = {
-    primary: document.getElementById('color-primary').value,
-    secondary: document.getElementById('color-secondary').value,
-    tertiary: document.getElementById('color-tertiary').value,
-    background: document.getElementById('color-background').value,
-    text: document.getElementById('color-text').value,
-    selection: document.getElementById('color-selection').value
-  }
+    primary: document.getElementById("color-primary").value,
+    secondary: document.getElementById("color-fields").value,
+    tertiary: document.getElementById("color-important").value,
+    background: document.getElementById("color-background").value,
+    text: document.getElementById("color-font").value,
+    selection: document.getElementById("color-secondary").value,
+  };
 
   const deploymentDetails = {
     network: document
@@ -195,10 +195,10 @@ function finalizeDeployment() {
     admin: window.ethereum.selectedAddress, //TODO change to actual admin (fetch from gbm contract)
   };
 
-  deploymentStatus = JSON.parse(localStorage.getItem('deploymentStatus'));
+  deploymentStatus = JSON.parse(localStorage.getItem("deploymentStatus"));
   deploymentStatus.colours = colours;
   deploymentStatus.details = deploymentDetails;
-  deploymentStatus.logo = newImage ? newImage : './images/gbm-logo.png';
+  deploymentStatus.logo = document.getElementById("logo-url").value;
 
   localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
   displayDeployedDAppStatus();
@@ -206,14 +206,17 @@ function finalizeDeployment() {
 
 function displayDeployedDAppStatus() {
   // Display the values from the previous deployment
-  document.getElementById("deployed-network").innerHTML = deploymentStatus.details.network;
-  document.getElementById("deployed-version").innerHTML = deploymentStatus.details.version;
-  document.getElementById("deployed-deployer").innerHTML = deploymentStatus.details.deployer;
-  document.getElementById("deployed-admin").innerHTML = deploymentStatus.details.admin;
+  document.getElementById("deployed-network").innerHTML =
+    deploymentStatus.details.network;
+  document.getElementById("deployed-version").innerHTML =
+    deploymentStatus.details.version;
+  document.getElementById("deployed-deployer").innerHTML =
+    deploymentStatus.details.deployer;
+  document.getElementById("deployed-admin").innerHTML =
+    deploymentStatus.details.admin;
 }
 
-document.getElementById('file-upload').addEventListener('change', onChange);
-document.getElementById('image-upload').addEventListener('change', imgFound);
+document.getElementById("file-upload").addEventListener("change", onChange);
 
 function onChange(event) {
   var reader = new FileReader();
@@ -221,37 +224,21 @@ function onChange(event) {
   reader.readAsText(event.target.files[0]);
 }
 
-function onReaderLoad(event){
+function onReaderLoad(event) {
   var obj = JSON.parse(event.target.result);
   //ToDo check if valid deployment status
-  localStorage.setItem('deploymentStatus', JSON.stringify(obj));
+  localStorage.setItem("deploymentStatus", JSON.stringify(obj));
   window.location.reload();
-}
-
-function imgFound(event) {
-  var reader = new FileReader();
-  reader.onload = onImageLoad;
-  reader.readAsDataURL(event.target.files[0]);
-}
-
-function onImageLoad(event){
-  newImage = event.target.result;
-  document.getElementById('logoPreview').src = newImage;
-  document.getElementById('display-logo').style.display = 'flex';
 }
 
 function triggerUpload() {
   document.getElementById("file-upload").click();
 }
 
-function imageUpload() {
-  document.getElementById("image-upload").click();
-}
-
 function downloadObjectAsJson() {
   var dataStr =
     "data:text/json;charset=utf-8," +
-    encodeURIComponent(localStorage.getItem('deploymentStatus'));
+    encodeURIComponent(localStorage.getItem("deploymentStatus"));
   var downloadAnchorNode = document.createElement("a");
   downloadAnchorNode.setAttribute("href", dataStr);
   downloadAnchorNode.setAttribute("download", "GBM-dApp-deployment.json");
@@ -260,21 +247,120 @@ function downloadObjectAsJson() {
   downloadAnchorNode.remove();
 }
 
-function getBase64Image(img) {
-  var canvas = document.createElement("canvas");
-  canvas.width = img.width;
-  canvas.height = img.height;
-
-  var ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
-
-  var dataURL = canvas.toDataURL("image/png");
-
-  return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-}
-
-
 function initReset() {
   localStorage.clear();
   window.location.reload();
 }
+
+const logoActions = {
+  init: async function () {
+    document.getElementById("logo-update-first").checked = true;
+    document.getElementById("logo-update-second").false = false;
+    document.getElementById("logo-url").hidden = false;
+    document.getElementById("logo-upload").hidden = true;
+    document.getElementById("logo-url").value = "./images/gbm-logo.png";
+    document
+      .getElementById("image-upload")
+      .addEventListener("change", this.imgFound);
+  },
+  toggleLogoUploadField: function () {
+    document.getElementById("logo-url").hidden =
+      !document.getElementById("logo-url").hidden;
+    document.getElementById("logo-upload").hidden =
+      !document.getElementById("logo-upload").hidden;
+  },
+  updateLogoByLink: function () {
+    document.getElementById("logo-upload-success").hidden = false;
+    this.updateCSS();
+  },
+  imageUpload: function () {
+    document.getElementById("image-upload").click();
+  },
+  imgFound: function (event) {
+    var reader = new FileReader();
+    reader.onload = function (event) {
+      document.getElementById("logo-url").value = event.target.result;
+      document.getElementById("logo-upload-success").hidden = false;
+      logoActions.updateCSS();
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  },
+  resetToDefault: function () {
+    document.getElementById("logo-url").value = "./images/gbm-logo.png";
+    document.getElementById("logo-upload-success").hidden = true;
+    this.updateCSS();
+  },
+  updateCSS: function () {
+    document.getElementById("nav-bar-logo").src = document.getElementById("logo-url").value;
+  }
+};
+
+const colorActions = {
+  currentColors: {},
+  colourMapping: {
+    "color-background": "background",
+    "color-font": "text",
+    "color-primary": "primary",
+    "color-secondary": "selection",
+    "color-fields": "secondary",
+    "color-important": "tertiary",
+  },
+  returnDefaultColours: function () {
+    return {
+      background: "#085F63",
+      text: "#FFFFFF",
+      primary: "#49BEB7",
+      selection: "#FACF5A",
+      secondary: "#05848A",
+      tertiary: "#FF5959",
+    };
+  },
+  initDone: false,
+  init: async function () {
+    this.currentColors = this.returnDefaultColours();
+    const colourElements = Array.from(
+      document.getElementsByClassName("color-picker")
+    );
+    colourElements.forEach((element) => this.pairFieldToPreview(element));
+
+    this.initializeColours(colourElements);
+    this.initDone = true;
+  },
+  initializeColours: function (elements) {
+    for (i = 0; i < elements.length; i++) {
+      elements[i].value =
+        this.currentColors[this.colourMapping[elements[i].id]].toUpperCase();
+      elements[i].dispatchEvent(new Event("change"));
+    }
+  },
+  updateCSS: function () {
+    const r = document.querySelector(":root");
+    r.style.setProperty("--primary", this.currentColors.primary);
+    r.style.setProperty("--secondary", this.currentColors.secondary);
+    r.style.setProperty("--tertiary", this.currentColors.tertiary);
+    r.style.setProperty("--background", this.currentColors.background);
+    r.style.setProperty("--selection", this.currentColors.selection);
+    r.style.setProperty("--text", this.currentColors.text);
+  },
+  pairFieldToPreview: function (element) {
+    element.onchange = function () {
+      if (colorActions.initDone) {
+        colorActions.currentColors[colorActions.colourMapping[element.id]] =
+          element.value;
+        colorActions.updateCSS();
+      }
+      document.getElementById(`${element.id}-preview`).style.backgroundColor =
+        element.value;
+    };
+  },
+  resetToDefault: function () {
+    this.currentColors = this.returnDefaultColours();
+    this.updateCSS();
+    const colourElements = Array.from(
+      document.getElementsByClassName("color-picker")
+    );
+    this.initDone = false;
+    this.initializeColours(colourElements);
+    this.initDone = true;
+  },
+};
