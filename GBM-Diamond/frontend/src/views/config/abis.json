@@ -66,6 +66,12 @@
                     "internalType": "uint256",
                     "name": "incentivesDue",
                     "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "bidTimestamp",
+                    "type": "uint256"
                 }
             ],
             "name": "AuctionBid_Placed",
