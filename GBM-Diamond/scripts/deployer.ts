@@ -249,10 +249,7 @@ async function doStep_d_c(){
     let continuer = true;
     while(continuer){
         try {
-            let gasPrice = await fetchGasPrice();
-            let tx = await diamondCut.diamondCut(facets, deployerStatus.deployedFacets["Diamond"], functionCall, {
-                ...gasPrice
-            });
+
             continuer = false;
         } catch (e: any){
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
@@ -277,6 +274,10 @@ async function doStep_d_c(){
 
 }
 
+
+let latestDeployedGBMPresetIndex = 0;
+
+
 //Set a GBM preset in the diamond
 async function doStep_s_p(arg:string){
     const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"], signer);
@@ -288,14 +289,16 @@ async function doStep_s_p(arg:string){
             let dapreset:any = conf.GBMPresetArray[i];
             logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
 
+            latestDeployedGBMPresetIndex++;
+
+            if((latestDeployedGBMPresetIndex) !=  dapreset.presetIndex){
+                dapreset.presetIndex = latestDeployedGBMPresetIndex;
+            }
+
             let continuer = true;
             while(continuer){
                 try {
                     
-                    let totalRegisteredPreset = parseInt(await theDiamond.getGBMPresetsAmount());
-                    if(parseInt(dapreset.presetIndex) -1 > totalRegisteredPreset){
-                        dapreset.presetIndex = totalRegisteredPreset +1;
-                    }
                     let gasPrice = await fetchGasPrice();
                     let tx = await theDiamond.setGBMPreset(
                         dapreset.presetIndex,
@@ -360,13 +363,15 @@ async function doStep_s_p(arg:string){
         logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
 
         let continuer = true;
+
+        if((latestDeployedGBMPresetIndex) !=  dapreset.presetIndex){
+            dapreset.presetIndex = latestDeployedGBMPresetIndex;
+        }
+
         while (continuer) {
             try {
                 
-                let totalRegisteredPreset = parseInt(await theDiamond.getGBMPresetsAmount());
-                if(parseInt(dapreset.presetIndex) -1 > totalRegisteredPreset){
-                    dapreset.presetIndex = totalRegisteredPreset +1;
-                }
+
 
                 let gasPrice = await fetchGasPrice();
                 let tx = await theDiamond.setGBMPreset(
