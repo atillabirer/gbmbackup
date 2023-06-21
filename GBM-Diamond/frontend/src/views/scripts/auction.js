@@ -99,7 +99,6 @@ async function generateSaleElements(_sale) {
       : ""
   } #${_sale.tokenID}`;
 
-  document.getElementById("description-container").innerHTML = "Welcome to the GBM Whales collection, a captivating world of unique and adorable NFT whales. Each meticulously crafted with love and imagination, these one-of-a-kind digital creatures possess their own charm, vibrant colors, and delightful details. As proud owners of these scarce and authenticated NFTs, immerse yourself in the magic of these cute whales, connect with a passionate community, and embark on an enchanting journey filled with wonder and joy."
     // fetchedMetadata.description;
   document.getElementById("bidOrPrice").value =
     /* _sale.saleKind === '' ? "Price" : */ "Current bid";
@@ -140,6 +139,7 @@ async function generateSaleElements(_sale) {
 
 
   let imageLink;
+  let description;
   if (deploymentStatus.ERC1155.indexOf(_sale.tokenAddress) > 0) {
     let tokenContract = new web3.eth.Contract(
       abis["tokenCoupon"],
@@ -148,9 +148,14 @@ async function generateSaleElements(_sale) {
     let tokenURI = await tokenContract.methods.tokenURI(0).call();
     let fetched = await getNFTAndCacheMedia(tokenURI);
     imageLink = fetched.image;
+    description = fetched.description;
   } else {
     imageLink = `/whale/${_sale.tokenID}/image`;
+    description = 'GBM Whale, An NFT used for testing purposes'
   }
+
+  document.getElementById("description-container").innerHTML = description;
+  document.getElementById("description-container2").innerHTML = description;
 
   document.getElementsByClassName(
     "media-container"
@@ -168,12 +173,12 @@ async function populateNFTDetails(_sale, _metadata) {
     standards[_sale.tokenKind];
   document.getElementById("details-blockchain").innerHTML = "Local Hardhat";
   document.getElementById("details-smart-contract").innerHTML = 
-    window.screen.availWidth < 768 ? shortenAddress(_sale.tokenAddress) : _sale.tokenAddress
+    window.innerWidth < 768 ? shortenAddress(_sale.tokenAddress) : _sale.tokenAddress
   document.getElementById(
     "details-token-uri"
-  ).innerHTML =  window.screen.availWidth < 768 ? shortenAddress(tokenURI) : `${tokenURI.substring(0, 25)}...${tokenURI.substring(
+  ).innerHTML =  window.innerWidth < 768 ? shortenAddress(tokenURI) : `${tokenURI.substring(0, 25)}...${tokenURI.substring(
     tokenURI.length - 20
-  )}`;
+  )}`; //ToDo: needs screen size change listener
 }
 
 const stateSwitcher = {
