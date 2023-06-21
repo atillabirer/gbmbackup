@@ -12,6 +12,7 @@ generateSelectDropdown(
 );
 
 async function generateTheDeployOptions() {
+
   let deploymentConf = await (
     await fetch("../config/deploymentConf.json")
   ).json();
@@ -26,6 +27,7 @@ async function generateTheDeployOptions() {
   }
 
   generateSelectDropdown("select-version", idList, dispNames, () => {});
+
 }
 
 generateTheDeployOptions();
@@ -106,6 +108,7 @@ async function connectToDeployer() {
     await fetch("../config/deploymentConf.json")
   ).json();
 
+  
   const webSocket = new WebSocket("ws://localhost:443/");
 
   let deploymentSteps =
@@ -121,7 +124,6 @@ async function connectToDeployer() {
       deploymentSteps
     );
   }
-
   let step = deploymentStatus ? deploymentStatus.commandHistory.length : 0;
 
   webSocket.onopen = (event) => {

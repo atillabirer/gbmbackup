@@ -89,7 +89,6 @@ logger = (msg: string) => console.log(msg);
 
 
 async function init(){
-
     //console.log(ethers);
     wallets =  await ethers.getSigners();
     signer =  wallets[0];
@@ -289,8 +288,6 @@ async function doStep_s_p(arg:string){
             let dapreset:any = conf.GBMPresetArray[i];
             logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
 
-
-
             let continuer = true;
             while(continuer){
                 try {
@@ -361,7 +358,6 @@ async function doStep_s_p(arg:string){
         let dapreset:any = conf.GBMPresetArray[index];
         
         logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
-
 
         let continuer = true;
         while (continuer) {
