@@ -53,6 +53,8 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
         require(newBidAmount > 1, "newBidAmount cannot be 0");
 
+ 
+
         uint256 _presetIndex = s.saleToGBMPreset[auctionID];
         if (_presetIndex == 0) {
             _presetIndex = s.defaultPreset;
@@ -130,6 +132,8 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
         //Increasing the number of bids on the auction
         _bidIndex++;
+
+        s.salesAndBidIndexToBidTimstamp[auctionID][_bidIndex] = block.timestamp; //On Ethereum mainnet, comment this line to save gas
         s.saleToNumberOfBids[auctionID] = _bidIndex;
         s.saleToBidValues[auctionID][_bidIndex] = newBidAmount;
         _dueIncentives = calculateIncentives(

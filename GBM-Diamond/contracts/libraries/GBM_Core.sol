@@ -90,6 +90,8 @@ struct GBMStorage {
 
     mapping (address => bool) secondarySaleNFTContractWhitelist; // A mapping storing which NFTs contract can be put up for sale on the secondary market
 
+    mapping (uint256 => mapping(uint256 => uint256)) salesAndBidIndexToBidTimstamp; //A mapping storing the timestamp at which a bid hapenned
+
 
     /* Clients specific variables */
     address STELLA_xStellaContract; //An ERC20 token contract to be used in multi-tier check

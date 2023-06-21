@@ -426,6 +426,15 @@ contract GBMGettersFacet is IGBMGettersFacet {
         return s.saleToBidValues[saleID][bidIndex];
     }
 
+    /// @notice Get the sale's specified bid value
+    /// @param saleID The ID of the sale you wish to know the details of
+    /// @param bidIndex The position of the bid you wish to know the details of. Starts at 1.
+    /// @return bidTimestamp The timestamp at which the bid was processed, in block.timestamp epoch
+    function getSale_Bid_Timestamp(uint256 saleID, uint256 bidIndex) external view returns(uint256){
+        return s.salesAndBidIndexToBidTimstamp[saleID][bidIndex];
+    }
+
+
 
     /// @notice Get the sale's specified bid bidder
     /// @param saleID The ID of the sale you wish to know the details of
