@@ -377,6 +377,8 @@ function generateBidHistoryElement(_bid, _index) {
 }
 
 function generateBidHistoryElementFromEvent(_newBid) {
+  console.log(_newBid)
+  
   let newBid = {
     bidBidder: _newBid.bidder,
     bidValue: web3.utils.fromWei(_newBid.bidamount),
@@ -386,8 +388,9 @@ function generateBidHistoryElementFromEvent(_newBid) {
     bidTimestamp: _newBid.bidTimestamp,
   };
 
-
-  if (bids[bids.length - 1].bidValue === newBid.bidValue) return;
+  if (bids.length !== 0) {
+    if (bids[bids.length - 1].bidValue === newBid.bidValue) return;    
+  }
   
   bids.push(newBid);
   bids = [...new Set(bids)]; // hacky way to prevent duplicate events
