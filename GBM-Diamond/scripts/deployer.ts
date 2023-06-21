@@ -249,7 +249,10 @@ async function doStep_d_c(){
     let continuer = true;
     while(continuer){
         try {
-
+            let gasPrice = await fetchGasPrice();
+            let tx = await diamondCut.diamondCut(facets, deployerStatus.deployedFacets["Diamond"], functionCall, {
+                ...gasPrice
+            });
             continuer = false;
         } catch (e: any){
             if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
@@ -282,6 +285,8 @@ let latestDeployedGBMPresetIndex = 0;
 async function doStep_s_p(arg:string){
     const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"], signer);
 
+    latestDeployedGBMPresetIndex++;
+
     if(arg.substring(0,5) == "s_p_+"){ //Case of all presets   at once
         let ending = parseInt(arg.substring(5));
         for(let i=0; i<ending; i++){
@@ -289,10 +294,9 @@ async function doStep_s_p(arg:string){
             let dapreset:any = conf.GBMPresetArray[i];
             logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
 
-            latestDeployedGBMPresetIndex++;
 
             if((latestDeployedGBMPresetIndex) !=  dapreset.presetIndex){
-                dapreset.presetIndex = latestDeployedGBMPresetIndex;
+                dapreset.presetIndex = "" + latestDeployedGBMPresetIndex;
             }
 
             let continuer = true;
@@ -365,14 +369,12 @@ async function doStep_s_p(arg:string){
         let continuer = true;
 
         if((latestDeployedGBMPresetIndex) !=  dapreset.presetIndex){
-            dapreset.presetIndex = latestDeployedGBMPresetIndex;
+            dapreset.presetIndex = "" + latestDeployedGBMPresetIndex;
         }
 
         while (continuer) {
             try {
                 
-
-
                 let gasPrice = await fetchGasPrice();
                 let tx = await theDiamond.setGBMPreset(
                     dapreset.presetIndex,
