@@ -216,8 +216,8 @@
                         class="text-medium mt-1"
                         hidden
                       >
-                        The logo has been updated! Please scroll to the top of the page to
-                        see your changes.
+                        The logo has been updated! Please scroll to the top of
+                        the page to see your changes.
                       </div>
                     </div>
                   </div>
@@ -233,9 +233,7 @@
                         Reset to default
                       </div>
                     </div>
-                    <div
-                      id="color-container"
-                    >
+                    <div id="color-container">
                       <div class="configuration-default-preset-group">
                         <div class="configuration-default-preset-label">
                           Background
@@ -367,6 +365,12 @@
                 onclick="downloadObjectAsJson()"
               >
                 Export dApp configuration
+              </button>
+              <button
+                class="gbm-btn transparent rounded cover h-4 left-column mt-2 text-large"
+                onclick="initReset()"
+              >
+                Clear cache and deploy new contract
               </button>
             </div>
             <div class="right-column configuration-terminal">
