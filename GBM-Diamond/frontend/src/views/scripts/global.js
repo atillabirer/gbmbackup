@@ -60,7 +60,7 @@ const pageInitializer = {
             <div class="metamask-found" hidden>
                 <div class="items-center flex-row">
                   <p id="active-metamask-account"></p>
-                  <button id="metamask-disable" class="gbm-btn transparent ml-75">Disconnect</button>
+                  <button id="metamask-disable" class="gbm-btn transparent ml-75" hidden>Disconnect</button>
                   <button id="metamask-refresh" class="gbm-btn ml-75">⟳</button>
                 </div>
             </div>
