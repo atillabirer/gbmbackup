@@ -508,6 +508,9 @@ const auctionFunctions = {
       bidCurrencyName: await gbmContracts.methods
         .getSale_Bid_Currency_Name(_saleID, _bidIndex)
         .call(),
+      bidTimestamp: await gbmContracts.methods
+        .getSale_Bid_Timestamp(_saleID, _bidIndex)
+        .call(),
     };
   },
   submitBid: async function (
