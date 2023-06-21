@@ -165,7 +165,7 @@ async function generateAuctionElement(auction, index) {
             }" loading="lazy" alt="" class="nft-image">
             <div>
                 <div class="auction-item-name">${
-                  auction.tokenAmount > 1 ? `<div style="color: var(--primary); margin-right: 10px; font-size: inherit; display: inline-block">${auction.tokenAmount}x</div>` : ""
+                  auction.tokenKind === '0x973bb640' ? `<div style="color: var(--primary); margin-right: 10px; font-size: inherit; font-weight: 700; display: inline-block">${auction.tokenAmount}x</div>` : ""
                   // }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
                 }${auction.tokenName} #${auction.tokenID}</div>
                 <div class="auction-item-flex subtitle"><img src="images/hardhat.svg" loading="lazy" alt="" class="company-icon">

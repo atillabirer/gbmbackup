@@ -94,7 +94,8 @@ interface IGBMEventsFacet {
         uint256 indexed bidIndex,               // The Index of the bid being placed
         address bidder,                         // The address of the bidder placing a bid
         uint256 bidamount,                      // The value of the bid being placed
-        uint256 incentivesDue                   // How much incentive will be earned if this bid is displaced
+        uint256 incentivesDue,                   // How much incentive will be earned if this bid is displaced
+        uint256 bidTimestamp
     );
 
     /// @dev This event emits whenever a bid is being displaced (cancelled because someone outbid it)

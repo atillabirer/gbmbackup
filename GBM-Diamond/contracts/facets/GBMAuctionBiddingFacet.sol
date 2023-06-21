@@ -149,7 +149,8 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
             _bidIndex,
             msg.sender,
             newBidAmount,
-            _dueIncentives
+            _dueIncentives,
+            block.timestamp
         );
 
         //Extending the auction if bid placed at the end

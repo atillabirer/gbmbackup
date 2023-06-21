@@ -18,9 +18,9 @@
   aspect-ratio: 1 / 1;
 }
 
-#description-container {
+#description-container, #description-container2{
   background-color: var(--secondary);
-  height: 8rem;
+  min-height: 2rem;
   border-radius: 4px;
   padding: 15px;
   line-height: 24px;
@@ -365,15 +365,20 @@
 
 @media (max-device-width: 768px), (max-width: 768px) {
   * {
-    font-size: xx-large;
+    font-size: x-large;
   }
 
   .collection-and-id {
-    font-size: x-large;
+    font-size: 2rem;
+  }
+
+  .bid-input {
+    font-size: 2rem;
   }
 
   .token-name {
     font-weight: 400;
+    font-size: 3.2rem;
   }
 
   .status-container {
@@ -382,35 +387,36 @@
   }
 
   .label {
-    font-size: large;
+    font-size: 2rem;
   }
 
   .info-value {
     padding: 20px 0;
-    font-size: x-large;
+    font-size: 2.6rem;
     font-weight: bolder;
   }
 
   .bid-btn {
     margin-top: 3rem;
-    font-size: large;
+    font-size: 2rem;
   }
 
   .share-btn {
-    font-size: large;
+    font-size: 2rem;
   }
 
   #bids-disabled-upper-msg {
-    font-size: large;
+    font-size: 50px;
+    margin-bottom: 5px;
   }
 
   #bids-disabled-lower-msg {
-    font-size: small;
+    font-size: 2rem;
   }
 
-  #description-container {
+  #description-container, #description-container2 {
     overflow: auto;
-    line-height: 22px;
+    line-height: inherit;
     height: auto;
   }
 
@@ -428,10 +434,19 @@
 
   .incentive-logo {
     display: block;
-    height: 15px;
+    height: 22px;
     padding-left: 0.25rem;
+    margin-top: 4px;
   }
   .incentive-box-right {
-    font-size: small;
+    font-size: inherit;
+  }
+
+  .incentive-text {
+    text-align: right;
+  }
+
+  #details-container {
+    line-height: inherit;
   }
 }

@@ -29,11 +29,9 @@ async function onScriptLoad() {
       await fetch(`/whale/${auction.tokenID}/json`)
     ).json();
   } catch {
-    fetchedMetadata = await (
-      await fetch(`/whale/1/json`)
-    ).json();
+    fetchedMetadata = await (await fetch(`/whale/1/json`)).json();
   }
-  
+
   await generateSaleElements(auction);
   populateNFTDetails(auction, fetchedMetadata);
   finalizeLoading();
@@ -89,7 +87,11 @@ async function generateSaleElements(_sale) {
   let collectionName =
     standards[_sale.tokenKind] === "ERC-721"
       ? await erc721contracts[0].methods.name().call()
-      : await erc1155contracts[deploymentStatus.ERC1155.indexOf(_sale.tokenAddress)].methods.name().call();
+      : await erc1155contracts[
+          deploymentStatus.ERC1155.indexOf(_sale.tokenAddress)
+        ].methods
+          .name()
+          .call();
   document.getElementsByClassName(
     "collection-and-id"
   )[0].innerHTML = `${collectionName}`;
@@ -99,24 +101,23 @@ async function generateSaleElements(_sale) {
       : ""
   } #${_sale.tokenID}`;
 
-  document.getElementById("description-container").innerHTML = "Welcome to the GBM Whales collection, a captivating world of unique and adorable NFT whales. Each meticulously crafted with love and imagination, these one-of-a-kind digital creatures possess their own charm, vibrant colors, and delightful details. As proud owners of these scarce and authenticated NFTs, immerse yourself in the magic of these cute whales, connect with a passionate community, and embark on an enchanting journey filled with wonder and joy."
-    // fetchedMetadata.description;
+  // fetchedMetadata.description;
   document.getElementById("bidOrPrice").value =
     /* _sale.saleKind === '' ? "Price" : */ "Current bid";
   document.getElementById(
     "bidOrPriceAmount"
   ).innerHTML = `${_sale.highestBidValue} ${_sale.highestBidCurrencyName}`;
 
-  let presetDetected = Object.values(
-    deploymentStatus.registeredPresets
-  ).find((preset) => {
-    return (
-      preset.incentiveMin === `${_sale.gbmPreset.incentiveMin.toString()}` &&
-      preset.incentiveMax === `${_sale.gbmPreset.incentiveMax.toString()}` &&
-      preset.incentiveGrowthMultiplier ===
-        `${_sale.gbmPreset.incentiveGrowthMultiplier.toString()}`
-    );
-  });
+  let presetDetected = Object.values(deploymentStatus.registeredPresets).find(
+    (preset) => {
+      return (
+        preset.incentiveMin === `${_sale.gbmPreset.incentiveMin.toString()}` &&
+        preset.incentiveMax === `${_sale.gbmPreset.incentiveMax.toString()}` &&
+        preset.incentiveGrowthMultiplier ===
+          `${_sale.gbmPreset.incentiveGrowthMultiplier.toString()}`
+      );
+    }
+  );
 
   document.getElementById("incentive-box-type").innerHTML =
     presetDetected === undefined ? "Custom" : presetDetected.name.split("_")[0];
@@ -138,8 +139,8 @@ async function generateSaleElements(_sale) {
       parseFloat(_sale.gbmPreset.incentiveMin) / 100
     } ${_localPageAuction.currencyName}%</strong> if outbid.`;
 
-
   let imageLink;
+  let description;
   if (deploymentStatus.ERC1155.indexOf(_sale.tokenAddress) > 0) {
     let tokenContract = new web3.eth.Contract(
       abis["tokenCoupon"],
@@ -148,9 +149,14 @@ async function generateSaleElements(_sale) {
     let tokenURI = await tokenContract.methods.tokenURI(0).call();
     let fetched = await getNFTAndCacheMedia(tokenURI);
     imageLink = fetched.image;
+    description = fetched.description;
   } else {
     imageLink = `/whale/${_sale.tokenID}/image`;
+    description = "GBM Whale, An NFT used for testing purposes";
   }
+
+  document.getElementById("description-container").innerHTML = description;
+  document.getElementById("description-container2").innerHTML = description;
 
   document.getElementsByClassName(
     "media-container"
@@ -160,20 +166,25 @@ async function generateSaleElements(_sale) {
 }
 
 async function populateNFTDetails(_sale, _metadata) {
-  let tokenURI = await erc721contracts[0].methods.tokenURI(_sale.tokenID).call();
+  let tokenURI = await erc721contracts[0].methods
+    .tokenURI(_sale.tokenID)
+    .call();
 
   document.getElementById("details-token-id").innerHTML = _sale.tokenID;
   document.getElementById("details-mint-date").innerHTML = "-";
   document.getElementById("details-token-standard").innerHTML =
     standards[_sale.tokenKind];
   document.getElementById("details-blockchain").innerHTML = "Local Hardhat";
-  document.getElementById("details-smart-contract").innerHTML = 
-    window.screen.availWidth < 768 ? shortenAddress(_sale.tokenAddress) : _sale.tokenAddress
-  document.getElementById(
-    "details-token-uri"
-  ).innerHTML =  window.screen.availWidth < 768 ? shortenAddress(tokenURI) : `${tokenURI.substring(0, 25)}...${tokenURI.substring(
-    tokenURI.length - 20
-  )}`;
+  document.getElementById("details-smart-contract").innerHTML =
+    window.innerWidth < 768
+      ? shortenAddress(_sale.tokenAddress)
+      : _sale.tokenAddress;
+  document.getElementById("details-token-uri").innerHTML =
+    window.innerWidth < 768
+      ? shortenAddress(tokenURI)
+      : `${tokenURI.substring(0, 25)}...${tokenURI.substring(
+          tokenURI.length - 20
+        )}`; //ToDo: needs screen size change listener
 }
 
 const stateSwitcher = {
@@ -206,7 +217,9 @@ const stateSwitcher = {
         "incentive-text"
       )[0].innerHTML = `You will earn <strong>${web3.utils.fromWei(
         _localPageAuction.highestBidIncentive
-      )} ${_localPageAuction.currencyName}</strong> if outbid or the sale is cancelled by the seller.`;
+      )} ${
+        _localPageAuction.currencyName
+      }</strong> if outbid or the sale is cancelled by the seller.`;
     } else {
       document.getElementById("bids-enabled").style.display = "block";
       document.getElementsByClassName("bid-btn")[0].style.display = "block";
@@ -330,6 +343,8 @@ function generateBidHistoryElement(_bid, _index) {
   const bidEl = document.createElement("div");
   bidEl.classList.add("previous-bid");
 
+  console.log(_bid);
+
   const bidInnerHTML = `
           <div class="previous-bid-row flex-row-mobile-friendly opposite-ends">
               <div class="flex-row-mobile-friendly">
@@ -345,7 +360,10 @@ function generateBidHistoryElement(_bid, _index) {
     _bid.bidCurrencyName
   }</div>
           </div>
-          <div class="previous-bid-row smaller-row">
+          <div class="previous-bid-row flex-row-mobile-friendly opposite-ends smaller-row">
+                <div style="text-align: left">
+                ${new Date(_bid.bidTimestamp * 1000).toUTCString()}
+                </div>
                <div class="previous-bid-incentive">${
                  bids.length - 1 === _index
                    ? "Reward if outbid"
@@ -359,14 +377,21 @@ function generateBidHistoryElement(_bid, _index) {
 }
 
 function generateBidHistoryElementFromEvent(_newBid) {
+  console.log(_newBid)
+  
   let newBid = {
     bidBidder: _newBid.bidder,
     bidValue: web3.utils.fromWei(_newBid.bidamount),
     bidCurrencyName: currencyName,
     bidCurrencyIndex: bids.length,
     bidIncentive: web3.utils.fromWei(_newBid.incentivesDue),
+    bidTimestamp: _newBid.bidTimestamp,
   };
 
+  if (bids.length !== 0) {
+    if (bids[bids.length - 1].bidValue === newBid.bidValue) return;    
+  }
+  
   bids.push(newBid);
   bids = [...new Set(bids)]; // hacky way to prevent duplicate events
   document.getElementsByClassName("bid-history-container")[0].style.display =
