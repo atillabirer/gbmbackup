@@ -230,6 +230,12 @@ interface IGBMGettersFacet {
     /// @return currencyIndex The currency index of the currency the bid was made in.
     function getSale_Bid_CurrencyIndex(uint256 saleID, uint256 bidIndex) external view returns(uint256);
 
+    /// @notice Get the sale's specified bid value
+    /// @param saleID The ID of the sale you wish to know the details of
+    /// @param bidIndex The position of the bid you wish to know the details of. Starts at 1.
+    /// @return bidTimestamp The timestamp at which the bid was processed, in block.timestamp epoch
+    function getSale_Bid_Timestamp(uint256 saleID, uint256 bidIndex) external view returns(uint256);
+
     /// @notice Get the sale's bid currency address
     /// @param saleID The ID of the sale you wish to know the details of
     /// @param bidIndex The position of the bid you wish to know the details of. Starts at 1.
