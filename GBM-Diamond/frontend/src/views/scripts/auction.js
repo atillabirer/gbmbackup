@@ -383,8 +383,12 @@ function generateBidHistoryElementFromEvent(_newBid) {
     bidCurrencyName: currencyName,
     bidCurrencyIndex: bids.length,
     bidIncentive: web3.utils.fromWei(_newBid.incentivesDue),
+    bidTimestamp: _newBid.bidTimestamp,
   };
 
+
+  if (bids[bids.length - 1].bidValue === newBid.bidValue) return;
+  
   bids.push(newBid);
   bids = [...new Set(bids)]; // hacky way to prevent duplicate events
   document.getElementsByClassName("bid-history-container")[0].style.display =
