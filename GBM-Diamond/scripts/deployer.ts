@@ -474,6 +474,7 @@ async function doStep_s_c(arg:string){
             deployerStatus.registeredCurrencies["" + dapreset.currencyIndex] = {
                 currencyIndex: dapreset.currencyIndex,
                 currencyAddress: dapreset.currencyAddress,
+                currencyDisplayName: dapreset.currencyDisplayName,
                 currencyName: dapreset.currencyName
             }
 
@@ -495,7 +496,7 @@ async function doStep_s_c(arg:string){
 
         
         if(arg.substring(6) == "demo"){
-            dapreset.currencyAddress; //TODO = erc20 address
+            dapreset.currencyAddress = deployerStatus.ERC20[0];
         }
 
         logger("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
@@ -534,7 +535,8 @@ async function doStep_s_c(arg:string){
         deployerStatus.registeredCurrencies["" + dapreset.currencyIndex] = {
             currencyIndex: dapreset.currencyIndex,
             currencyAddress: dapreset.currencyAddress,
-            currencyName: dapreset.currencyName
+            currencyName: dapreset.currencyName,
+            currencyDisplayName: dapreset.currencyDisplayName,
         }
     }
 }

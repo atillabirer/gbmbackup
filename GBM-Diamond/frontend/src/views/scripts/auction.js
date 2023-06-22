@@ -23,6 +23,12 @@ async function onScriptLoad() {
   saleId = urlParams.get("saleId");
   const auction = await auctionFunctions.getAuctionInfo(saleId);
   _localPageAuction = auction;
+
+  auctionFunctions.addCurrencyToMetamask({
+    address: _localPageAuction.currencyAddress,
+    name: _localPageAuction.currencyName,
+  });
+
   console.log(auction);
   try {
     fetchedMetadata = await (
@@ -82,7 +88,7 @@ async function generateSaleElements(_sale) {
   _localPageSale = _sale;
   incentiveMax = _sale.gbmPreset.incentiveMax;
   stepMin = _sale.gbmPreset.stepMin;
-  currencyName = _sale.highestBidCurrencyName;
+  currencyName = _sale.currencyName;
 
   let collectionName =
     standards[_sale.tokenKind] === "ERC-721"
@@ -106,7 +112,7 @@ async function generateSaleElements(_sale) {
     /* _sale.saleKind === '' ? "Price" : */ "Current bid";
   document.getElementById(
     "bidOrPriceAmount"
-  ).innerHTML = `${_sale.highestBidValue} ${_sale.highestBidCurrencyName}`;
+  ).innerHTML = `${_sale.highestBidValue} ${_sale.currencyName}`;
 
   let presetDetected = Object.values(deploymentStatus.registeredPresets).find(
     (preset) => {
@@ -128,7 +134,7 @@ async function generateSaleElements(_sale) {
       : _sale.startingBid;
   document.getElementById(
     "minimum-bid-message"
-  ).innerHTML = `Minimum bid: ${minimumBid} ${_sale.highestBidCurrencyName}`;
+  ).innerHTML = `Minimum bid: ${minimumBid} ${_sale.currencyName}`;
 
   highestBid = _sale.highestBidValue;
 
@@ -377,8 +383,8 @@ function generateBidHistoryElement(_bid, _index) {
 }
 
 function generateBidHistoryElementFromEvent(_newBid) {
-  console.log(_newBid)
-  
+  console.log(_newBid);
+
   let newBid = {
     bidBidder: _newBid.bidder,
     bidValue: web3.utils.fromWei(_newBid.bidamount),
@@ -389,9 +395,9 @@ function generateBidHistoryElementFromEvent(_newBid) {
   };
 
   if (bids.length !== 0) {
-    if (bids[bids.length - 1].bidValue === newBid.bidValue) return;    
+    if (bids[bids.length - 1].bidValue === newBid.bidValue) return;
   }
-  
+
   bids.push(newBid);
   bids = [...new Set(bids)]; // hacky way to prevent duplicate events
   document.getElementsByClassName("bid-history-container")[0].style.display =
@@ -437,7 +443,12 @@ function placeBid() {
   const bidInput = document.getElementsByClassName("bid-input")[0].value;
   const urlParams = new URLSearchParams(window.location.search);
   const saleId = urlParams.get("saleId");
-  auctionFunctions.submitBid(parseInt(saleId), bidInput, highestBid);
+  auctionFunctions.submitBid(
+    parseInt(saleId),
+    bidInput,
+    highestBid,
+    _localPageAuction.currencyAddress
+  );
 }
 
 async function claim() {

@@ -32,6 +32,7 @@ const pageInitializer = {
     erc721contractAddresses = deploymentStatus.ERC721;
     erc1155contractAddresses = deploymentStatus.ERC1155;
   },
+
   loadCustomCss: function () {
     if (!deploymentStatus) return;
     if (!deploymentStatus.colours) return;
@@ -516,10 +517,29 @@ const auctionFunctions = {
   submitBid: async function (
     _auctionId,
     _newBidAmount,
-    _previousHighestBidAmount
+    _previousHighestBidAmount,
+    _currencyAddress
   ) {
     const newAmount = web3.utils.toWei(_newBidAmount);
     const oldAmount = web3.utils.toWei(_previousHighestBidAmount);
+    if (_currencyAddress !== "0x0000000000000000000000000000000000000000") {
+      let erc20contractToBid = new web3.eth.Contract(
+        abis["erc20"],
+        _currencyAddress
+      );
+
+      let approvedAmount = await erc20contractToBid.methods
+        .allowance(window.ethereum.selectedAddress, diamondAddress)
+        .call();
+
+      if (
+        web3.utils.toBN(approvedAmount).cmp(web3.utils.toBN(newAmount)) === -1
+      ) {
+        await erc20contractToBid.methods
+          .approve(diamondAddress, newAmount)
+          .send({ from: window.ethereum.selectedAddress });
+      }
+    }
     await gbmContracts.methods.bid(_auctionId, newAmount, oldAmount).send({
       from: window.ethereum.selectedAddress,
       to: diamondAddress,
@@ -531,6 +551,24 @@ const auctionFunctions = {
     await gbmContracts.methods
       .claim(_saleId)
       .send({ from: window.ethereum.selectedAddress });
+  },
+  addCurrencyToMetamask: async function (_currency) {
+    if (_currency.address !== "0x0000000000000000000000000000000000000000") {
+      const params = {
+        type: "ERC20",
+        options: {
+          address: _currency.address,
+          symbol: _currency.name,
+          decimals: 18,
+          image: "https://s2.coinmarketcap.com/static/img/coins/64x64/3701.png",
+        },
+      };
+
+      window.ethereum
+        .request({ method: "wallet_watchAsset", params })
+        .then(() => console.log("Success, Token added!"))
+        .catch((error) => console.log(`Error: ${error.message}`));
+    }
   },
 };
 
