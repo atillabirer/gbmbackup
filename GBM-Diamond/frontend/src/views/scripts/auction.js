@@ -24,11 +24,6 @@ async function onScriptLoad() {
   const auction = await auctionFunctions.getAuctionInfo(saleId);
   _localPageAuction = auction;
 
-  auctionFunctions.addCurrencyToMetamask({
-    address: _localPageAuction.currencyAddress,
-    name: _localPageAuction.currencyName,
-  });
-
   console.log(auction);
   try {
     fetchedMetadata = await (
@@ -112,7 +107,7 @@ async function generateSaleElements(_sale) {
     /* _sale.saleKind === '' ? "Price" : */ "Current bid";
   document.getElementById(
     "bidOrPriceAmount"
-  ).innerHTML = `${_sale.highestBidValue} ${_sale.currencyName}`;
+  ).innerHTML = `${_sale.highestBidValue} <span onclick="lazyAddCurrencyToMetamask()" style="cursor: pointer">${_sale.currencyName}</span>`;
 
   let presetDetected = Object.values(deploymentStatus.registeredPresets).find(
     (preset) => {
@@ -591,3 +586,10 @@ const incentiveCalculator = {
     }
   },
 };
+
+function lazyAddCurrencyToMetamask() {
+  auctionFunctions.addCurrencyToMetamask({
+    address: _localPageAuction.currencyAddress,
+    name: _localPageAuction.currencyName,
+  });
+}

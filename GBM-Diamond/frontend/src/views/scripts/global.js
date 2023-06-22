@@ -560,7 +560,7 @@ const auctionFunctions = {
           address: _currency.address,
           symbol: _currency.name,
           decimals: 18,
-          image: "https://s2.coinmarketcap.com/static/img/coins/64x64/3701.png",
+          image: "https://i.imgur.com/kvjZZ3s.png",
         },
       };
 
