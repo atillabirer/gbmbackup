@@ -408,22 +408,22 @@ function startElementCountdownTimer(_startTimestamp) {
 async function moveToStep(_step) {
   switch (_step) {
     case 1:
-      // await tokenSaleProcess.deployNewTokenContract();
-      // document.getElementById(
-      //   "tokens-for-sale-header"
-      // ).innerHTML = `Number of ${
-      //   document.getElementById("token-symbol").value
-      // } for sale`;
+      await tokenSaleProcess.deployNewTokenContract();
+      document.getElementById(
+        "tokens-for-sale-header"
+      ).innerHTML = `Number of ${
+        document.getElementById("token-symbol").value
+      } for sale`;
       break;
     case 2:
-      // await tokenSaleProcess.mintBatchFromDistribution(
-      //   distribution[0],
-      //   distribution[1]
-      // );
-      // await tokenSaleProcess.transferBatchToDiamond(
-      //   distribution[0],
-      //   distribution[1]
-      // );
+      await tokenSaleProcess.mintBatchFromDistribution(
+        distribution[0],
+        distribution[1]
+      );
+      await tokenSaleProcess.transferBatchToDiamond(
+        distribution[0],
+        distribution[1]
+      );
       break;
     case 3:
       //TODO Dynamically generate the array below
