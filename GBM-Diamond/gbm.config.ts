@@ -30,7 +30,12 @@ let confi =  {
         "currencyIndex": 1,
         "currencyName": "fETH",                                           // To be used by your frontend, not used otherwise
         "currencyAddress": "0x0000000000000000000000000000000000000000", //Address 0x0 for the base currency, ERC20 token address if not
-    }]
+    },
+    {
+        "currencyIndex": 2,
+        "currencyName": "fUSD",                                           // To be used by your frontend, not used otherwise
+        "currencyAddress": "0x0000000000000000000000000000000000000001", //Address 0x0 for the base currency, ERC20 token address if not
+    }],
 }
 
 

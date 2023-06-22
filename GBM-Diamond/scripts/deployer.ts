@@ -325,7 +325,7 @@ async function doStep_s_p(arg:string){
                     } else {
                         console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================");
                         console.log(e);
-                        logger("The network has not yet synchronized the consequence of your previous transaction. Waiting for 10s ⏲️");
+                        logger("The network has not yet synchronized the consequence of your previous transaction. Waiting for 20s ⏲️");
                     }
                     await new Promise(resolve => setTimeout(resolve, 20000));
                     logger("retrying")
@@ -393,13 +393,13 @@ async function doStep_s_p(arg:string){
                 continuer = false;
             } catch (e: any) {
                 if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
-                    logger("The network has not yet synchronized the consequence of your previous transaction. Waiting for 10s ⏲️");
+                    logger("The network has not yet synchronized the consequence of your previous transaction. Waiting for 20s ⏲️");
                 } else {
                     console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================");
                     console.log(e);
-                    logger("The network has not yet synchronized the consequence of your previous transaction. Waiting for 10s ⏲️");
+                    logger("The network has not yet synchronized the consequence of your previous transaction. Waiting for 20s ⏲️");
                 }
-                await new Promise(resolve => setTimeout(resolve, 10000));
+                await new Promise(resolve => setTimeout(resolve, 20000));
                 logger("retrying")
             }
         }
@@ -481,9 +481,9 @@ async function doStep_s_c(arg:string){
 
         }
 
-    } else {
-        let index = parseInt(arg.substring(4));
-        if(index != 0 && index<=conf.CurrenciesArray.length){
+    } else { //Do not handle more than 9 currencies in the array
+        let index = parseInt(arg.substring(4, 5));
+        if(index != 0 && index <=conf.CurrenciesArray.length){
             index--;
         } else {
             throw "Please specify a valid currency index";
@@ -492,6 +492,12 @@ async function doStep_s_c(arg:string){
        
         let gasPrice = await fetchGasPrice();
         let dapreset:any = conf.CurrenciesArray[index];
+
+        
+        if(arg.substring(6) == "demo"){
+            dapreset.currencyAddress; //TODO = erc20 address
+        }
+
         logger("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
 
 
@@ -724,6 +730,66 @@ async function doSubStep_create1155Contract(args:Array<any>){
 }
 
 
+async function doSubStep_createER20Contract(args:Array<any>){
+
+    //Deploying a test ERC20
+    logger("Deploying an ERC-20 contract 💵 ↗️");
+    let gasPrice = await fetchGasPrice();
+    const ERC20 = await ethers.getContractFactory("ERC20Generic", signer);
+    const erc20C = await ERC20.deploy( {
+        ...gasPrice
+    });
+    await erc20C.deployed();
+
+    if( deployerStatus.ERC20 == undefined){
+        deployerStatus.ERC20 = [];
+    }
+
+    deployerStatus.ERC20.push(("" + erc20C.address));
+}
+
+async function doSubStep_MintERC20(args:Array<any>){  //Args[0] should be the amount of token to mint
+
+    let erc20Address = deployerStatus.ERC20[0];
+    const erc20C =  await ethers.getContractAt("ERC20Generic", erc20Address, signer);
+
+    if( deployerStatus.totalUsedTokenURI == undefined){
+        deployerStatus.totalUsedTokenURI = 0;
+    }
+
+    deployerStatus.totalUsedTokenURI++;
+
+    logger("Just like the real banks! Printing " + args[0] +" ERC-20 tokens  for " + signer.address + " 🖨️  💵");
+
+    args[0] = ethers.utils.parseEther(args[0]);
+
+    let continuer = true;
+    while (continuer) {
+        try {
+            let gasPrice = await fetchGasPrice();
+            
+            let tx = await erc20C.mint(
+                args[0],
+                {
+                    ...gasPrice
+                });
+            
+            
+            continuer = false;
+        } catch (e: any) {
+            if(e.code == "UNPREDICTABLE_GAS_LIMIT"){
+                logger("The network has not yet synchronized the consequence of your previous transaction. Waiting for 10s ⏲️")
+            } else {
+                console.log("Transaction error, retrying in 10s, likely ignore the error message below =======================================================");
+                console.log(e);
+                logger("The network has not yet synchronized the consequence of your previous transaction. Waiting for 10s ⏲️");
+            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            logger("retrying")
+        }
+    }
+}
+
 async function doSubStep_mint1155Token(args:Array<any>){  //Args[0] should be the amount of token to mint
     let contract1155Address = deployerStatus.ERC1155[0];
     const the1155 =  await ethers.getContractAt("ERC1155Generic", contract1155Address, signer);
@@ -820,6 +886,7 @@ async function doSubStep_transfer1155Token(args:Array<any>){  //Args are expced 
         }
     }
 }
+
 
 //args are : TokenID, 721contract, GBMpreset, Timestamp, CurrencyID, beneficiary
 // 721contract is either 0xxxx or can be set to D for the deployed 721 contract
@@ -1090,6 +1157,24 @@ for(let i=0; i<10; i++){
         "args": ["10"]
     });
 }
+
+
+
+//Deploying an erc20 contract
+
+testSequenceManual.push({
+    "func":"doSubStep_createER20Contract",
+    "args": [""]
+});
+
+
+testSequenceManual.push({
+    "func":"doSubStep_MintERC20",
+    "args": ["100000"]
+});
+
+
+
 
 //Transferring 6x(1..6) of them to the GBM smart contract
 for(let i=10; i<16; i++){
