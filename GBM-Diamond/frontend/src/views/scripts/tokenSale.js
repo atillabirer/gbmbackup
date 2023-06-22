@@ -13,8 +13,13 @@ let calculatedDistribution = [];
 
 generateSelectDropdown(
   "select-currency",
-  ["feth"],
-  ["Fake Ether (fETH)"],
+  Object.values(deploymentStatus.registeredCurrencies).map((currency) => {
+    console.log(currency);
+    return currency.currencyName;
+  }),
+  Object.values(deploymentStatus.registeredCurrencies).map(
+    (currency) => currency.currencyDisplayName
+  ),
   () => {}
 );
 
@@ -262,6 +267,15 @@ const tokenSaleProcess = {
     let selectDuration = document.getElementById("select-duration");
     let selectIncentive = document.getElementById("select-incentive");
     let minBid = document.getElementById("min-bid");
+    const currencyIndexToUse = Object.values(
+      deploymentStatus.registeredCurrencies
+    ).filter(
+      (currency) =>
+        currency.currencyName ===
+        document
+          .getElementById("select-currency")
+          .getAttribute("selected-value")
+    )[0].currencyIndex;
 
     let presetName = `${selectIncentive.getAttribute(
       "selected-value"
@@ -290,7 +304,7 @@ const tokenSaleProcess = {
         deploymentStatus.ERC1155[deploymentStatus.ERC1155.length - 1],
         presetNumber,
         getStartTime(),
-        0,
+        currencyIndexToUse,
         window.ethereum.selectedAddress
       )
       .send({ from: window.ethereum.selectedAddress });
@@ -360,9 +374,7 @@ const tokenSaleProcess = {
 function getStartTime() {
   let startTime = Math.ceil(Date.now() / 1000) + 30;
 
-  if (
-    document.getElementById("start-date-selector").style.display !== "none"
-  ) {
+  if (document.getElementById("start-date-selector").style.display !== "none") {
     let time = document
       .getElementsByClassName("gbm-time-picker")[0]
       .value.split(":");
@@ -382,7 +394,6 @@ function getStartTime() {
 
   return startTime;
 }
-
 
 function startElementCountdownTimer(_startTimestamp) {
   const timer = document.getElementById("sale-countdown");

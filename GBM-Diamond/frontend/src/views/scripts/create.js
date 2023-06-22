@@ -9,11 +9,13 @@ let availableQuantity = 1;
 
 generateSelectDropdown(
   "select-currency",
-  Object.values(deploymentStatus.registeredCurrencies).map(currency => {
-    console.log(currency)
-    return currency.currencyName
+  Object.values(deploymentStatus.registeredCurrencies).map((currency) => {
+    console.log(currency);
+    return currency.currencyName;
   }),
-  Object.values(deploymentStatus.registeredCurrencies).map(currency => currency.currencyDisplayName),
+  Object.values(deploymentStatus.registeredCurrencies).map(
+    (currency) => currency.currencyDisplayName
+  ),
   () => {}
 );
 
@@ -74,7 +76,7 @@ async function populatePresets() {
     "select-incentive",
     incentivePresets,
     incentivePresetNames,
-    generateBreakdown, 
+    generateBreakdown,
     2
   );
 }
@@ -151,16 +153,16 @@ function generateBreakdown() {
         Bidders will make between ${convertToPercentage(
           preset.incentiveMin
         )}% and ${convertToPercentage(
-          preset.incentiveMax
+    preset.incentiveMax
   )}% return on their bid. In total, bidders will receive up to ${convertToPercentage(
     preset.potentialTotal
   )}% of the winning bid.
     `;
 
   document.getElementById("cancellation-text1-2").innerHTML = `
-        ${convertToPercentage(
-          preset.incentiveMin
-        )}%-${convertToPercentage(preset.incentiveMax)}% of winning bid
+        ${convertToPercentage(preset.incentiveMin)}%-${convertToPercentage(
+    preset.incentiveMax
+  )}% of winning bid
     `;
 
   document.getElementById("cancellation-text2").innerHTML = `
@@ -172,8 +174,14 @@ function generateBreakdown() {
 
 async function createAuctionAndRedirect() {
   const nextAuction = parseInt(latestAuction) + 1;
-  const currencyIndexToUse = Object.values(deploymentStatus.registeredCurrencies).filter(currency => currency.currencyName === document.getElementById('select-currency').getAttribute('selected-value'))[0].currencyIndex;
-  
+  const currencyIndexToUse = Object.values(
+    deploymentStatus.registeredCurrencies
+  ).filter(
+    (currency) =>
+      currency.currencyName ===
+      document.getElementById("select-currency").getAttribute("selected-value")
+  )[0].currencyIndex;
+
   let startTime = Math.ceil(Date.now() / 1000) + 30;
 
   let selectDuration = document.getElementById("select-duration");
