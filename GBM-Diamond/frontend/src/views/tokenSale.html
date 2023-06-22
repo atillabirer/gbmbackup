@@ -144,9 +144,7 @@
             </button>
           </div>
           <div class="step-container">
-            <div class="step-header">
-              Step 2: Token bundle distribution
-            </div>
+            <div class="step-header">Step 2: Token bundle distribution</div>
             <div class="step-option">
               <div
                 id="tokens-for-sale-header"
@@ -257,7 +255,9 @@
                 <div class="gbm-header step-option-label">
                   Token bundle distribution
                 </div>
-                <div id="token-dist" class="gbm-subtitle distribution-text">Some Text Here</div>
+                <div id="token-dist" class="gbm-subtitle distribution-text">
+                  Some Text Here
+                </div>
                 <div id="the-plot"></div>
               </div>
               <button class="gbm-btn red width-limiter" onclick="moveToStep(2)">
@@ -266,9 +266,7 @@
             </div>
           </div>
           <div class="step-container">
-            <div class="step-header">
-              Step 3: Auctions parameters
-            </div>
+            <div class="step-header">Step 3: Auctions parameters</div>
             <div class="step-option">
               <div class="gbm-header step-option-label">Currency</div>
               <div class="step-option-fields">
@@ -355,7 +353,10 @@
                 <div class="width-limiter">
                   <span id="select-incentive" class="gbm-select"></span>
                 </div>
-                <p id="incentive-specifics" class="step-description under width-limiter">
+                <p
+                  id="incentive-specifics"
+                  class="step-description under width-limiter"
+                >
                   Bidders will make between 1% and 10% return on their bid. In
                   total, bidders will receive up to 15% of the winning bid.
                 </p>
@@ -365,14 +366,29 @@
               Start token sale
             </button>
           </div>
+          <div class="step-container">
+            <div class="step-header">Step 4: Create Auctions</div>
+            <div id="sale-countdown" class="step-option">
+            </div>
+            <div class="step-option">
+              <div id="bundle-grid"></div>
+            </div>
+            <div id="sale-selected" class="step-option"></div>
+            <button
+              id="step-4-btn"
+              class="gbm-btn width-limiter"
+              onclick="moveToStep(3)"
+            ></button>
+          </div>
         </div>
       </div>
     </div>
     <script type="text/javascript" src="scripts/global.js"></script>
-    <script type="text/javascript" src="scripts/tokenSaleBundleCalculator.js"></script>
+    <script
+      type="text/javascript"
+      src="scripts/tokenSaleBundleCalculator.js"
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
-
-
   </body>
 </html>

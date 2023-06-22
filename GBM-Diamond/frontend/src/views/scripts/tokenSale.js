@@ -28,7 +28,6 @@ function initPage() {
   document.getElementById("whale-factor").value = 50;
   document.getElementById("whale-factor-display").value = 50;
 
-  
   let displayedMetadata = newMetadata;
   displayedMetadata.symbol = undefined;
   displayedMetadata.name = "";
@@ -41,7 +40,10 @@ function initPage() {
   document.getElementById("smallest-bundle").onchange = function (event) {
     document.getElementById("smallest-bundle-display").value =
       convertStepToValue(event.target.value);
-    if(parseInt(document.getElementById("biggest-bundle").value) < parseInt(event.target.value)){
+    if (
+      parseInt(document.getElementById("biggest-bundle").value) <
+      parseInt(event.target.value)
+    ) {
       document.getElementById("biggest-bundle").value = event.target.value;
       document.getElementById("biggest-bundle-display").value =
         convertStepToValue(event.target.value);
@@ -51,7 +53,10 @@ function initPage() {
     document.getElementById("biggest-bundle-display").value =
       convertStepToValue(event.target.value);
 
-    if(parseInt(document.getElementById("smallest-bundle").value) > parseInt(event.target.value)){
+    if (
+      parseInt(document.getElementById("smallest-bundle").value) >
+      parseInt(event.target.value)
+    ) {
       document.getElementById("smallest-bundle").value = event.target.value;
       document.getElementById("smallest-bundle-display").value =
         convertStepToValue(event.target.value);
@@ -80,14 +85,17 @@ function initPage() {
       document.getElementById("whale-factor-display").value
     );
 
-    let resu = generateDistributionFromNotesAndTokenAmount(saleNumber, smallest, largest, (whaleFactor * 0.01));
-
+    let resu = generateDistributionFromNotesAndTokenAmount(
+      saleNumber,
+      smallest,
+      largest,
+      whaleFactor * 0.01
+    );
 
     let _ids = [];
     let _amounts = [];
 
-
-    for(let i = 0; i < resu.saleBundling.length; i++){
+    for (let i = 0; i < resu.saleBundling.length; i++) {
       _ids.push(resu.saleBundling[i].value);
       _amounts.push(resu.saleBundling[i].amount);
     }
@@ -107,39 +115,56 @@ function initPage() {
       totalation += distribution[0][i] * distribution[1][i];
       aucCount += distribution[1][i];
     }
-    distDisplay.innerHTML += "</br> Total: " + totalation +" distributed out of " + saleNumber + " desired sold over " + aucCount + " separate auctions</br>"; 
-    if(totalation != saleNumber) {
-      distDisplay.innerHTML += "⚠️ " + (saleNumber - totalation) + " tokens could not be fitted in a bundle. ⚠️  </br>";
+    distDisplay.innerHTML +=
+      "</br> Total: " +
+      totalation +
+      " distributed out of " +
+      saleNumber +
+      " desired sold over " +
+      aucCount +
+      " separate auctions</br>";
+    if (totalation != saleNumber) {
+      distDisplay.innerHTML +=
+        "⚠️ " +
+        (saleNumber - totalation) +
+        " tokens could not be fitted in a bundle. ⚠️  </br>";
     }
-    distDisplay.innerHTML += "</br></br>"
+    distDisplay.innerHTML += "</br></br>";
 
     /* Plot stuff */
     //let plot = Plot.rectY({length: 10000}, Plot.binX({y: "count"}, {x: Math.random})).plot();
 
     let _plotData = [];
-    for(let i = 0; i < resu.saleBundling.length; i++){
+    for (let i = 0; i < resu.saleBundling.length; i++) {
       _ids.push(resu.saleBundling[i].value);
       _amounts.push(resu.saleBundling[i].amount);
 
-      _plotData.push({"bundleSize":resu.saleBundling[i].value, "shareOfTokens":(((resu.saleBundling[i].amount * resu.saleBundling[i].value)/saleNumber))})
+      _plotData.push({
+        bundleSize: resu.saleBundling[i].value,
+        shareOfTokens:
+          (resu.saleBundling[i].amount * resu.saleBundling[i].value) /
+          saleNumber,
+      });
     }
     let plot = Plot.plot({
       width: 960,
       height: 500,
-      y: {percent: true},
+      y: { percent: true },
       marks: [
-        Plot.barY(_plotData, {x: "bundleSize", y: "shareOfTokens", fill: "steelblue"}),
-        Plot.ruleY([0])
-      ]
-    })
+        Plot.barY(_plotData, {
+          x: "bundleSize",
+          y: "shareOfTokens",
+          fill: "steelblue",
+        }),
+        Plot.ruleY([0]),
+      ],
+    });
     plot.id = "plotted";
-    if(document.querySelector("#plotted") != null){
+    if (document.querySelector("#plotted") != null) {
       document.querySelector("#plotted").remove();
     }
     let div = document.querySelector("#the-plot");
     div.append(plot);
-    
-
 
     document.getElementById("after-generation").hidden = false;
     window.scrollTo({
@@ -234,8 +259,6 @@ const tokenSaleProcess = {
       .send({ from: window.ethereum.selectedAddress });
   },
   startAuctionBatch: async function () {
-    let startTime = Math.ceil(Date.now() / 1000) + 30;
-
     let selectDuration = document.getElementById("select-duration");
     let selectIncentive = document.getElementById("select-incentive");
     let minBid = document.getElementById("min-bid");
@@ -245,36 +268,16 @@ const tokenSaleProcess = {
     )}_${selectDuration.getAttribute("selected-value")}`;
     let presetNumber = gbmPresetNames.indexOf(presetName) + 1;
 
-    if (
-      document.getElementById("start-date-selector").style.display !== "none"
-    ) {
-      let time = document
-        .getElementsByClassName("gbm-time-picker")[0]
-        .value.split(":");
-      let date = document
-        .getElementsByClassName("gbm-date-picker")[0]
-        .value.split("-");
-      startTime = Math.floor(
-        new Date(
-          parseInt(date[0]),
-          parseInt(date[1]) - 1,
-          parseInt(date[2]),
-          parseInt(time[0]),
-          parseInt(time[1])
-        ).getTime() / 1000
-      );
-    }
-
     let finalMinBid =
       minBid.value !== "1" || minBid.value !== "" ? minBid.value : "1";
 
-    //ToDo: Add start bid to auciton start
+    //ToDo: Add start bid to auction start
 
     //unrolling the bundles
     let tokenIDUnroll = [];
     let tokenAmountUnroll = [];
-    for(let i =0; i<distribution[0].length; i++){
-      for(let j = 0; j<distribution[1][i]; j++){
+    for (let i = 0; i < distribution[0].length; i++) {
+      for (let j = 0; j < distribution[1][i]; j++) {
         tokenIDUnroll.push(distribution[0][i]);
         tokenAmountUnroll.push(1);
       }
@@ -286,31 +289,167 @@ const tokenSaleProcess = {
         tokenAmountUnroll,
         deploymentStatus.ERC1155[deploymentStatus.ERC1155.length - 1],
         presetNumber,
-        startTime,
+        getStartTime(),
         0,
         window.ethereum.selectedAddress
       )
       .send({ from: window.ethereum.selectedAddress });
   },
+  generateBundleGridDisplay: function (_bundles) {
+    let grid = document.getElementById("bundle-grid");
+    grid.innerHTML = "";
+    this.generateBundleGridHeader(grid);
+    for (i = 0; i < _bundles.length; i++) {
+      this.generateBundleRow(grid, _bundles[i]);
+    }
+  },
+  generateBundleGridHeader: function (_gridElement) {
+    _gridElement.appendChild(this.generateBundleGridItem("Created", true));
+    _gridElement.appendChild(
+      this.generateBundleGridItem("Left to create", true)
+    );
+    _gridElement.appendChild(this.generateBundleGridItem("Select", true));
+    _gridElement.appendChild(this.generateBundleGridItem("Bundle size", true));
+  },
+  generateBundleRow: function (_gridElement, _bundle) {
+    _gridElement.appendChild(
+      this.generateBundleGridItem(
+        `${_bundle.createdAuctions} out of ${_bundle.totalAuctions}`,
+        false
+      )
+    );
+    _gridElement.appendChild(
+      this.generateBundleGridItem(
+        `${_bundle.totalAuctions - _bundle.createdAuctions}`,
+        false
+      )
+    );
+    _gridElement.appendChild(
+      this.generateBundleGridItem(
+        `<input class="gbm-input-boxed h-2 bundle-grid-input" onchange="tokenSaleProcess.calculateSelectedAuctions()" value="${
+          _bundle.totalAuctions - _bundle.createdAuctions
+        }"/>`,
+        false
+      )
+    );
+    _gridElement.appendChild(
+      this.generateBundleGridItem(`${_bundle.size} tokens`, false)
+    );
+  },
+  generateBundleGridItem: function (_innerHTML, _headerFlag) {
+    let gridItem = document.createElement("div");
+    if (_headerFlag) gridItem.classList.add("gbm-header");
+    gridItem.classList.add("bundle-grid-item");
+    gridItem.innerHTML = _innerHTML;
+    return gridItem;
+  },
+  calculateSelectedAuctions: function () {
+    const selectedAuctions = Array.from(
+      document.getElementsByClassName("bundle-grid-input")
+    ).reduce((sum, element) => sum + parseInt(element.value), 0);
+
+    document.getElementById(
+      "sale-selected"
+    ).innerHTML = `${selectedAuctions} auctions selected`;
+    document.getElementById(
+      "step-4-btn"
+    ).innerHTML = `Create ${selectedAuctions} selected auctions`;
+  },
 };
+
+function getStartTime() {
+  let startTime = Math.ceil(Date.now() / 1000) + 30;
+
+  if (
+    document.getElementById("start-date-selector").style.display !== "none"
+  ) {
+    let time = document
+      .getElementsByClassName("gbm-time-picker")[0]
+      .value.split(":");
+    let date = document
+      .getElementsByClassName("gbm-date-picker")[0]
+      .value.split("-");
+    startTime = Math.floor(
+      new Date(
+        parseInt(date[0]),
+        parseInt(date[1]) - 1,
+        parseInt(date[2]),
+        parseInt(time[0]),
+        parseInt(time[1])
+      ).getTime() / 1000
+    );
+  }
+
+  return startTime;
+}
+
+
+function startElementCountdownTimer(_startTimestamp) {
+  const timer = document.getElementById("sale-countdown");
+
+  var timestamp = _startTimestamp * 1000 - Date.now();
+  timestamp /= 1000;
+  if (timestamp > 0) {
+    timer.innerHTML = `Sale starts in ${countdownDisplay(timestamp)}`;
+    countdown = setInterval(function () {
+      timestamp--;
+      timer.innerHTML = `Sale starts in ${countdownDisplay(timestamp)}`;
+
+      if (timecalc(timestamp, 1) < 1) {
+        clearInterval(countdown);
+        startElementCountdownTimer(_startTimestamp);
+      }
+    }, 1000);
+  } else {
+    timer.innerHTML = `Sale will already be underway`;
+  }
+}
 
 async function moveToStep(_step) {
   switch (_step) {
     case 1:
-      await tokenSaleProcess.deployNewTokenContract();
-      document.getElementById(
-        "tokens-for-sale-header"
-      ).innerHTML = `Number of ${
-        document.getElementById("token-symbol").value
-      } for sale`;
+      // await tokenSaleProcess.deployNewTokenContract();
+      // document.getElementById(
+      //   "tokens-for-sale-header"
+      // ).innerHTML = `Number of ${
+      //   document.getElementById("token-symbol").value
+      // } for sale`;
       break;
     case 2:
-      await tokenSaleProcess.mintBatchFromDistribution(
-        distribution[0], distribution[1]
-      );
-      await tokenSaleProcess.transferBatchToDiamond(distribution[0], distribution[1]);
+      // await tokenSaleProcess.mintBatchFromDistribution(
+      //   distribution[0],
+      //   distribution[1]
+      // );
+      // await tokenSaleProcess.transferBatchToDiamond(
+      //   distribution[0],
+      //   distribution[1]
+      // );
       break;
     case 3:
+      //TODO Dynamically generate the array below
+      let bundles = [
+        {
+          createdAuctions: 0,
+          totalAuctions: 9,
+          size: 1500,
+        },
+        {
+          createdAuctions: 0,
+          totalAuctions: 3,
+          size: 5000,
+        },
+        {
+          createdAuctions: 0,
+          totalAuctions: 25,
+          size: 700,
+        },
+      ];
+
+      startElementCountdownTimer(getStartTime());
+      tokenSaleProcess.generateBundleGridDisplay(bundles);
+      tokenSaleProcess.calculateSelectedAuctions();
+      break;
+    case 4:
       await tokenSaleProcess.startAuctionBatch();
       location.href = `${window.location.protocol}//${window.location.host}/auctions`;
       return;
@@ -325,13 +464,13 @@ async function moveToStep(_step) {
 
 //Mapping faster than redoing the calcs
 let mappingStepis = [];
-for(let i = 0; i<=30; i+=3){
-  let exponent = Math.floor(i/3) - 0;
-  mappingStepis.push( 1.0 * (10 ** exponent));
-  mappingStepis.push( 2.0 * (10 ** exponent));
-  mappingStepis.push( 5.0 * (10 ** exponent));
+for (let i = 0; i <= 30; i += 3) {
+  let exponent = Math.floor(i / 3) - 0;
+  mappingStepis.push(1.0 * 10 ** exponent);
+  mappingStepis.push(2.0 * 10 ** exponent);
+  mappingStepis.push(5.0 * 10 ** exponent);
 }
 
-function convertStepToValue(_step){
+function convertStepToValue(_step) {
   return mappingStepis[_step];
 }
