@@ -495,7 +495,7 @@ async function doStep_s_c(arg:string){
 
         
         if(arg.substring(6) == "demo"){
-            dapreset.currencyAddress; //TODO = erc20 address
+            dapreset.currencyAddress = deployerStatus.ERC20[0];
         }
 
         logger("Setting Currency #" +  dapreset.currencyIndex + " 💲⚙️");
