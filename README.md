@@ -38,7 +38,7 @@ Self host the dapp as it is with only very minor frontend adjustment for brandin
 + *For who* : Low costs experiments selling a few dozen items       
 + *Timeline of dev work* : A single day, assuming you already know how to send an NFT to a smart contract and are a full stack dev.       
 + *Necessary infra* : An amazon t2.small to host the node server. All the rest of the data come from the smart contract getting queried trough metamask by the frontend.        
-+ *Drawback* : Due to being pure dapp, will not handle selling more than a few dozen items in total.         
++ *Drawback* : Due to being pure dapp, the live auction search page will not handle selling more than a few dozen items in total. If metamask lose the connection/user leave the website, they won't receive the dopamine rush of receving a notification telling them they have made money on being outbid.         
 
 
 ### Web3 EVM Marketplace / NFT Drop          
