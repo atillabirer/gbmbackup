@@ -42,7 +42,7 @@ Self host the dapp as it is with only very minor frontend adjustment for brandin
 
 
 ### Web3 EVM Marketplace / NFT Drop          
-Use our frontend as a guideline/modify it to accept data feed from your backend. Run it from a different subdomain/section on your website. The GBM dApp can also do direct fixed price sales, english auction, resale, etc... Pick what you want from the features.
+Use our frontend as a guideline/modify it to accept data feed from your backend. For even lower dev cost, run it from a different subdomain/section on your website and iteratively merge features. The GBM dApp can also do direct fixed price sales, english auction, resale, etc... Pick what you want from the features.
    
 + *For who* : Existing marketplace/projects wanting to add a standalone GBM feature while limiting cost.                  
 + *Timeline of dev work* : Depend of your existing infrastructure. Between two weeks and a month, more if you want deeper integration with your existing services.              
