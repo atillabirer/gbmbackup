@@ -55,7 +55,7 @@ Use our frontend as a guideline/modify it to accept data feed from your backend.
 We currently have in the work a self-hosted API version of the GBM dapp. The UX will work similarily to the Web3 EVM marketplace : 
 + Your users do not need a web3 wallet anymore, instead they just provide a user ID and an optional idenfitication mechanism (eg : non-evm blockchain wallet signature, SSO, etc...).  
 + The provided frontend is replacing web3 interaction with your userID scheme interactions.                            
-+ The API will map those userIDs to private keys, and then will use those private keys to interact with a normal GBM dapp on a private EVM blockchain that you control. For those without the knowledge to run such a blockchain, we have a ready made soplution coming Q3 2023.                                      
++ The API will map those userIDs to private keys, and then will use those private keys to interact with a normal GBM dapp on a private EVM blockchain that you control. For those without the knowledge to run such a blockchain, we have a ready made solution coming Q3 2023.                                      
 
 From there, two cases.                         
                         
