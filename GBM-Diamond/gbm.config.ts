@@ -28,9 +28,16 @@ let confi =  {
     ],
     "CurrenciesArray": [{
         "currencyIndex": 1,
-        "currencyName": "fETH",                                           // To be used by your frontend, not used otherwise
+        "currencyName": "fETH",
+        "currencyDisplayName": "Fake Ether (fETH)",                                           // To be used by your frontend, not used otherwise
         "currencyAddress": "0x0000000000000000000000000000000000000000", //Address 0x0 for the base currency, ERC20 token address if not
-    }]
+    },
+    {
+        "currencyIndex": 2,
+        "currencyName": "fUSD",
+        "currencyDisplayName": "Fake Dollar (fUSD)",                                           // To be used by your frontend, not used otherwise
+        "currencyAddress": "0x0000000000000000000000000000000000000001", //Address 0x0 for the base currency, ERC20 token address if not
+    }],
 }
 
 

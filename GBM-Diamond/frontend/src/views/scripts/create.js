@@ -9,8 +9,11 @@ let availableQuantity = 1;
 
 generateSelectDropdown(
   "select-currency",
-  ["feth"],
-  ["Fake Ether (fETH)"],
+  Object.values(deploymentStatus.registeredCurrencies).map(currency => {
+    console.log(currency)
+    return currency.currencyName
+  }),
+  Object.values(deploymentStatus.registeredCurrencies).map(currency => currency.currencyDisplayName),
   () => {}
 );
 
@@ -169,7 +172,8 @@ function generateBreakdown() {
 
 async function createAuctionAndRedirect() {
   const nextAuction = parseInt(latestAuction) + 1;
-
+  const currencyIndexToUse = Object.values(deploymentStatus.registeredCurrencies).filter(currency => currency.currencyName === document.getElementById('select-currency').getAttribute('selected-value'))[0].currencyIndex;
+  
   let startTime = Math.ceil(Date.now() / 1000) + 30;
 
   let selectDuration = document.getElementById("select-duration");
@@ -207,7 +211,7 @@ async function createAuctionAndRedirect() {
       erc721contractAddresses[0],
       presetNumber,
       startTime,
-      0,
+      currencyIndexToUse,
       window.ethereum.selectedAddress,
       finalMinBid
     );
@@ -218,7 +222,7 @@ async function createAuctionAndRedirect() {
       parseInt(document.getElementById("quantity-input").value),
       presetNumber,
       startTime,
-      0,
+      currencyIndexToUse,
       window.ethereum.selectedAddress,
       finalMinBid
     );
