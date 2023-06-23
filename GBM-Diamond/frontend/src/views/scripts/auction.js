@@ -486,7 +486,7 @@ function updatePotentialIncentive(e) {
     );
 
     incentiveContainer[0].innerHTML = `You will earn <strong>${earnableIncentives} ${currencyName} (${incentivePercentage}%)</strong> if outbid.`;
-    bidButton.disabled = currentBidInput <= minimumBid;
+    bidButton.disabled = currentBidInput < minimumBid;
   } catch {
     incentiveContainer[0].innerHTML = `You will earn 0 ${currencyName} (0%) if outbid.`;
     bidButton.disabled = true;
