@@ -343,6 +343,9 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
         uint256 _gbmPreset;
         if(_gbmPreset == 0){
             _gbmPreset = s.defaultPreset;
+        } else {
+        _gbmPreset = gbmPreset;
+            _gbmPreset = gbmPreset;
         }
 
         s.saleToGBMPreset[_saleID] = gbmPreset;                                                     // A mapping storing the associated GBM preset with a sale
