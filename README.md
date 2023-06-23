@@ -1,26 +1,29 @@
 
-# GBM_Dapp
+# GBM dApp
 
-A GBM auction is an Open Ended, Incentivized English auction. More details on how it works here : https://www.gbm.auction      
+**Disclaimer: The GBM dApp, its codebase, the GBM auction system, the GBM brand and all related  intellectual property are owned by Perpetual Altruism Ltd and covered by copyright, trademark and pending patent applications. All rights reserved. You may only use the aforementioned with a valid licence from Perpetual Altruism Ltd. To get a license, please contact us via https://www.gbm.auction.**
 
-This codebase allows our clients (you) to deploy and configure their fully-owned-by-you GBM dapp in a matter of minutes.
-A demo Frontend is included so that you can iterate on top of it when integrating to your own marketplace. You can also use this frontend as a basis for a completely new marketplace.   
+This codebase allows you to deploy and configure your own GBM dApp in a matter of minutes. The GBM dApp consists of an upgradable diamond-pattern smart contract infrastructure with an integrated frontend. You can:
+* customise the look of the GBM dApp front-end and use it as is;
+* iterate on top of the GBM dApp to integrate it with your own platform; or
+* use this frontend as a basis for a completely new platform.
 
-In order to modify the deployment parameters, you can edit the gbm.config file options yourself or soon, use the step by step option picker as a part of the deployment process.
+In order to modify the deployment parameters, you can edit the gbm.config file options yourself or use the step-by-step option picker as a part of the deployment process (available soon).
 
-## Features coming very soon : 
- => TheGraph built in schema    
- => Frontend polishing/connection to existing smart contract features
- 
+## For developers wanting to launch the demo, click [here](/GBM-Diamond/README.md) 
 
-## Feature Roadmap :
-=> Solidity codebase audit (under way)               
+## Features coming soon
+* Solidity codebase audit
+* Step-by-step option picker
+* TheGraph built-in schema
+* Frontend polishing/connection to existing smart contract features       
 
-# For developpers wanting to launch the demo, click [here](/GBM-Diamond/README.md)             
-          
+## What is a GBM auction
+
+To learn how GBM auctions work and how to communicate it to your users, please read our [GBM Auction Guide](https://docs.google.com/document/d/16jqjfFTFS7bSP9HDhC4fJkDzihmskhByZL13tcpRX5o/edit?usp=sharing)
 
 ## Which chain to chose to hold a GBM auction    
-   
+
 GBM auctions, just like any other auction, are in need quite a bid of gas to do on chain : each bid necessitate two transfer of currency (new bidder, previous bidder), many variables need to be written inside the chain state, etc...   This is a non-issue in chain where the block size is far above the block consumption (Polygon, Moonbeam, etc...), but the incentive of GBM auctions (make money when you are outbid) can disappear if auctioning lower-price items on Ethereum Mainnet, eaten whole by the gas expenditure.    
 
 As such, we suggest avoiding holding the auction themselves on Ethereum mainnet unless you are auctionning expensive items. If your sold assets exist on Ethereum mainnet, what we suggest is to create a "voucher" NFT on an L2/alternative EVM chain, hold the auction on those chain with the winner receivng the voucher NFT, and then shortly after the end of the auction, give the actual auctionned asset on Ethereum Mainnet to the address that is the holder of the voucher NFT on the chain where the auction was held. No need for a complex bridge or fancy new tech, everything works extremely well and is entirely compatible with existing scripts, software and marketplaces. The UX challenge here is onboarding your user with a currency used on the L2 (wETH, USDC, etc), the rest is very transparent and gas optimized.  
