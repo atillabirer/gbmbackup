@@ -24,7 +24,6 @@ async function onScriptLoad() {
   const auction = await auctionFunctions.getAuctionInfo(saleId);
   _localPageAuction = auction;
 
-  console.log(auction);
   try {
     fetchedMetadata = await (
       await fetch(`/whale/${auction.tokenID}/json`)
@@ -344,8 +343,6 @@ function generateBidHistoryElement(_bid, _index) {
   const bidEl = document.createElement("div");
   bidEl.classList.add("previous-bid");
 
-  console.log(_bid);
-
   const bidInnerHTML = `
           <div class="previous-bid-row flex-row-mobile-friendly opposite-ends">
               <div class="flex-row-mobile-friendly">
@@ -378,8 +375,6 @@ function generateBidHistoryElement(_bid, _index) {
 }
 
 function generateBidHistoryElementFromEvent(_newBid) {
-  console.log(_newBid);
-
   let newBid = {
     bidBidder: _newBid.bidder,
     bidValue: web3.utils.fromWei(_newBid.bidamount),

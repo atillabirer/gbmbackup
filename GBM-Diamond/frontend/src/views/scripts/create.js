@@ -10,7 +10,6 @@ let availableQuantity = 1;
 generateSelectDropdown(
   "select-currency",
   Object.values(deploymentStatus.registeredCurrencies).map((currency) => {
-    console.log(currency);
     return currency.currencyName;
   }),
   Object.values(deploymentStatus.registeredCurrencies).map(
