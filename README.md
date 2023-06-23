@@ -13,8 +13,7 @@ In order to modify the deployment parameters, you can edit the gbm.config file o
 ## For developers wanting to launch the demo, click [here](/GBM-Diamond/README.md) 
 
 ## Features coming soon
-* Solidity codebase audit
-* Step-by-step option picker
+* Solidity codebase audit 
 * TheGraph built-in schema
 * Frontend polishing/connection to existing smart contract features       
 
@@ -66,8 +65,8 @@ From there, two cases.
 + The bids need to be fully funded and the assets of auction winners need to be properly tracked. Wherever the assets you are selling exist, you need to tell the API that bids amounts are properly put and withdrawn from escrow, and that the assets auctionned are properly changing hand. In essence, you need to build a bridge. This is trivial enough if you are dealing with physical assets/fiat as ultimately you are bridging toward a classic database, it can be much more tricky and require much more domain specific technical expertise if you are bridging from an another blockchain.                
 + The GBM api software need to be able to manipulate items in escrow : this could be sending paypal transactions or executing blockchain transaction, but ultimately you have a server that is a juicy target for hacks. The software we provide is of course coming with some built-in security, but by the very nature of being at it's core a price exploration and settlement engine, it will be able to move assets. We can of course advice and help with best practises, but it is much preferred has an experienced sysadmin and good security practices. The best armored door in the world is useless if you leave the key on the lock.                          
 + If you are bridging from an another blockchain to keep track of escrow, why not have your users use the EVM web3 dapp anyway ?       
-+ An another solution is to re-implement in your blockchain specific smart contract language the GBM marketplace. We are open to collaboration on the matter and already have delivered succesfully audited implementations for non-evem chains.      
-+ If you are a blockchain project yourself, GBM could also be integrated as a precompile/part of the abse protocol. We are open to collaboration on the matter.                   
++ An another solution is to re-implement in your blockchain specific smart contract language the GBM marketplace. We are open to collaboration on the matter and already have delivered succesfully audited implementations for non-evm chains.      
++ If you are a blockchain project yourself, GBM could also be integrated as a precompile/part of the base protocol. We are open to collaboration on the matter.                   
 
 **Database to privatised GBM EVM DAPP**
 + If you are for example selling digital items (gaming, tickets, etc) with a prepaid account system and do not care much about this blockchain/Web3 thingy, then we have a ready made solution coming Q3 2023                              
