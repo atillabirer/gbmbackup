@@ -347,7 +347,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
             _gbmPreset = gbmPreset;
         }
 
-        s.saleToGBMPreset[_saleID] = gbmPreset;                                                     // A mapping storing the associated GBM preset with a sale
+        s.saleToGBMPreset[_saleID] = _gbmPreset;                                                     // A mapping storing the associated GBM preset with a sale
         s.saleTocurrencyID[_saleID] = currencyID;                                                   // A mapping storing the associated main currency with a sale
         s.saleToStartTimestamp[_saleID] = startTimestamp;  
                                                  // A mapping storing the associated StartTimestamp with a sale
