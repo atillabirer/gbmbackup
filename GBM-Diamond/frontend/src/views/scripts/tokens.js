@@ -147,7 +147,6 @@ const cardGenerator = {
       })
     );
 
-    console.log(ownedTokens);
     ownedTokens = ownedTokens.filter(
       (item) =>
         item.owner.toLowerCase() ===
@@ -425,7 +424,6 @@ async function generateTokens() {
   let { tokens721, tokens1155 } = await tokenFetcher.getTokens();
   collectionNames1155 = await tokenFetcher.getCollectionNames();
 
-  console.log(tokens1155);
   const { uris721, owners721, escrowed721 } = tokens721;
   const owned1155All = tokens1155.map((contract) => contract.owned1155);
   const escrowed1155All = tokens1155.map((contract) => contract.escrowed1155);

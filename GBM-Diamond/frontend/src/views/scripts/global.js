@@ -28,9 +28,11 @@ const pageInitializer = {
   loadContractAddresses: function () {
     if (!deploymentStatus) return;
     deploymentStatus = JSON.parse(deploymentStatus);
-    diamondAddress = deploymentStatus.deployedFacets["Diamond"];
-    erc721contractAddresses = deploymentStatus.ERC721;
-    erc1155contractAddresses = deploymentStatus.ERC1155;
+    try {
+      diamondAddress = deploymentStatus.deployedFacets["Diamond"];
+      erc721contractAddresses = deploymentStatus.ERC721;
+      erc1155contractAddresses = deploymentStatus.ERC1155;
+    } catch {}
   },
 
   loadCustomCss: function () {
@@ -543,7 +545,7 @@ const auctionFunctions = {
     await gbmContracts.methods.bid(_auctionId, newAmount, oldAmount).send({
       from: window.ethereum.selectedAddress,
       to: diamondAddress,
-      value: newAmount,
+      value: _currencyAddress !== "0x0000000000000000000000000000000000000000" ? 0 : newAmount,
       gasLimit: 300000,
     });
   },

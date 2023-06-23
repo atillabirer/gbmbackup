@@ -97,3 +97,38 @@
 #start-date-selector {
   display: none;
 }
+
+#sale-countdown {
+  color: var(--tertiary);
+  font-weight: 700;
+  font-size: large;
+}
+
+#sale-selected {
+  color: var(--text);
+  font-weight: 400;
+  font-size: large;
+}
+
+#bundle-grid {
+  width: 70%;
+  color: var(--text);
+  font-weight: 700;
+  font-size: large;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.bundle-grid-item {
+  flex: 1 0 20%;
+  margin: auto 5px;
+  padding: 10px 0px;
+}
+
+.bundle-grid-input {
+  font-size: large;
+  max-width: 100px;
+  
+}

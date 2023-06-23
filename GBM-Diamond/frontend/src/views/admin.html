@@ -207,7 +207,43 @@
             <div class="left-column-option mt-2">
               <div class="gbm-header left-column-option-label">Currencies</div>
               <div class="left-column-option-fields">
-                <p class="left-column-description">Coming soon</p>
+                <div id="currency-display">
+                </div>
+                <div
+                  class="configuration-default-preset-group"
+                  style="color: var(--text); margin-top: 10px"
+                >
+                  <div class="configuration-default-preset-label">
+                    Currency display symbol
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      class="gbm-input-boxed"
+                      id="currency-symbol-input"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="configuration-default-preset-group"
+                  style="color: var(--text)"
+                >
+                  <div class="configuration-default-preset-label">
+                    Token contract
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      class="gbm-input-boxed"
+                      id="currency-address-input"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <button class="gbm-btn transparent cover mt-1 h-3" onclick="currencyActions.addCurrency()">
+                  Add currency
+                </button>
               </div>
             </div>
             <div class="left-column-option mt-2">

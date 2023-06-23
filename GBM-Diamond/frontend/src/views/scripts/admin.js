@@ -133,7 +133,88 @@ const colorActions = {
 };
 
 const currencyActions = {
-  init: async function () {},
+  currentCurrencies: [],
+  init: async function () {
+    this.fetchCurrencies();
+    this.generateCurrencyElements();
+  },
+  fetchCurrencies: function () {
+    this.currentCurrencies = Object.values(
+      deploymentStatus.registeredCurrencies
+    );
+    this.currentCurrencies = this.currentCurrencies.map((currency, index) => ({
+      ...currency,
+      currencyAddress:
+        index > 0
+          ? deploymentStatus.ERC20[index - 1]
+          : currency.currencyAddress,
+    }));
+  },
+  generateCurrencyElements: function () {
+    const currencyContainer = document.getElementById("currency-display");
+    for (i = 0; i < this.currentCurrencies.length; i++) {
+      let currencyToAdd = document.createElement("div");
+      currencyToAdd.classList.add(
+        "configuration-default-preset-group",
+        "currency-row"
+      );
+      currencyToAdd.innerHTML = `
+      <div class="currency-column currency-header">${
+        this.currentCurrencies[i].currencyName
+      }</div>
+      <div class="currency-column">${
+        i === 0
+          ? "Native"
+          : shortenAddress(this.currentCurrencies[i].currencyAddress)
+      }</div>
+      ${
+        i === 0
+          ? ""
+          : `<div class="currency-column currency-remove" onclick="currencyActions.removeCurrency(${i})">Remove</div>`
+      }
+      `;
+      currencyContainer.appendChild(currencyToAdd);
+    }
+  },
+  removeCurrency: function (_index) {
+    deploymentStatus.ERC20.splice(_index - 1, 1);
+    let temp = JSON.parse(
+      JSON.stringify(
+        Object.assign({}, [{}, ...currencyActions.currentCurrencies])
+      )
+    );
+    delete temp[0];
+    delete temp[_index+1];
+    deploymentStatus.registeredCurrencies = temp;
+    storeNewDeploymentStatus();
+    window.location.reload();
+  },
+  addCurrency: async function () {
+    let symbol = document.getElementById("currency-symbol-input").value;
+    let address = document.getElementById("currency-address-input").value;
+
+    // TODO Add check for valid contract address
+
+
+    await gbmContracts.methods
+      .setCurrencyAddressAndName(
+        deploymentStatus.ERC20.length + 1,
+        address,
+        symbol
+      )
+      .send({ from: window.ethereum.selectedAddress });
+
+    this.currentCurrencies.push({
+      currencyIndex: deploymentStatus.ERC20.length + 1,
+      currencyAddress: address,
+      currencyName: symbol,
+      currencyDisplayName: symbol,
+    });
+    deploymentStatus.registeredCurrencies = this.currentCurrencies;
+    deploymentStatus.ERC20.push(address);
+    storeNewDeploymentStatus();
+    window.location.reload();
+  },
 };
 
 const sliderActions = {

@@ -24,7 +24,6 @@ async function onScriptLoad() {
   const auction = await auctionFunctions.getAuctionInfo(saleId);
   _localPageAuction = auction;
 
-  console.log(auction);
   try {
     fetchedMetadata = await (
       await fetch(`/whale/${auction.tokenID}/json`)
@@ -65,6 +64,7 @@ function generateBidHistoryElementLoop() {
         "Bid History";
     }
     generateBidHistoryElement(bids[i], i);
+    console.log(bids[i]);
   }
   reverseChildren(document.getElementsByClassName("bids")[0]);
 }
@@ -344,8 +344,6 @@ function generateBidHistoryElement(_bid, _index) {
   const bidEl = document.createElement("div");
   bidEl.classList.add("previous-bid");
 
-  console.log(_bid);
-
   const bidInnerHTML = `
           <div class="previous-bid-row flex-row-mobile-friendly opposite-ends">
               <div class="flex-row-mobile-friendly">
@@ -378,8 +376,6 @@ function generateBidHistoryElement(_bid, _index) {
 }
 
 function generateBidHistoryElementFromEvent(_newBid) {
-  console.log(_newBid);
-
   let newBid = {
     bidBidder: _newBid.bidder,
     bidValue: web3.utils.fromWei(_newBid.bidamount),
@@ -491,7 +487,7 @@ function updatePotentialIncentive(e) {
     );
 
     incentiveContainer[0].innerHTML = `You will earn <strong>${earnableIncentives} ${currencyName} (${incentivePercentage}%)</strong> if outbid.`;
-    bidButton.disabled = currentBidInput <= minimumBid;
+    bidButton.disabled = currentBidInput < minimumBid;
   } catch {
     incentiveContainer[0].innerHTML = `You will earn 0 ${currencyName} (0%) if outbid.`;
     bidButton.disabled = true;
