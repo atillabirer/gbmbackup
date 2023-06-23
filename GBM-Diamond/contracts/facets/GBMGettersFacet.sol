@@ -332,7 +332,15 @@ contract GBMGettersFacet is IGBMGettersFacet {
     /// @param saleID The ID of the sale you wish to know the details of
     /// @return currencyID The currencyID bsed by the auction. 0 for default.
     function getSale_CurrencyID(uint256 saleID) external view returns(uint256){
-        return s.saleTocurrencyID[saleID];
+        //Getting the sale currency index
+        uint256 _index = s.saleTocurrencyID[saleID];
+
+        //If the sale is using the default preset, fetch it
+        if(_index == 0){
+            _index = s.defaultCurrency;
+        }
+
+        return _index;
     }
 
 
@@ -456,10 +464,20 @@ contract GBMGettersFacet is IGBMGettersFacet {
 
     /// @notice Get the sale's bid currency index
     /// @param saleID The ID of the sale you wish to know the details of
-    /// @param bidIndex The position of the bid you wish to know the details of. Starts at 1.
     /// @return currencyIndex The currency index of the currency the bid was made in.
-    function getSale_Bid_CurrencyIndex(uint256 saleID, uint256 bidIndex) external view returns(uint256){
-        return s.saleToBidCurrencies[saleID][bidIndex];
+    function getSale_Bid_CurrencyIndex(uint256 saleID, uint256 /* bidIndex */) external view returns(uint256){
+
+        //Getting the sale currency index
+        uint256 _index = s.saleTocurrencyID[saleID];
+
+        //If the sale is using the default preset, fetch it
+        if(_index == 0){
+            _index = s.defaultCurrency;
+        }
+
+       // return s.saleToBidCurrencies[saleID][bidIndex]; To be change once there is multi currency option supprot
+
+       return _index;
     }
     
 
