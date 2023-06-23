@@ -28,9 +28,11 @@ const pageInitializer = {
   loadContractAddresses: function () {
     if (!deploymentStatus) return;
     deploymentStatus = JSON.parse(deploymentStatus);
-    diamondAddress = deploymentStatus.deployedFacets["Diamond"];
-    erc721contractAddresses = deploymentStatus.ERC721;
-    erc1155contractAddresses = deploymentStatus.ERC1155;
+    try {
+      diamondAddress = deploymentStatus.deployedFacets["Diamond"];
+      erc721contractAddresses = deploymentStatus.ERC721;
+      erc1155contractAddresses = deploymentStatus.ERC1155;
+    } catch {}
   },
 
   loadCustomCss: function () {

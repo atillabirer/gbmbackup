@@ -12,7 +12,6 @@ generateSelectDropdown(
 );
 
 async function generateTheDeployOptions() {
-
   let deploymentConf = await (
     await fetch("../config/deploymentConf.json")
   ).json();
@@ -27,7 +26,6 @@ async function generateTheDeployOptions() {
   }
 
   generateSelectDropdown("select-version", idList, dispNames, () => {});
-
 }
 
 generateTheDeployOptions();
@@ -108,7 +106,6 @@ async function connectToDeployer() {
     await fetch("../config/deploymentConf.json")
   ).json();
 
-  
   const webSocket = new WebSocket("ws://localhost:443/");
 
   let deploymentSteps =
@@ -282,6 +279,13 @@ const logoActions = {
       document.getElementById("logo-url").value = event.target.result;
       document.getElementById("logo-upload-success").hidden = false;
       logoActions.updateCSS();
+      deploymentStatus =
+        JSON.parse(localStorage.getItem("deploymentStatus")) || {};
+      deploymentStatus.logo = document.getElementById("logo-url").value;
+      localStorage.setItem(
+        "deploymentStatus",
+        JSON.stringify(deploymentStatus)
+      );
     };
     reader.readAsDataURL(event.target.files[0]);
   },
@@ -291,8 +295,9 @@ const logoActions = {
     this.updateCSS();
   },
   updateCSS: function () {
-    document.getElementById("nav-bar-logo").src = document.getElementById("logo-url").value;
-  }
+    document.getElementById("nav-bar-logo").src =
+      document.getElementById("logo-url").value;
+  },
 };
 
 const colorActions = {
@@ -348,6 +353,13 @@ const colorActions = {
         colorActions.currentColors[colorActions.colourMapping[element.id]] =
           element.value;
         colorActions.updateCSS();
+        deploymentStatus =
+          JSON.parse(localStorage.getItem("deploymentStatus")) || {};
+        deploymentStatus.colours = colorActions.currentColors;
+        localStorage.setItem(
+          "deploymentStatus",
+          JSON.stringify(deploymentStatus)
+        );
       }
       document.getElementById(`${element.id}-preview`).style.backgroundColor =
         element.value;
