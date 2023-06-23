@@ -167,3 +167,23 @@ h3 {
   margin-top: 5px;
   cursor: pointer;
 }
+
+.currency-row {
+  color: var(--text);
+  font-size: large;
+}
+
+.currency-column {
+  flex: 1 0 30%;
+  text-align: left;
+  margin: 5px 30px 0px 0px;
+}
+
+.currency-header {
+  max-width: 50px;
+  font-weight: 700;
+}
+
+.currency-remove { 
+  text-decoration: underline;
+}
