@@ -64,6 +64,7 @@ function generateBidHistoryElementLoop() {
         "Bid History";
     }
     generateBidHistoryElement(bids[i], i);
+    console.log(bids[i]);
   }
   reverseChildren(document.getElementsByClassName("bids")[0]);
 }

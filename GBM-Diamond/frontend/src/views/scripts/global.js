@@ -545,7 +545,7 @@ const auctionFunctions = {
     await gbmContracts.methods.bid(_auctionId, newAmount, oldAmount).send({
       from: window.ethereum.selectedAddress,
       to: diamondAddress,
-      value: newAmount,
+      value: _currencyAddress !== "0x0000000000000000000000000000000000000000" ? 0 : newAmount,
       gasLimit: 300000,
     });
   },
