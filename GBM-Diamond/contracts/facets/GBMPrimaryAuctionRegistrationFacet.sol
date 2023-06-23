@@ -344,7 +344,6 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
         if(_gbmPreset == 0){
             _gbmPreset = s.defaultPreset;
         } else {
-        _gbmPreset = gbmPreset;
             _gbmPreset = gbmPreset;
         }
 
