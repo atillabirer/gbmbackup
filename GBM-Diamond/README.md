@@ -87,6 +87,8 @@ Use
 ```    
 npx hardhat run scripts/deployer.ts   
 ```    
+or the normal frontend using the "live blockchain" network option.
+
 Come back in a few minutes, and everything should be deployed.
 You can then hardcode/connect to your backend the contract addresses and host your frontend for your users to use.
             
