@@ -1,23 +1,22 @@
 
 # GBM_Dapp
 
-A GBM auction is an Open Ended, Incentivized English auction. More details on how it works here : https://www.gbm.auction      
+**Disclaimer: The GBM dApp, its codebase, the GBM auction system, the GBM brand and all related  intellectual property are owned by Perpetual Altruism Ltd and covered by copyright, trademark and pending patent applications. All rights reserved. You may only use the aforementioned with a valid licence from Perpetual Altruism Ltd. To get a license, please contact us via https://www.gbm.auction.**
 
-This codebase allows our clients (you) to deploy and configure their fully-owned-by-you GBM dapp in a matter of minutes.
-A demo Frontend is included so that you can iterate on top of it when integrating to your own marketplace. You can also use this frontend as a basis for a completely new marketplace.   
+This codebase allows you to deploy and configure your own GBM dApp in a matter of minutes. The GBM dApp consists of an upgradable diamond-pattern smart contract infrastructure with an integrated frontend. You can:
+* customise the look of the GBM dApp front-end and use it as is;
+* iterate on top of the GBM dApp to integrate it with your own platform; or
+* use this frontend as a basis for a completely new platform.
 
-In order to modify the deployment parameters, you can edit the gbm.config file options yourself or soon, use the step by step option picker as a part of the deployment process.
+In order to modify the deployment parameters, you can edit the gbm.config file options yourself or use the step-by-step option picker as a part of the deployment process (available soon).
 
-## Features coming very soon : 
- => TheGraph built in schema    
- => Frontend polishing/connection to existing smart contract features
- 
+## For developers wanting to launch the demo, click [here](/GBM-Diamond/README.md) 
 
-## Feature Roadmap :
-=> Solidity codebase audit (under way)               
-
-# For developpers wanting to launch the demo, click [here](/GBM-Diamond/README.md)             
-          
+## Features coming soon
+* Solidity codebase audit
+* Step-by-step option picker
+* TheGraph built-in schema
+* Frontend polishing/connection to existing smart contract features       
 
 ## Which chain to chose to hold a GBM auction    
    
