@@ -291,7 +291,10 @@ const tokenSaleProcess = {
     let tokenIDUnroll = [];
     let tokenAmountUnroll = [];
     for (let i = 0; i < distribution[0].length; i++) {
-      for (let j = 0; j < distribution[1][i]; j++) {
+
+      let amountForThisAuction = parseInt(document.getElementById("auction-amount-input-" + distribution[0][i]).value);
+
+      for (let j = 0; j < amountForThisAuction; j++) {
         tokenIDUnroll.push(distribution[0][i]);
         tokenAmountUnroll.push(1);
       }
@@ -314,7 +317,10 @@ const tokenSaleProcess = {
     grid.innerHTML = "";
     this.generateBundleGridHeader(grid);
     for (i = 0; i < _bundles.length; i++) {
-      this.generateBundleRow(grid, _bundles[i]);
+      if(_bundles[i].totalAuctions != 0){
+        this.generateBundleRow(grid, _bundles[i]);
+      }
+     
     }
   },
   generateBundleGridHeader: function (_gridElement) {
@@ -340,7 +346,7 @@ const tokenSaleProcess = {
     );
     _gridElement.appendChild(
       this.generateBundleGridItem(
-        `<input class="gbm-input-boxed h-2 bundle-grid-input" onchange="tokenSaleProcess.calculateSelectedAuctions()" value="${
+        `<input id="auction-amount-input-${_bundle.size}" class="gbm-input-boxed h-2 bundle-grid-input" onchange="tokenSaleProcess.calculateSelectedAuctions()" value="${
           _bundle.totalAuctions - _bundle.createdAuctions
         }"/>`,
         false
@@ -438,23 +444,14 @@ async function moveToStep(_step) {
       break;
     case 3:
       //TODO Dynamically generate the array below
-      let bundles = [
-        {
+      let bundles = [];
+      for(let i =0; i<distribution[0].length; i++){
+        bundles.push({
           createdAuctions: 0,
-          totalAuctions: 9,
-          size: 1500,
-        },
-        {
-          createdAuctions: 0,
-          totalAuctions: 3,
-          size: 5000,
-        },
-        {
-          createdAuctions: 0,
-          totalAuctions: 25,
-          size: 700,
-        },
-      ];
+          totalAuctions:  distribution[1][i],
+          size:  distribution[0][i]
+        });
+      }
 
       startElementCountdownTimer(getStartTime());
       tokenSaleProcess.generateBundleGridDisplay(bundles);
@@ -462,7 +459,7 @@ async function moveToStep(_step) {
       break;
     case 4:
       await tokenSaleProcess.startAuctionBatch();
-      location.href = `${window.location.protocol}//${window.location.host}/auctions`;
+      //location.href = `${window.location.protocol}//${window.location.host}/auctions`;
       return;
     default:
       break;
@@ -484,4 +481,33 @@ for (let i = 0; i <= 30; i += 3) {
 
 function convertStepToValue(_step) {
   return mappingStepis[_step];
+}
+
+
+let createdAuctions = {};
+
+async function refreshUnderAuctionBundle(){
+  for(let i =0; i<distribution[0].length; i++){
+    createdAuctions[i] = await gbmContracts.methods
+    .getERC1155Token_UnderSaleByDepositor(
+      newTokenContract.options.address,
+      distribution[0][i],
+      window.ethereum.selectedAddress
+    ).call();
+  }
+
+  let bundles = [];
+  for(let i =0; i<distribution[0].length; i++){
+    bundles.push({
+      createdAuctions: createdAuctions[i],
+      totalAuctions:  distribution[1][i],
+      size:  distribution[0][i]
+    });
+  }
+
+  console.log(bundles);
+
+  tokenSaleProcess.generateBundleGridDisplay(bundles);
+  tokenSaleProcess.calculateSelectedAuctions();
+
 }
