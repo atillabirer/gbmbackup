@@ -49,14 +49,13 @@ Use our frontend as a guideline/modify it to accept data feed from your backend.
 + *Necessary infra* : An indexer for all the NFTs sold on your platform as well as tracking the status of sales/auctions/deposits within the GBM dapp. A database cluster to service those indexed data to the frontend instead of relying on the public web3 node, and making proper optimized DB requests instead of DDOS'ing loops to fetch/search existing auctions. And of course your normal frontend delivery infrastructure.   
 + *Drawback* : Frontend developement and polishing takes time. Making and hosting an indexer is not the simplest thing either. However, if you are an NFT project, you should already have the skillsets in-house.
 
-
 ### 3. I'm neither of the above, what are my options ?
 We currently have in the works a self-hosted API version of the GBM dApp. The UX will work similarly to the Web3 EVM marketplace but: 
 + Your users do not need a blockchain wallet anymore, instead they just provide a user ID and an optional identification mechanism (eg : non-evm blockchain wallet signature, SSO, etc...); 
 + The provided frontend is replacing web3 interaction with your userID scheme interactions.                            
 + The API will map those userIDs to private keys, and then will use those private keys to interact with a normal GBM dapp on a private EVM blockchain that you control. For those without the knowledge to run such a blockchain, we have a ready made solution coming Q3 2023.                                      
 
-From there, two cases.                         
+From there, two cases:
                         
 **Blockchain to privatised GBM EVM DAPP**
 + The bids and the assets must be properly tracked so you can tell the API to do the settlement. In essence, you need to build a bridge between your system and the dApp. This is trivial enough if you are dealing with physical assets/fiat as ultimately you are bridging toward a classic database. It can be much more tricky and require much more domain specific technical expertise if you are bridging from another blockchain.                
