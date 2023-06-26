@@ -38,15 +38,15 @@ Self-host the dApp as is, customise the look of the front-end using the Admin pa
      
 + *For who* : Low costs experiments selling a few dozen items       
 + *Timeline of dev work* : A single day, assuming you already know how to send an NFT to a smart contract and are a full stack dev.       
-+ *Necessary infra* : An amazon t2.small to host the node server. All the rest of the data come from the smart contract getting queried trough metamask by the frontend.        
++ *Necessary infra* : An amazon t2.small to host the node server. All the rest of the data come from the smart contract getting queried through Metamask by the frontend.        
 + *Drawback* : Due to being pure dApp, the live auction search page will not handle selling more than a few dozen items in total. If metamask loses the connection or the user leaves the website, they won't receive notifications (for example when they are outbid).         
 
 ### 2. Web3 EVM Marketplace / NFT Drop          
 Use our frontend as a guideline/modify it to accept data feed from your backend. For even lower dev cost, run it from a different subdomain/section on your website and iteratively merge features. 
    
 + *For who* : Existing marketplace/NFT projects wanting to add a standalone GBM feature while limiting cost.                  
-+ *Timeline of dev work* : Depend of your existing infrastructure. Between two weeks and a month, more if you want deeper integration with your existing services.              
-+ *Necessary infra* : An indexer for all the NFTs sold on your platform as well as tracking the status of sales/auctions/deposits within the GBM dapp. A database cluster to service those indexed data to the frontend instead of relying on the public web3 node, and making proper optimized DB requests instead of DDOS'ing loops to fetch/search existing auctions. And of course your normal frontend delivery infrastructure.   
++ *Timeline of dev work* : Depend on your existing infrastructure. Between two weeks and a month, more if you want deeper integration with your existing services.              
++ *Necessary infra* : An indexer for all the NFTs sold on your platform as well as tracking the status of sales/auctions/deposits within the GBM dApp. A database cluster to service those indexed data to the frontend instead of relying on the public web3 node, and making proper optimised DB requests instead of DDOSing loops to fetch/search existing auctions. And of course your normal frontend delivery infrastructure.   
 + *Drawback* : Frontend developement and polishing takes time. Making and hosting an indexer is not the simplest thing either. However, if you are an NFT project, you should already have the skillsets in-house.
 
 ### 3. I'm neither of the above, what are my options ?
