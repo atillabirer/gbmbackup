@@ -7,13 +7,31 @@ let auctionTypeCount = {
 let countdowns = [];
 let currentView = 0;
 
-Array.from(document.getElementsByClassName("filter-btn")).forEach(
-  (_element, index) => {
-    _element.onclick = function () {
-      currentView = index;
-      toggleAuctions(index);
-    };
-  }
+let auctions = [];
+
+let sortOptions = [
+  "tokenPriceAsc",
+  "tokenPriceDesc",
+  "endsSoonest",
+  "endsLatest",
+  "bundleSizeDesc",
+  "bundleSizeAsc",
+  "currentBidDesc",
+  "currentBidAsc",
+];
+let sortLabels = [
+  "Sort by: Price per token (lowest)",
+  "Sort by: Price per token (highest)",
+  "Sort by: Ends (soonest)",
+  "Sort by: Ends (last)",
+  "Sort by: Bundle size (biggest)",
+  "Sort by: Bundle size (smallest)",
+  "Sort by: Current bid (highest)",
+  "Sort by: Current bid (lowest)",
+];
+
+generateSelectDropdown("select-sort", sortOptions, sortLabels, () =>
+  displayWithPreferredSort()
 );
 
 async function onScriptLoad() {
@@ -23,19 +41,13 @@ async function onScriptLoad() {
 async function loadGBMAuctions() {
   try {
     const auctionNo = await getNumberOfAuctions();
-    let auctions = await loadAuctions(auctionNo);
+    auctions = await loadAuctions(auctionNo);
     auctions = auctions.filter((_auction) => _auction); // Filter out undefined (meaning non-token) auctions
     const loader = document.getElementsByClassName("loading-container");
     loader[0].style.display = "none";
-    for (i = 0; i < auctions.length; i++) {
-      generateAuctionElement(auctions[i], i);
-    }
-    updateCounters();
-    toggleAuctions(0);
-    reverseChildren(
-      document.getElementsByClassName("auction-grid-rows-container")[0]
-    );
-    subscribeToNewAuctions(retrieveNewAuction);
+    sortAuctions("tokenPriceDesc");
+    displayAuctions();
+    subscribeToNewAuctions(retrieveNewAuction); // ToDo fix?
   } catch {
     setTimeout(async () => {
       await loadGBMAuctions();
@@ -43,13 +55,67 @@ async function loadGBMAuctions() {
   }
 }
 
-function updateCounters() {
-  document.getElementById("live-number").innerHTML = Array.from(
-    document.getElementsByClassName("auction-live")
-  ).length;
-  document.getElementById("upcoming-number").innerHTML = Array.from(
-    document.getElementsByClassName("auction-upcoming")
-  ).length;
+function sortAuctions(_sortType) {
+  switch (_sortType) {
+    case "tokenPriceAsc":
+      auctions = auctions.sort((a, b) => a.pricePerToken.cmp(b.pricePerToken));
+      break;
+    case "tokenPriceDesc":
+      auctions = auctions.sort((a, b) => b.pricePerToken.cmp(a.pricePerToken));
+      break;
+    case "endsSoonest":
+      auctions = auctions.sort((a, b) => a.endTimestamp < b.endTimestamp);
+      break;
+    case "endsLatest":
+      auctions = auctions.sort((a, b) => a.endTimestamp > b.endTimestamp);
+      break;
+    case "bundleSizeDesc":
+      auctions = auctions.sort((a, b) => {
+        if (a.tokenID > b.tokenID) return -1;
+        else return 1;
+      });
+      break;
+    case "bundleSizeAsc":
+      auctions = auctions.sort((a, b) => {
+        if (a.tokenID < b.tokenID) return -1;
+        else return 1;
+      });
+      break;
+    case "currentBidDesc":
+      auctions = auctions.sort((a, b) =>
+        web3.utils
+          .toBN(b.highestBidValueRaw)
+          .cmp(web3.utils.toBN(a.highestBidValueRaw))
+      );
+      break;
+    case "currentBidAsc":
+      auctions = auctions.sort((a, b) =>
+        web3.utils
+          .toBN(a.highestBidValueRaw)
+          .cmp(web3.utils.toBN(b.highestBidValueRaw))
+      );
+      break;
+    default:
+  }
+}
+
+function displayAuctions() {
+  for (i = 0; i < auctions.length; i++) {
+    generateAuctionElement(auctions[i], i);
+  }
+}
+
+function displayWithPreferredSort() {
+  sortAuctions(
+    document.getElementById("select-sort").getAttribute("selected-value")
+  );
+  for (i = 0; i < countdowns.length; i++) {
+    clearInterval[countdowns[i]];
+  }
+  countdowns = [];
+  document.getElementsByClassName("auction-grid-rows-container")[0].innerHTML =
+    "";
+  displayAuctions();
 }
 
 function reverseChildren(parent) {
@@ -86,18 +152,18 @@ async function getAuctionInfoMinimal(saleID) {
   let tokenAddressFetched = await gbmContracts.methods
     .getSale_TokenAddress(saleID)
     .call();
-  let tokenIDFetched = await gbmContracts.methods
-    .getSale_TokenID(saleID)
-    .call();
+  let tokenIDFetched = parseInt(
+    await gbmContracts.methods.getSale_TokenID(saleID).call()
+  );
 
   if (
     deploymentStatus.tokens &&
-    deploymentStatus.tokens.includes(tokenAddressFetched)
+    !deploymentStatus.tokens.includes(tokenAddressFetched)
   )
     return;
   let imageLink = tokenImages[tokenAddressFetched];
   if (imageLink === undefined) {
-    if (deploymentStatus.ERC1155.indexOf(tokenAddressFetched) > 0) {
+    if (deploymentStatus.tokens.indexOf(tokenAddressFetched) >= 0) {
       let tokenContract = new web3.eth.Contract(
         abis["tokenCoupon"],
         tokenAddressFetched
@@ -115,12 +181,12 @@ async function getAuctionInfoMinimal(saleID) {
   }
   let tokenName = tokenNames[tokenAddressFetched];
   if (tokenName === undefined) {
-    if (deploymentStatus.ERC1155.indexOf(tokenAddressFetched) > -1) {
-      tokenName = await erc1155contracts[
-        deploymentStatus.ERC1155.indexOf(tokenAddressFetched)
-      ].methods
-        .name()
-        .call();
+    if (deploymentStatus.tokens.indexOf(tokenAddressFetched) > -1) {
+      let tokenContract = new web3.eth.Contract(
+        abis["tokenCoupon"],
+        tokenAddressFetched
+      );
+      tokenName = await tokenContract.methods.name().call();
       tokenNames[tokenAddressFetched] = tokenName;
     } else {
       tokenNames[tokenAddressFetched] = `GBM Whales`;
@@ -143,23 +209,27 @@ async function getAuctionInfoMinimal(saleID) {
     currencyAddress: await gbmContracts.methods
       .getSale_Currency_Address(saleID)
       .call(),
-    startTimestamp: await gbmContracts.methods
-      .getSale_StartTimestamp(saleID)
-      .call(),
-    endTimestamp: await gbmContracts.methods
-      .getSale_EndTimestamp(saleID)
-      .call(),
+    startTimestamp: parseFloat(
+      await gbmContracts.methods.getSale_StartTimestamp(saleID).call()
+    ),
+    endTimestamp: parseFloat(
+      await gbmContracts.methods.getSale_EndTimestamp(saleID).call()
+    ),
     highestBidValue: web3.utils.fromWei(_highBidValueRaw),
     highestBidValueRaw: _highBidValueRaw,
     highestBidBidder: await gbmContracts.methods
       .getSale_HighestBid_Bidder(saleID)
       .call(),
+    pricePerToken: web3.utils
+      .toBN(_highBidValueRaw)
+      .div(web3.utils.toBN(tokenIDFetched)),
     //   gbmPreset: await gbmContracts.methods.getSale_GBMPreset(saleID).call(), // can break this down further
     //   gbmPresetName: await gbmContracts.methods.getGBMPreset_Name(gbmPresetIndex).call(),
   };
 }
 
 async function generateAuctionElement(auction, index) {
+  if (!auction) return;
   const auctionsContainer = document.getElementsByClassName(
     "auction-grid-rows-container"
   );
@@ -172,16 +242,17 @@ async function generateAuctionElement(auction, index) {
               auction.tokenImage
             }" loading="lazy" alt="" class="nft-image">
             <div>
-                <div class="auction-item-name">${
-                  auction.tokenKind === "0x973bb640"
-                    ? `<div style="color: var(--primary); margin-right: 10px; font-size: inherit; font-weight: 700; display: inline-block">${auction.tokenAmount}x</div>`
-                    : ""
-                  // }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
-                }${auction.tokenName} #${auction.tokenID}</div>
-                <div class="auction-item-flex subtitle"><img src="images/hardhat.svg" loading="lazy" alt="" class="company-icon">
-                <div class="text-block">GBM</div>
+                <div class="auction-item-name">${auction.tokenID}</div>
+                <div class="auction-item-flex subtitle">
+                <div class="text-block">${auction.tokenName}</div>
                 </div>
             </div>
+            </div>
+            <div class="auction-item-current-bid">
+            <div class="auction-item-name">${web3.utils.fromWei(
+              auction.pricePerToken.toString()
+            )} ${auction.currencyName}</div>
+            <div class="auction-item-bidder">per ${auction.tokenName}</div>
             </div>
             <div class="auction-item-current-bid">
             <div class="auction-item-name">${auction.highestBidValue} ${
@@ -242,32 +313,14 @@ function subscribeToNewAuctions(callback) {
     .on("error", console.error);
 }
 
-function toggleAuctions(_filterButtonIndex) {
-  Array.from(document.getElementsByClassName("filter-btn")).forEach(
-    (_element) => _element.classList.remove("active")
-  );
-  Array.from(document.getElementsByClassName("auction-upcoming")).forEach(
-    (_element) =>
-      (_element.style.display = _filterButtonIndex == 1 ? `block` : `none`)
-  );
-  Array.from(document.getElementsByClassName("auction-live")).forEach(
-    (_element) =>
-      (_element.style.display = _filterButtonIndex == 0 ? `block` : `none`)
-  );
-  Array.from(document.getElementsByClassName("auction-ended")).forEach(
-    (_element) => (_element.style.display = `none`)
-  );
-  document
-    .getElementsByClassName("filter-btn")
-    [currentView].classList.add("active");
-}
-
 function timecalc(x, v) {
   return Math.floor(x / v);
 }
 
 function startElementCountdownTimer(_auction, _index) {
-  const auctionEl = document.getElementsByClassName(`auction-${_auction.saleID}`)[0];
+  const auctionEl = document.getElementsByClassName(
+    `auction-${_auction.saleID}`
+  )[0];
   const timer = document.getElementById(`timer-${_index}`);
   const circle = document.getElementById(`circle-${_index}`);
   const bidBtn = document.getElementById(`button-${_index}`);
@@ -291,8 +344,6 @@ function startElementCountdownTimer(_auction, _index) {
   if (timestamp > 0) {
     if (auctionStatus === "auction-live") bidBtn.style.display = "block";
     auctionEl.classList.add(auctionStatus);
-    updateCounters();
-    toggleAuctions(currentView);
     timer.innerHTML = `${messagePrefix} in ${countdownDisplay(timestamp)}`;
     countdowns[_index] = setInterval(function () {
       timestamp--;
@@ -307,8 +358,6 @@ function startElementCountdownTimer(_auction, _index) {
       }
     }, 1000);
   } else {
-    updateCounters();
-    toggleAuctions(currentView);
     auctionStatus = "auction-ended";
     auctionEl.classList.add(auctionStatus);
     circle.style.display = "none";

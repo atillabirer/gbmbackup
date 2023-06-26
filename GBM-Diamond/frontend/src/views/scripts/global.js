@@ -95,6 +95,11 @@ const pageInitializer = {
                   ? `stay"`
                   : `leave" href="/tokenSale"`
               }>Token Sale</a>
+              <a class="nav-link link-${
+                window.location.pathname === "/tokenAuctions"
+                  ? `stay"`
+                  : `leave" href="/tokenAuctions"`
+              }>Token Auctions</a>
           </div>
         </div>
       </div>
@@ -159,7 +164,7 @@ const pageInitializer = {
 
       ethereum.on("connect", handleConnect);
       ethereum.on("disconnect", () => {
-        window.location.reload();
+        // window.location.reload();
       });
       ethereum.on("chainChanged", handleChainChanged);
       ethereum.on("accountsChanged", handleAccountsChanged);

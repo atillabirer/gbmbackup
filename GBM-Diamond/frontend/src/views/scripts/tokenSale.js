@@ -238,7 +238,9 @@ const tokenSaleProcess = {
         console.log(txhash);
       });
     console.log(`Contract deployed at ${newTokenContract.options.address}`);
+    if (deploymentStatus.tokens === undefined) deploymentStatus.tokens = [];
     deploymentStatus.ERC1155.push(newTokenContract.options.address);
+    deploymentStatus.tokens.push(newTokenContract.options.address);
     localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
   },
   mintBatchFromDistribution: async function (
@@ -307,7 +309,7 @@ const tokenSaleProcess = {
       .safeRegister1155auctionBatch(
         tokenIDUnroll,
         tokenAmountUnroll,
-        deploymentStatus.ERC1155[deploymentStatus.ERC1155.length - 1],
+        deploymentStatus.tokens[deploymentStatus.tokens.length - 1],
         presetNumber,
         getStartTime(),
         currencyIndexToUse,
