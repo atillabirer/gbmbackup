@@ -4,7 +4,7 @@
 **Disclaimer: The GBM dApp, its codebase, the GBM auction system, the GBM brand and all related  intellectual property are owned by Perpetual Altruism Ltd and covered by copyright, trademark and patent applications. All rights reserved. You may only use the aforementioned with a valid licence from Perpetual Altruism Ltd. To get a license, please contact us via https://www.gbm.auction.**
 
 This codebase allows you to deploy and configure your own GBM dApp in a matter of minutes. The GBM dApp consists of an upgradable diamond-pattern Solidity smart contract infrastructure with an integrated pure HTML/CSS frontend with some vanilla JavaScript. You can:
-* customise the look of the GBM dApp front-end and use it as is;
+* customise the look of the GBM dApp frontend and use it as is;
 * iterate on top of the GBM dApp to integrate it with your own platform; or
 * use this frontend as a basis for a completely new platform.
 
