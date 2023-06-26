@@ -18,7 +18,7 @@ Before deployment and integration, please read our **[GBM Auction Guide](https:/
 
 ## For developers wanting to launch the demo, click [here](/GBM-Diamond/README.md) 
 
-## Which chain to chose to hold a GBM auction    
+## Which chain should I deploy the GBM dApp on?    
 
 GBM auctions, just like any other auction, are in need quite a bid of gas to do on chain : each bid necessitate two transfer of currency (new bidder, previous bidder), many variables need to be written inside the chain state, etc...   This is a non-issue in chain where the block size is far above the block consumption (Polygon, Moonbeam, etc...), but the incentive of GBM auctions (make money when you are outbid) can disappear if auctioning lower-price items on Ethereum Mainnet, eaten whole by the gas expenditure.    
 
@@ -31,14 +31,13 @@ There is many way to integrate the GBM dapp in your platform, each with their ow
 
 We only provide code. You fully own every part of your infrastructure, deployed smart contracts, wallet private keys, etc. There is no backdoors. You control everything.
 
-### Quickest
-Self host the dapp as it is with only very minor frontend adjustment for branding and hosting the configuration file of the deployment.     >
+### Quickest (Pure dApp)
+Self-host the dApp as is, customise the look of the front-end using the Admin panel and you’re ready to go.
      
 + *For who* : Low costs experiments selling a few dozen items       
 + *Timeline of dev work* : A single day, assuming you already know how to send an NFT to a smart contract and are a full stack dev.       
 + *Necessary infra* : An amazon t2.small to host the node server. All the rest of the data come from the smart contract getting queried trough metamask by the frontend.        
-+ *Drawback* : Due to being pure dapp, the live auction search page will not handle selling more than a few dozen items in total. If metamask lose the connection/user leave the website, they won't receive the dopamine rush of receving a notification telling them they have made money on being outbid.         
-
++ *Drawback* : Due to being pure dapp, the live auction search page will not handle selling more than a few dozen items in total. If metamask loses the connection or the user leaves the website, they won't receive notifications (for example when they are outbid).         
 
 ### Web3 EVM Marketplace / NFT Drop          
 Use our frontend as a guideline/modify it to accept data feed from your backend. For even lower dev cost, run it from a different subdomain/section on your website and iteratively merge features. The GBM dApp can also do direct fixed price sales, english auction, resale, etc... Pick what you want from the features.
