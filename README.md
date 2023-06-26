@@ -29,9 +29,9 @@ The blockchain you run the auctions on does **not** have to be the blockchain th
 
 ## Integration
     
-There is many way to integrate the GBM dapp in your platform, each with their own compromise between UX and developper time.  
+There are many ways to integrate the GBM dApp in your platform, each with their own compromise between user experience and developer time. 
 
-We only provide code. You fully own every part of your infrastructure, deployed smart contracts, wallet private keys, etc. There is no backdoors. You control everything.
+Regardless of your implementation, you fully own every part of your infrastructure, deployed smart contracts, wallet private keys, etc. There are no backdoors. You control everything.
 
 ### Quickest (Pure dApp)
 Self-host the dApp as is, customise the look of the front-end using the Admin panel and you’re ready to go.
