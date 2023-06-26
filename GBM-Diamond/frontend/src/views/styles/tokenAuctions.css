@@ -132,6 +132,7 @@
   padding: 1rem 0;
   display: flex;
   flex-direction: row;
+  justify-content: space-evenly;
 }
 
 .auction-container {
@@ -150,7 +151,7 @@
 
 .filter-grid-row-item {
   width: 100%;
-  margin: 0 10px;
+  margin: 0 50px;
   min-width: 400px;
 }
 
