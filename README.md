@@ -20,7 +20,7 @@ Before deployment and integration, please read our **[GBM Auction Guide](https:/
 
 ## Which chain should I deploy the GBM dApp on?    
 
-The GBM dApp can be deployed on any EVM-compatible blockchains. The blockchain the GBM dApp is deployed on will be the one on which the auctions are run: this means bids will be in a currency from that blockchain, and users will be required to pay gas from that blockchain to place bids or list items for auction.
+The GBM dApp can be deployed on any EVM-compatible blockchain. The blockchain the GBM dApp is deployed on will be the one on which the auctions are run: this means bids will be in a currency from that blockchain, and users will be required to pay gas from that blockchain to place bids or list items for auction.
 
 GBM auctions require a fair amount of gas to be implemented on chain. For example, each bid requires two currency transfers and many variables to be written. This is not an issue on blockchains where the block size is far greater than the block consumption (e.g. Polygon, Moonbeam) ; however it can be a problem on a chain like Ethereum mainnet, in particular if the item being sold at GBM auction is not of high value. Therefore, we recommend avoiding deploying the dApp and running GBM auctions on Ethereum mainnet unless you are auctioning expensive items.
 
