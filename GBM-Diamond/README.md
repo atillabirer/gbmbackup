@@ -25,7 +25,7 @@ If you're having any issues scroll down to the Troubleshooting section.
 
 To end the demo at any point tap Ctrl + C while focused on your terminal window.
 
-You can edit the gbm.config file options yourself to modify the deployment parameters, or use the step-by-step option picker as a part of the deployment process (available soon).
+You can edit the gbm.config file options yourself to modify the ecosystem parameters. For deployment options, please use the dropdowns provided in the frontend. Do not hesitate to get in touch with us if you encounter any difficulties.    
 
 ## Cloning the project
 
