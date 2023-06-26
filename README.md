@@ -39,7 +39,7 @@ Self-host the dApp as is, customise the look of the front-end using the Admin pa
 + *For who* : Low costs experiments selling a few dozen items       
 + *Timeline of dev work* : A single day, assuming you already know how to send an NFT to a smart contract and are a full stack dev.       
 + *Necessary infra* : An amazon t2.small to host the node server. All the rest of the data come from the smart contract getting queried trough metamask by the frontend.        
-+ *Drawback* : Due to being pure dapp, the live auction search page will not handle selling more than a few dozen items in total. If metamask loses the connection or the user leaves the website, they won't receive notifications (for example when they are outbid).         
++ *Drawback* : Due to being pure dApp, the live auction search page will not handle selling more than a few dozen items in total. If metamask loses the connection or the user leaves the website, they won't receive notifications (for example when they are outbid).         
 
 ### Web3 EVM Marketplace / NFT Drop          
 Use our frontend as a guideline/modify it to accept data feed from your backend. For even lower dev cost, run it from a different subdomain/section on your website and iteratively merge features. The GBM dApp can also do direct fixed price sales, english auction, resale, etc... Pick what you want from the features.
