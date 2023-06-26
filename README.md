@@ -33,7 +33,7 @@ There are many ways to integrate the GBM dApp in your platform, each with their 
 
 Regardless of your implementation, you fully own every part of your infrastructure, deployed smart contracts, wallet private keys, etc. There are no backdoors. You control everything.
 
-### Quickest (Pure dApp)
+### 1. Quickest (Pure dApp)
 Self-host the dApp as is, customise the look of the front-end using the Admin panel and you’re ready to go.
      
 + *For who* : Low costs experiments selling a few dozen items       
@@ -41,18 +41,18 @@ Self-host the dApp as is, customise the look of the front-end using the Admin pa
 + *Necessary infra* : An amazon t2.small to host the node server. All the rest of the data come from the smart contract getting queried trough metamask by the frontend.        
 + *Drawback* : Due to being pure dApp, the live auction search page will not handle selling more than a few dozen items in total. If metamask loses the connection or the user leaves the website, they won't receive notifications (for example when they are outbid).         
 
-### Web3 EVM Marketplace / NFT Drop          
-Use our frontend as a guideline/modify it to accept data feed from your backend. For even lower dev cost, run it from a different subdomain/section on your website and iteratively merge features. The GBM dApp can also do direct fixed price sales, english auction, resale, etc... Pick what you want from the features.
+### 2. Web3 EVM Marketplace / NFT Drop          
+Use our frontend as a guideline/modify it to accept data feed from your backend. For even lower dev cost, run it from a different subdomain/section on your website and iteratively merge features. 
    
-+ *For who* : Existing marketplace/projects wanting to add a standalone GBM feature while limiting cost.                  
++ *For who* : Existing marketplace/NFT projects wanting to add a standalone GBM feature while limiting cost.                  
 + *Timeline of dev work* : Depend of your existing infrastructure. Between two weeks and a month, more if you want deeper integration with your existing services.              
-+ *Necessary infra* : An indexer for all the NFT sold on your marketplaces as well as tracking the status of sales/auctions/deposits within the GBM dapp. A database cluster to service those indexed data to the frontend instead of relying on the public web3 node, and making proper optimized DB requests instead of DDOS'ing loops to fetch/search existing auctions. And of course your normal frontend delivery infrastructure.   
-+ *Drawback* : Frontend developement and polishing takes time. Making and hosting an indexer is not the simplest thing either. However, if you are an NFT project, you should already have the skillsets in-house.   
++ *Necessary infra* : An indexer for all the NFTs sold on your platform as well as tracking the status of sales/auctions/deposits within the GBM dapp. A database cluster to service those indexed data to the frontend instead of relying on the public web3 node, and making proper optimized DB requests instead of DDOS'ing loops to fetch/search existing auctions. And of course your normal frontend delivery infrastructure.   
++ *Drawback* : Frontend developement and polishing takes time. Making and hosting an indexer is not the simplest thing either. However, if you are an NFT project, you should already have the skillsets in-house.
 
 
-### I'm neither of the above, what are my options ?
+### 3. I'm neither of the above, what are my options ?
 
-We currently have in the work a self-hosted API version of the GBM dapp. The UX will work similarily to the Web3 EVM marketplace : 
+We currently have in the work a self-hosted API version of the GBM dapp. The UX will work similarily to the Web3 EVM marketplace but: 
 + Your users do not need a web3 wallet anymore, instead they just provide a user ID and an optional idenfitication mechanism (eg : non-evm blockchain wallet signature, SSO, etc...).  
 + The provided frontend is replacing web3 interaction with your userID scheme interactions.                            
 + The API will map those userIDs to private keys, and then will use those private keys to interact with a normal GBM dapp on a private EVM blockchain that you control. For those without the knowledge to run such a blockchain, we have a ready made solution coming Q3 2023.                                      
