@@ -20,12 +20,14 @@ Before deployment and integration, please read our **[GBM Auction Guide](https:/
 
 ## Which chain should I deploy the GBM dApp on?    
 
-GBM auctions, just like any other auction, are in need quite a bid of gas to do on chain : each bid necessitate two transfer of currency (new bidder, previous bidder), many variables need to be written inside the chain state, etc...   This is a non-issue in chain where the block size is far above the block consumption (Polygon, Moonbeam, etc...), but the incentive of GBM auctions (make money when you are outbid) can disappear if auctioning lower-price items on Ethereum Mainnet, eaten whole by the gas expenditure.    
+The GBM dApp can be deployed on any EVM-compatible blockchains. The blockchain the GBM dApp is deployed on will be the one on which the auctions are run: this means bids will be in a currency from that blockchain, and users will be required to pay gas from that blockchain to place bids or list items for auction.
 
-As such, we suggest avoiding holding the auction themselves on Ethereum mainnet unless you are auctionning expensive items. If your sold assets exist on Ethereum mainnet, what we suggest is to create a "voucher" NFT on an L2/alternative EVM chain, hold the auction on those chain with the winner receivng the voucher NFT, and then shortly after the end of the auction, give the actual auctionned asset on Ethereum Mainnet to the address that is the holder of the voucher NFT on the chain where the auction was held. No need for a complex bridge or fancy new tech, everything works extremely well and is entirely compatible with existing scripts, software and marketplaces. The UX challenge here is onboarding your user with a currency used on the L2 (wETH, USDC, etc), the rest is very transparent and gas optimized.  
+GBM auctions require a fair amount of gas to be implemented on chain. For example, each bid requires two currency transfers and many variables to be written. This is not an issue on blockchains where the block size is far greater than the block consumption (e.g. Polygon, Moonbeam) ; however it can be a problem on a chain like Ethereum mainnet, in particular if the item being sold at GBM auction is not of high value. Therefore, we recommend avoiding deploying the dApp and running GBM auctions on Ethereum mainnet unless you are auctioning expensive items.
+
+The blockchain you run the auctions on does **not** have to be the blockchain the assets being sold are on. For example, if you are doing a NFT drop on Ethereum, you could deploy the dApp and run the auctions on Polygon selling “coupons” NFTs. The auction winners would receive these coupon NFTs and use them to redeem the actual Ethereum NFTs. This coupon solution does not require anything else to be implemented and is entirely compatible with existing scripts, software and marketplaces. The drawback would be that currency of the auction would need to be on Polygon (e.g. MATIC, USDC, WETH) and bidders would pay gas in MATIC.  
    
 
-## Integration work
+## Integration
     
 There is many way to integrate the GBM dapp in your platform, each with their own compromise between UX and developper time.  
 
