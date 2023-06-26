@@ -8,18 +8,15 @@ This codebase allows you to deploy and configure your own GBM dApp in a matter o
 * iterate on top of the GBM dApp to integrate it with your own platform; or
 * use this frontend as a basis for a completely new platform.
 
-In order to modify the deployment parameters, you can edit the gbm.config file options yourself or use the step-by-step option picker as a part of the deployment process (available soon).
-
-## For developers wanting to launch the demo, click [here](/GBM-Diamond/README.md) 
+Before deployment and integration, please read our **[GBM Auction Guide](https://docs.google.com/document/d/16jqjfFTFS7bSP9HDhC4fJkDzihmskhByZL13tcpRX5o/edit?usp=sharing)** to make sure you understand how GBM auctions and all its associated features work. This resource will also be helpful to communicate about GBM to your audience. 
 
 ## Features coming soon
-* Solidity codebase audit 
+* Solidity codebase audit
+* Step-by-step option picker for deployment process
 * TheGraph built-in schema
 * Frontend polishing/connection to existing smart contract features       
 
-## What is a GBM auction
-
-To learn how GBM auctions work and how to communicate it to your users, please read our [GBM Auction Guide](https://docs.google.com/document/d/16jqjfFTFS7bSP9HDhC4fJkDzihmskhByZL13tcpRX5o/edit?usp=sharing)
+## For developers wanting to launch the demo, click [here](/GBM-Diamond/README.md) 
 
 ## Which chain to chose to hold a GBM auction    
 
