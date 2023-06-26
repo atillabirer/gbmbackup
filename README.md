@@ -12,7 +12,6 @@ Before deployment and integration, please read our **[GBM Auction Guide](https:/
 
 ## Features coming soon
 * Solidity codebase audit
-* Step-by-step option picker for deployment process
 * TheGraph built-in schema
 * Frontend polishing/connection to existing smart contract features       
 
