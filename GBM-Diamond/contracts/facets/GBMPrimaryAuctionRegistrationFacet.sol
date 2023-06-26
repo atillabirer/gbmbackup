@@ -341,7 +341,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
         s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenID][beneficiary] += amount;
                 
         uint256 _gbmPreset;
-        if(_gbmPreset == 0){
+        if(gbmPreset == 0){
             _gbmPreset = s.defaultPreset;
         } else {
             _gbmPreset = gbmPreset;
