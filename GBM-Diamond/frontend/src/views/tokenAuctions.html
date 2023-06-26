@@ -16,7 +16,78 @@
       </div>
       <div class="metamask-found" hidden>
         <div class="auction-filters-container">
-          <span id="select-sort" class="gbm-select"></span>
+          <div class="flex-row">
+            <div class="" style="margin: 0 10px; width: 100%">
+              <div class="gbm-header step-option-label">
+                Bundle Size
+              </div>
+              <div class="step-option-fields">
+                <div class="rangecontainer">
+                  <input
+                    type="range"
+                    min="0"
+                    max="25"
+                    value="3"
+                    step="1"
+                    class="gbm-range"
+                    id="smallest-bundle"
+                    style="margin-top:10px"
+                  />
+                </div>
+                <p style="color: var(--primary)">
+                  From
+                </p>
+                <input
+                  id="smallest-bundle-display"
+                  class="gbm-input-boxed width-limiter"
+                  type="text"
+                  disabled
+                  style="height: 2rem"
+                  value="0"
+                />
+              </div>
+            </div>
+            <div class="" style="margin: 0 10px; width: 100%">
+              <div class="gbm-header step-option-label">
+                Current bid
+              </div>
+              <div class="step-option-fields">
+                <div class="rangecontainer">
+                  <input
+                    type="range"
+                    min="0"
+                    max="25"
+                    value="3"
+                    step="1"
+                    class="gbm-range"
+                    id="smallest-bundle"
+                    style="margin-top:10px"
+                  />
+                </div>
+                <p style="color: var(--primary)">
+                  Up to
+                </p>
+                <input
+                  id="smallest-bundle-display"
+                  class="gbm-input-boxed width-limiter"
+                  type="text"
+                  disabled
+                  style="height: 2rem"
+                  value="0"
+                />
+              </div>
+            </div>
+            <div class="filter-grid-row-item">
+              <div class="cover" style="display: flex; flex-direction: column;">
+                <label class="gbm-checkbox"
+                  >Use same as deployer address
+                  <input id="use-deployer" type="checkbox" checked="checked" />
+                  <span class="gbm-checkmark"></span>
+                </label>
+                <span id="select-sort" class="gbm-select"></span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="auctions-container">
           <div class="auction-wrapper">

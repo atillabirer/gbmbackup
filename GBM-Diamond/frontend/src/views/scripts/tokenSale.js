@@ -305,6 +305,8 @@ const tokenSaleProcess = {
       }
     }
 
+    console.log(presetNumber)
+
     await gbmContracts.methods
       .safeRegister1155auctionBatch(
         tokenIDUnroll,
