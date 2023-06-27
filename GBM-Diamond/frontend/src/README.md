@@ -76,7 +76,7 @@
 - [ ] Auction status divs should have the same width columns
 - [ ] Fact check the NFT details panel (not all correct right now)
 - [ ] Share options + QR code
-- [ ] -"Learn more" section (e.g. a modal, a side panel, a separate page)
+- [ ] "Learn more" section (e.g. a modal, a side panel, a separate page)
 
 ## NFT Drop page
 
