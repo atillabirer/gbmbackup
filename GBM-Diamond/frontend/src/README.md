@@ -2,11 +2,14 @@
 
 ### Global (JavaScript)
 
+- [ ] .BAT file to launch deployment for easy demo (need NODE already installed)
 - [ ] **JavaScript file cleanup in general**
 - [ ] Fix split second white page on reload/change
 - [ ] Unify the Filter button CSS for Token and Auctions pages
 - [ ] Change pathing to not use queryParams and mimic myNFT auction page
 - [ ] Add the "Powered by GBM" badge to the footer of every page
+- [ ] **Buffer state while Metamask connection handling (connect first time) eg while typing password**
+
 
 ### Deployment
 
@@ -50,6 +53,7 @@
 - [ ] Remove slider to enable English auction (goes at deployment)
 - [ ] Add "Remove" button for base curency
 - [ ] New currency: check if it is valid
+- [ ] Use image as background
 
 ### Create Auction Flow
 
@@ -62,15 +66,22 @@
 - [ ] Align everything to the left
 - [ ] Add NFT approval flow
 
-### Auction 
+### Auction (Bidding page)
 
-- [ ] Outdated view (see Figma)
-- [ ] Plug the above to actual code
 - [ ] Add read more function to description
 - [ ] Add show more to bids
-- [ ] Add timestamp to bids
-- [ ] Fix occasional double bid-found event
+- [ ] Add explorer link
 - [ ] Fix margins/font-weight for the GBM badge
 - [ ] Bigger Margin between incentive badge + bid button
 - [ ] Auction status divs should have the same width columns
+- [ ] Fact check the NFT details panel (not all correct right now)
+- [ ] Share options + QR code
+- [ ] -"Learn more" section (e.g. a modal, a side panel, a separate page)
 
+## NFT Drop page
+
+- [ ] Do the frontend
+
+## TheGraph
+
+- [ ] Add thegraph to the dApp codebase 
