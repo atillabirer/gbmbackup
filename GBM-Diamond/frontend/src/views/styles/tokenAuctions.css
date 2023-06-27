@@ -563,6 +563,13 @@
 
 .range-input input::-webkit-slider-thumb{
   pointer-events: auto;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: -15px;
+  cursor: pointer;
+  border: none;
 }
 
 .range-slider {
