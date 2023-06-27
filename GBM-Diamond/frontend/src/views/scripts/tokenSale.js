@@ -238,7 +238,9 @@ const tokenSaleProcess = {
         console.log(txhash);
       });
     console.log(`Contract deployed at ${newTokenContract.options.address}`);
+    if (deploymentStatus.tokens === undefined) deploymentStatus.tokens = [];
     deploymentStatus.ERC1155.push(newTokenContract.options.address);
+    deploymentStatus.tokens.push(newTokenContract.options.address);
     localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
   },
   mintBatchFromDistribution: async function (
@@ -292,19 +294,24 @@ const tokenSaleProcess = {
     let tokenAmountUnroll = [];
     for (let i = 0; i < distribution[0].length; i++) {
 
-      let amountForThisAuction = parseInt(document.getElementById("auction-amount-input-" + distribution[0][i]).value);
+      if(distribution[1][i] != 0){
+        let amountForThisAuction = parseInt(document.getElementById("auction-amount-input-" + distribution[0][i]).value);
 
-      for (let j = 0; j < amountForThisAuction; j++) {
-        tokenIDUnroll.push(distribution[0][i]);
-        tokenAmountUnroll.push(1);
+        for (let j = 0; j < amountForThisAuction; j++) {
+          tokenIDUnroll.push(distribution[0][i]);
+          tokenAmountUnroll.push(1);
+        }
+
       }
     }
+
+    console.log(presetNumber)
 
     await gbmContracts.methods
       .safeRegister1155auctionBatch(
         tokenIDUnroll,
         tokenAmountUnroll,
-        deploymentStatus.ERC1155[deploymentStatus.ERC1155.length - 1],
+        deploymentStatus.tokens[deploymentStatus.tokens.length - 1],
         presetNumber,
         getStartTime(),
         currencyIndexToUse,

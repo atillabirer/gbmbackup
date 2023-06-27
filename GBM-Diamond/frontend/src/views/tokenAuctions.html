@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+      integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <div class="page-content">
+      <div class="page-title">Browse Auctions</div>
+      <div class="metamask-missing">
+        <p class="gbm-header">Please connect your MetaMask wallet.</p>
+      </div>
+      <div class="metamask-found" hidden>
+        <div class="auction-filters-container" style="display: none;">
+          <div class="flex-row">
+            <div class="" style="margin: 0 50px; width: 100%">
+              <div class="gbm-header step-option-label">Bundle size</div>
+              <div class="step-option-fields">
+                <div class="double-range-container">
+                  <div class="range-slider">
+                    <span class="range-selected"></span>
+                  </div>
+                  <div class="range-input">
+                    <div style="margin-bottom: 15px">
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        value="1"
+                        step="1"
+                        class="gbm-range-min"
+                        id="bundle-size-min"
+                        style="margin-top: 10px"
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        value="1"
+                        step="1"
+                        class="gbm-range-max"
+                        id="bundle-size-max"
+                        style="margin-top: 10px"
+                      />
+                    </div>
+                  </div>
+                  <div class="range-price flex-row" style="margin-top: -25px;">
+                    <div style="margin-right: 5px">
+                      <p style="color: var(--primary)">From</p>
+                      <input
+                        id="bundle-size-display-min"
+                        class="gbm-input-boxed width-limiter"
+                        type="text"
+                        disabled
+                        style="height: 2rem"
+                        value="0"
+                      />
+                    </div>
+                    <div>
+                      <p style="color: var(--primary)">To</p>
+                      <input
+                        id="bundle-size-display-max"
+                        class="gbm-input-boxed width-limiter"
+                        type="text"
+                        disabled
+                        style="height: 2rem"
+                        value="0"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="" style="margin: 0 50px; width: 100%">
+              <div class="gbm-header step-option-label">Current bid</div>
+              <div class="step-option-fields">
+                <div class="rangecontainer" style="padding: 10px 0">
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    value="1"
+                    step="1"
+                    class="gbm-range"
+                    id="current-bid"
+                    style="margin-top: 10px"
+                  />
+                </div>
+                <p style="color: var(--primary); margin-top: 10px">Up to</p>
+                <input
+                  id="current-bid-display"
+                  class="gbm-input-boxed width-limiter"
+                  type="text"
+                  disabled
+                  style="height: 2rem"
+                  value="0"
+                />
+              </div>
+            </div>
+            <div class="filter-grid-row-item">
+              <div class="cover" style="display: flex; flex-direction: column">
+                <label class="gbm-checkbox"
+                  >Only show the cheapest bundle for each size
+                  <input id="show-cheapest" type="checkbox" checked="checked" />
+                  <span class="gbm-checkmark"></span>
+                </label>
+                <span id="select-sort" class="gbm-select"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="auctions-container">
+          <div class="auction-wrapper">
+            <div class="auction-grid-row auction-grid-item title">
+              <div class="auction-item-flex">
+                <div class="auction-item-title">Bundle size</div>
+              </div>
+              <div class="auction-item-flex">
+                <div class="auction-item-title">Token price</div>
+              </div>
+              <div class="auction-item-flex">
+                <div class="auction-item-title">Current Bid</div>
+              </div>
+              <div class="auction-item-flex">
+                <div class="auction-item-title">Status</div>
+              </div>
+            </div>
+            <div class="loading-container">
+              <div class="loading-text">Fetching auctions...</div>
+              <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+            <div class="auction-grid-rows-container"></div>
+            <!-- <div class="center-align">
+                        <a href="#" class="load-more">Load More</a>
+                      </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="scripts/global.js"></script>
+  </body>
+</html>

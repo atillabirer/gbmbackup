@@ -23,7 +23,8 @@ async function onScriptLoad() {
 async function loadGBMAuctions() {
   try {
     const auctionNo = await getNumberOfAuctions();
-    const auctions = await loadAuctions(auctionNo);
+    let auctions = await loadAuctions(auctionNo);
+    auctions = auctions.filter((_auction) => _auction); // Filter out undefined (meaning non-token) auctions
     const loader = document.getElementsByClassName("loading-container");
     loader[0].style.display = "none";
     for (i = 0; i < auctions.length; i++) {
@@ -88,6 +89,12 @@ async function getAuctionInfoMinimal(saleID) {
   let tokenIDFetched = await gbmContracts.methods
     .getSale_TokenID(saleID)
     .call();
+
+  if (
+    deploymentStatus.tokens &&
+    deploymentStatus.tokens.includes(tokenAddressFetched)
+  )
+    return;
   let imageLink = tokenImages[tokenAddressFetched];
   if (imageLink === undefined) {
     if (deploymentStatus.ERC1155.indexOf(tokenAddressFetched) > 0) {
@@ -122,6 +129,7 @@ async function getAuctionInfoMinimal(saleID) {
   }
 
   return {
+    saleID,
     saleKind: await gbmContracts.methods.getSale_SaleKind(saleID).call(),
     tokenID: tokenIDFetched,
     tokenImage: imageLink,
@@ -156,7 +164,7 @@ async function generateAuctionElement(auction, index) {
     "auction-grid-rows-container"
   );
   const auctionEl = document.createElement("div");
-  auctionEl.classList.add(`auction-${index}`);
+  auctionEl.classList.add(`auction-${auction.saleID}`);
 
   const auctionInnerHTML = `
         <div class="auction-grid-row auction-grid-item">
@@ -165,7 +173,9 @@ async function generateAuctionElement(auction, index) {
             }" loading="lazy" alt="" class="nft-image">
             <div>
                 <div class="auction-item-name">${
-                  auction.tokenKind === '0x973bb640' ? `<div style="color: var(--primary); margin-right: 10px; font-size: inherit; font-weight: 700; display: inline-block">${auction.tokenAmount}x</div>` : ""
+                  auction.tokenKind === "0x973bb640"
+                    ? `<div style="color: var(--primary); margin-right: 10px; font-size: inherit; font-weight: 700; display: inline-block">${auction.tokenAmount}x</div>`
+                    : ""
                   // }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
                 }${auction.tokenName} #${auction.tokenID}</div>
                 <div class="auction-item-flex subtitle"><img src="images/hardhat.svg" loading="lazy" alt="" class="company-icon">
@@ -187,7 +197,7 @@ async function generateAuctionElement(auction, index) {
                 <div id="timer-${index}" class="auction-item-name countdown">Loading...</div>
             </div>
             <button id="button-${index}" class="gbm-btn bid-now-btn" onclick="redirectToAuction(${
-    i + 1
+    auction.saleID
   })" style="display: none">Bid now</a>
             </div>
         </div>
@@ -257,7 +267,7 @@ function timecalc(x, v) {
 }
 
 function startElementCountdownTimer(_auction, _index) {
-  const auctionEl = document.getElementsByClassName(`auction-${_index}`)[0];
+  const auctionEl = document.getElementsByClassName(`auction-${_auction.saleID}`)[0];
   const timer = document.getElementById(`timer-${_index}`);
   const circle = document.getElementById(`circle-${_index}`);
   const bidBtn = document.getElementById(`button-${_index}`);
