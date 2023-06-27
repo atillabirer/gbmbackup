@@ -362,11 +362,11 @@ input:checked + .gbm-slider:before {
   border: none;
 }
 
-/* .gbm-range::-moz-range-progress {
+.gbm-range::-moz-range-progress {
   height: 5px;
   background-color: var(--primary);
   border-radius: 5px;
-} */
+}
 
 .gbm-range::-webkit-slider-runnable-track {
   -webkit-appearance: none;
