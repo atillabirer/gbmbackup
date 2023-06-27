@@ -21,6 +21,9 @@
               <div class="gbm-header step-option-label">Bundle size</div>
               <div class="step-option-fields">
                 <div class="double-range-container">
+                  <div class="range-slider">
+                    <span class="range-selected"></span>
+                  </div>
                   <div class="range-input">
                     <div style="margin-bottom: 15px">
                       <input
@@ -29,7 +32,7 @@
                         max="10"
                         value="1"
                         step="1"
-                        class="gbm-range"
+                        class="gbm-range-min"
                         id="bundle-size-min"
                         style="margin-top: 10px"
                       />
@@ -39,13 +42,13 @@
                         max="10"
                         value="1"
                         step="1"
-                        class="gbm-range"
+                        class="gbm-range-max"
                         id="bundle-size-max"
                         style="margin-top: 10px"
                       />
                     </div>
                   </div>
-                  <div class="range-price flex-row">
+                  <div class="range-price flex-row" style="margin-top: -25px;">
                     <div style="margin-right: 5px">
                       <p style="color: var(--primary)">From</p>
                       <input
