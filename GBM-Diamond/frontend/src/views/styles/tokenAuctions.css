@@ -535,3 +535,21 @@
   width: 50px;
   border-radius: 50px;
 }
+
+.range-input {
+  position: relative;
+  padding: 10px 0;
+}
+.range-input input {
+  position: absolute;
+}
+
+.range-input input::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: -15px;
+  cursor: pointer;
+  border: none;
+}

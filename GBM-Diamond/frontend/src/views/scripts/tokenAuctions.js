@@ -8,6 +8,12 @@ let countdowns = [];
 let currentView = 0;
 
 let auctions = [];
+let baseAuctions = [];
+let currentHighestBid = 0;
+let currentBiggestBundle = 0;
+let currentLowestBundle = 99999;
+let currentBidRange = [0];
+let currentBundleRange = [0];
 
 let sortOptions = [
   "tokenPriceAsc",
@@ -43,8 +49,15 @@ async function loadGBMAuctions() {
     const auctionNo = await getNumberOfAuctions();
     auctions = await loadAuctions(auctionNo);
     auctions = auctions.filter((_auction) => _auction); // Filter out undefined (meaning non-token) auctions
+    baseAuctions = auctions;
+
+    generateFilterConditions();
+
     const loader = document.getElementsByClassName("loading-container");
     loader[0].style.display = "none";
+    document.getElementsByClassName(
+      "auction-filters-container"
+    )[0].style.display = "block";
     sortAuctions("tokenPriceDesc");
     displayAuctions();
     subscribeToNewAuctions(retrieveNewAuction); // ToDo fix?
@@ -53,6 +66,117 @@ async function loadGBMAuctions() {
       await loadGBMAuctions();
     }, 2000);
   }
+}
+
+function generateFilterConditions() {
+  auctions.forEach((_auction) => {
+    if (parseFloat(_auction.highestBidValue) > currentHighestBid)
+      currentHighestBid = parseFloat(_auction.highestBidValue);
+    if (parseInt(_auction.tokenID) > currentBiggestBundle)
+      currentBiggestBundle = parseInt(_auction.tokenID);
+    if (parseInt(_auction.tokenID) < currentLowestBundle)
+      currentLowestBundle = parseInt(_auction.tokenID);
+  });
+  currentBidRange = [...Array(11).keys()].map((key) =>
+    (key * currentHighestBid * 0.1).toFixed(2)
+  );
+  currentBundleRange = [...Array(11).keys()].map((key) =>
+    (key * currentBiggestBundle * 0.1).toFixed(0)
+  );
+  currentBundleRange[0] = currentLowestBundle.toFixed(0);
+
+  document.getElementById("bundle-size-min").value = 0;
+  document.getElementById("bundle-size-display-min").value =
+    currentBundleRange[0];
+  document.getElementById("bundle-size-max").value = 10;
+  document.getElementById("bundle-size-display-max").value =
+    currentBundleRange[10];
+  document.getElementById("current-bid").value = 10;
+  document.getElementById("current-bid-display").value = currentBidRange[10];
+
+  document.getElementById("bundle-size-min").onchange = function (event) {
+    if (
+      parseInt(event.target.value) >
+      parseInt(document.getElementById("bundle-size-max").value)
+    ) {
+      let temp = document.getElementById("bundle-size-max").value;
+      document.getElementById("bundle-size-max").value = event.target.value;
+      document.getElementById("bundle-size-display-max").value =
+        currentBundleRange[event.target.value];
+      event.target.value = temp;
+    }
+    document.getElementById("bundle-size-display-min").value =
+      currentBundleRange[event.target.value];
+    document.getElementsByClassName(
+      "auction-grid-rows-container"
+    )[0].innerHTML = "";
+    filterAuctions();
+  };
+
+  document.getElementById("bundle-size-max").onchange = function (event) {
+    if (
+      parseInt(event.target.value) <
+      parseInt(document.getElementById("bundle-size-min").value)
+    ) {
+      let temp = document.getElementById("bundle-size-min").value;
+      document.getElementById("bundle-size-min").value = event.target.value;
+      document.getElementById("bundle-size-display-min").value =
+        currentBundleRange[event.target.value];
+      event.target.value = temp;
+    }
+    document.getElementById("bundle-size-display-max").value =
+      currentBundleRange[event.target.value];
+    document.getElementsByClassName(
+      "auction-grid-rows-container"
+    )[0].innerHTML = "";
+    filterAuctions();
+  };
+
+  document.getElementById("current-bid").onchange = function (event) {
+    document.getElementById("current-bid-display").value =
+      currentBidRange[event.target.value];
+    document.getElementsByClassName(
+      "auction-grid-rows-container"
+    )[0].innerHTML = "";
+    filterAuctions();
+  };
+
+  document.getElementById("show-cheapest").checked = false;
+  document.getElementById("show-cheapest").onchange = function (event) {
+    filterAuctions();
+  }
+}
+
+function filterAuctions() {
+  let upperBidBound = parseFloat(
+    document.getElementById("current-bid-display").value
+  );
+  let lowerBundleSizeLimit = parseInt(
+    document.getElementById("bundle-size-display-min").value
+  );
+  let upperBundleSizeLimit = parseInt(
+    document.getElementById("bundle-size-display-max").value
+  );
+
+  auctions = baseAuctions.filter((_auction) => {
+    return (
+      parseFloat(_auction.highestBidValue) <= upperBidBound &&
+      parseInt(_auction.tokenID) <= upperBundleSizeLimit &&
+      parseInt(_auction.tokenID) >= lowerBundleSizeLimit
+    );
+  });
+
+  if (document.getElementById("show-cheapest").checked) {
+    let selectedBundles = []
+    sortAuctions('currentBidAsc');
+    auctions = auctions.filter((_auction) => {
+      if (selectedBundles.includes(_auction.tokenID)) return false;
+      selectedBundles.push(_auction.tokenID);
+      return true;
+    });
+  }
+
+  displayWithPreferredSort();
 }
 
 function sortAuctions(_sortType) {

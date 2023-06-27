@@ -15,60 +15,81 @@
         <p class="gbm-header">Please connect your MetaMask wallet.</p>
       </div>
       <div class="metamask-found" hidden>
-        <div class="auction-filters-container">
+        <div class="auction-filters-container" style="display: none;">
           <div class="flex-row">
             <div class="" style="margin: 0 50px; width: 100%">
-              <div class="gbm-header step-option-label">
-                Bundle Size
-              </div>
+              <div class="gbm-header step-option-label">Bundle size</div>
               <div class="step-option-fields">
-                <div class="rangecontainer">
-                  <input
-                    type="range"
-                    min="0"
-                    max="25"
-                    value="3"
-                    step="1"
-                    class="gbm-range"
-                    id="smallest-bundle"
-                    style="margin-top:10px"
-                  />
+                <div class="double-range-container">
+                  <div class="range-input">
+                    <div style="margin-bottom: 15px">
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        value="1"
+                        step="1"
+                        class="gbm-range"
+                        id="bundle-size-min"
+                        style="margin-top: 10px"
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        value="1"
+                        step="1"
+                        class="gbm-range"
+                        id="bundle-size-max"
+                        style="margin-top: 10px"
+                      />
+                    </div>
+                  </div>
+                  <div class="range-price flex-row">
+                    <div style="margin-right: 5px">
+                      <p style="color: var(--primary)">From</p>
+                      <input
+                        id="bundle-size-display-min"
+                        class="gbm-input-boxed width-limiter"
+                        type="text"
+                        disabled
+                        style="height: 2rem"
+                        value="0"
+                      />
+                    </div>
+                    <div>
+                      <p style="color: var(--primary)">To</p>
+                      <input
+                        id="bundle-size-display-max"
+                        class="gbm-input-boxed width-limiter"
+                        type="text"
+                        disabled
+                        style="height: 2rem"
+                        value="0"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <p style="color: var(--primary)">
-                  From
-                </p>
-                <input
-                  id="smallest-bundle-display"
-                  class="gbm-input-boxed width-limiter"
-                  type="text"
-                  disabled
-                  style="height: 2rem"
-                  value="0"
-                />
               </div>
             </div>
             <div class="" style="margin: 0 50px; width: 100%">
-              <div class="gbm-header step-option-label">
-                Current bid
-              </div>
+              <div class="gbm-header step-option-label">Current bid</div>
               <div class="step-option-fields">
-                <div class="rangecontainer">
+                <div class="rangecontainer" style="padding: 10px 0">
                   <input
                     type="range"
                     min="0"
-                    max="25"
-                    value="3"
+                    max="10"
+                    value="1"
                     step="1"
                     class="gbm-range"
-                    id="smallest-bundle"
-                    style="margin-top:10px"
+                    id="current-bid"
+                    style="margin-top: 10px"
                   />
                 </div>
-                <p style="color: var(--primary)">
-                  Up to
-                </p>
+                <p style="color: var(--primary); margin-top: 10px">Up to</p>
                 <input
-                  id="smallest-bundle-display"
+                  id="current-bid-display"
                   class="gbm-input-boxed width-limiter"
                   type="text"
                   disabled
@@ -78,10 +99,10 @@
               </div>
             </div>
             <div class="filter-grid-row-item">
-              <div class="cover" style="display: flex; flex-direction: column;">
+              <div class="cover" style="display: flex; flex-direction: column">
                 <label class="gbm-checkbox"
                   >Only show the cheapest bundle for each size
-                  <input id="use-deployer" type="checkbox" checked="checked" />
+                  <input id="show-cheapest" type="checkbox" checked="checked" />
                   <span class="gbm-checkmark"></span>
                 </label>
                 <span id="select-sort" class="gbm-select"></span>
