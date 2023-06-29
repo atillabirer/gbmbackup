@@ -8,7 +8,8 @@
 - [ ] Unify the Filter button CSS for Token and Auctions pages
 - [ ] Change pathing to not use queryParams and mimic myNFT auction page
 - [ ] Add the "Powered by GBM" badge to the footer of every page
-- [ ] **Buffer state while Metamask connection handling (connect first time) eg while typing password**
+- [x] **Buffer state while Metamask connection handling (connect first time) eg while typing password**
+    - [ ] Above is tested on "Put in NFT Contract Drop", apply everywhere else
 - [ ] Mobile version of every page
 - [ ] Rename versions on the dApp
 

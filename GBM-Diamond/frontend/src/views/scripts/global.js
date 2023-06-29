@@ -21,6 +21,7 @@ const pageInitializer = {
     this.loadCustomCss();
     this.addNavBar();
     this.addFooter();
+    this.addFreezeBar();
     this.setUpMetamask();
     await this.isConnected();
     this.checkDeploymentState();
@@ -118,6 +119,20 @@ const pageInitializer = {
 
     metamaskTrigger = document.getElementById("metamask-enable");
     metamaskTrigger.onclick = enableMetamask;
+  },
+  addFreezeBar: function () {
+    let freeze = document.createElement("div");
+    freeze.classList.add("freeze");
+    freeze.innerHTML = `
+      <div class="freeze-container">
+        <div class="freeze-box">
+          <img src="./images/metamask-fox.svg" />
+          Please check your MetaMask plugin!
+          <button class="gbm-btn red h-3" style="width: 40%; margin: 2rem auto; font-size: x-large;">Cancel</button>
+        </div>
+      </div>
+    `;
+    document.body.insertBefore(freeze, document.body.children[0]);
   },
   addTitleAndFavicon: function () {
     var favicon = document.createElement("link");
@@ -550,7 +565,10 @@ const auctionFunctions = {
     await gbmContracts.methods.bid(_auctionId, newAmount, oldAmount).send({
       from: window.ethereum.selectedAddress,
       to: diamondAddress,
-      value: _currencyAddress !== "0x0000000000000000000000000000000000000000" ? 0 : newAmount,
+      value:
+        _currencyAddress !== "0x0000000000000000000000000000000000000000"
+          ? 0
+          : newAmount,
       gasLimit: 300000,
     });
   },
@@ -719,5 +737,17 @@ const creationFunctions = {
     this.generateBreakdown();
   },
 };
+
+async function freezeAndSendToMetamask(_functionCall) {
+  let freezer = document.getElementsByClassName("freeze")[0];
+  freezer.style.display = "block";
+  await _functionCall()
+    .then(() => {
+      freezer.style.display = "none";
+    })
+    .catch(() => {
+      freezer.style.display = "none";
+    });
+}
 
 pageInitializer.init();
