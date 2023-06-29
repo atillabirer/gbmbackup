@@ -2,7 +2,7 @@
 
 ### Global (JavaScript)
 
-- [ ] **.BAT file to launch deployment for easy demo (need NODE already installed)**
+- [x] **.BAT file to launch deployment for easy demo (need NODE already installed)**
 - [ ] **JavaScript file cleanup in general**
 - [ ] Fix split second white page on reload/change
 - [ ] Unify the Filter button CSS for Token and Auctions pages
