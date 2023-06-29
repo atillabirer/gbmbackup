@@ -1,5 +1,4 @@
-⚠️ The project is currently under heavy feature addition and polishing and is not considered "ready" yet for a codeless experience ⚠️                     
-⚠️ It is good enough already though if you want to just preview GBM or are not afraid to do a code dive ⚠️                           
+⚠️ This project is still under development and is not considered ready yet for a codeless experience. ⚠️                            
                                                      
 # Launching the Demo
 
