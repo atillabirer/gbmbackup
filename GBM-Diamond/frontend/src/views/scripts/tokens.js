@@ -471,9 +471,12 @@ async function createNewAuction(_tokenId, _tokenKind, _index) {
 }
 
 async function sendToEscrow(tokenId) {
-  await erc721contracts[0].methods
+  await freezeAndSendToMetamask(() => erc721contracts[0].methods
     .safeTransferFrom(window.ethereum.selectedAddress, diamondAddress, tokenId)
-    .send({ from: window.ethereum.selectedAddress });
+    .send({ from: window.ethereum.selectedAddress }))
+  // await erc721contracts[0].methods
+  //   .safeTransferFrom(window.ethereum.selectedAddress, diamondAddress, tokenId)
+  //   .send({ from: window.ethereum.selectedAddress });
 }
 
 //TODO implement amount

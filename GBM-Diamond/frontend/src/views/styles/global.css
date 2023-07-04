@@ -618,6 +618,45 @@ input:checked + .gbm-slider:before {
   display: none;
 }
 
+.freeze {
+  display: none;
+  position: fixed;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  overflow: clip;
+  z-index: 1;
+}
+
+.freeze-container {
+  position: fixed;
+  background: var(--primary);
+  border-radius: 30px;
+  margin: 10%;
+  width: 80%;
+  height: 70%;
+}
+
+.freeze-box {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+  font-size: xx-large;
+  color: white;
+}
+
+.freeze-box img {
+  width: 300px;
+  margin: auto;
+}
+
 @media (max-device-width: 768px), (max-width: 768px) {
   body {
     margin: 0;
