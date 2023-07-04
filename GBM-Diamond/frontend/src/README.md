@@ -2,13 +2,14 @@
 
 ### Global (JavaScript)
 
-- [ ] **.BAT file to launch deployment for easy demo (need NODE already installed)**
+- [x] **.BAT file to launch deployment for easy demo (need NODE already installed)**
 - [ ] **JavaScript file cleanup in general**
 - [ ] Fix split second white page on reload/change
 - [ ] Unify the Filter button CSS for Token and Auctions pages
 - [ ] Change pathing to not use queryParams and mimic myNFT auction page
 - [ ] Add the "Powered by GBM" badge to the footer of every page
-- [ ] **Buffer state while Metamask connection handling (connect first time) eg while typing password**
+- [x] **Buffer state while Metamask connection handling (connect first time) eg while typing password**
+    - [ ] Above is tested on "Put in NFT Contract Drop", apply everywhere else
 - [ ] Mobile version of every page
 - [ ] Rename versions on the dApp
 
@@ -17,7 +18,7 @@
 
 - [ ] **Adapt the deploy script for the deployer=admin scenario**
 - [ ] **Add an abort button that resets a failed deployment**
-- [ ] **Report back-end errors in case of a failed deployment**
+- [x] **Report back-end errors in case of a failed deployment**
 - [ ] **Detect admin address from the contract post-deployment**
 - [ ] Prevent deploy click if admin address fails regex check
 - [ ] Add "enable English auction" slider. 
@@ -29,7 +30,7 @@
 - [ ] Add bid event listener logic
 - [ ] Display message on empty list (if no auctions, design to be done)
 - [ ] Add filter buttons, even if placeholders
-- [ ] **Remove no bid yet message, remove the column for upcoming auctions**
+- [ ] **Remove no bid yet message, remove the column for upcoming auctions** <= Very tricky to remove without rewriting the entire page's CSS, consider alternatives
 - [ ] Change so it queries the last 20-25 auctions instead of all of them
 - [ ] Missing Load More Button
 - [ ] Use the load animation/script from this page on other pages 
@@ -45,7 +46,7 @@
 
 ### Token Sale / IDO Browse auctions
 
-- [ ] **Unfinished View**
+- [x] **Unfinished View**
 - [ ] Tabs should be aware if it's the admin or someone else requesting the page (everywhere)
 
 ### Admin Panel 
@@ -60,7 +61,7 @@
 ### Create Auction Flow
 
 - [ ] The selects that allows you to chose the preset (create auctions page) needs to look at what presets are available (currently hard coded) -need to work for english
-- [ ] **Fetch the NFT data dynamically**
+- [ ] **Fetch the NFT data dynamically**   <= Requires rework of the tokens page - Pass the ERC721/1155 contract as a query parameter in all scenarios
 - [ ] Make sure the initial state of radio buttons is set (refresh issues)
 - [ ] Check for missing fields before submission
 - [ ] Add currency as suffix to the minimum bid input (also for auction page)

@@ -129,6 +129,12 @@ async function connectToDeployer() {
     webSocket.send(`DEPLOY || ${deploymentSteps[step]}`);
   };
 
+  webSocket.onclose = (event) => {
+    let msgToDisplay = `${new Date().toLocaleTimeString()} - ⚠️⚠️⚠️ ERROR: The deployer stopped responding! ⚠️⚠️⚠️`;
+    terminal.innerHTML += msgToDisplay + "<br/>";
+    terminal.scrollTop = terminal.scrollHeight;
+  };
+
   webSocket.onmessage = (event) => {
     let receivedMsg = event.data;
     let commands = receivedMsg.split(" || ");
@@ -147,8 +153,8 @@ async function connectToDeployer() {
           setTimeout(() => {
             pageInitializer.loadCustomCss();
             pageInitializer.flipVisibility();
+            webSocket.close(); // Very dirty way to not show the onclose message for now :)
           }, 2000);
-          webSocket.close();
         } else {
           webSocket.send(`DEPLOY || ${deploymentSteps[step]}`);
         }

@@ -1052,6 +1052,8 @@ async function doSubStep_bidOnAuctionNativeCurr(args:Array<any>){
     while (continuer) {
         try {
             let gasPrice = await fetchGasPrice();
+
+            highestBidValue = await theDiamond.getSale_HighestBid_Value(_saleID);
             
             let tx = await theDiamond.bid(
                 _saleID, //SaleID 
