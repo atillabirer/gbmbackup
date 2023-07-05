@@ -72,8 +72,8 @@ contract GBMDirectSalePrimaryAndSecondaryFacet is GBMDirectSalePrimaryFacet, IGB
                                     ) external reentrancyProtector() {
 
         
-
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth; ){
             if(!(IERC721(tokenContractAddress).ownerOf(tokenIDs[i]) == msg.sender)){ //If the token is NOT in the sender wallet
                         require(IERC721(tokenContractAddress).ownerOf(tokenIDs[i]) == address(this), "A token must be in your wallet or in escrow if you are putting it up for direct sale"); //then it must be in escrow
                     } else { //If the token is in the sender wallet
@@ -97,7 +97,8 @@ contract GBMDirectSalePrimaryAndSecondaryFacet is GBMDirectSalePrimaryFacet, IGB
                                                     0x73ad2146,
                                                     address(0) //Useless for 721
                                                 );
-                    }
+            unchecked{ i++;}
+        }
        
     }
 
@@ -169,8 +170,8 @@ contract GBMDirectSalePrimaryAndSecondaryFacet is GBMDirectSalePrimaryFacet, IGB
                                         uint256 endTimestamp
                                     ) external reentrancyProtector() {
 
-                                        
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+        uint256 _lgth =  tokenIDs.length;                     
+        for(uint256 i = 0; i < _lgth;){
 
             address _origin;
             if((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenIDs[i]][msg.sender] + amounts[i]) <= 
@@ -199,6 +200,7 @@ contract GBMDirectSalePrimaryAndSecondaryFacet is GBMDirectSalePrimaryFacet, IGB
                                             0x973bb640,
                                             _origin
                                         );
+            unchecked{ i++;}
         }
     }
 

@@ -76,11 +76,14 @@ contract GBMPrimaryAndSecondaryAuctionRegistrationFacet is GBMPrimaryAuctionRegi
 
         require(s.secondarySaleNFTContractWhitelist[tokenContractAddress], "Only whitelisted NFT smart contracts can have their nft put on sale");
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
             require(s.erc721tokensAddressAndIDToUnderSale[tokenContractAddress][tokenIDs[i]] == false, "This token is already under sale"); 
 
             IERC721(tokenContractAddress).safeTransferFrom(msg.sender, address(this), tokenIDs[i], "");
             internalRegister721Auction(tokenIDs[i], tokenContractAddress, gbmPreset, startTimestamp, currencyID, msg.sender, 0, 0);
+
+            unchecked{ i++;}
         }
     }
 
@@ -104,12 +107,13 @@ contract GBMPrimaryAndSecondaryAuctionRegistrationFacet is GBMPrimaryAuctionRegi
 
         require(s.secondarySaleNFTContractWhitelist[tokenContractAddress], "Only whitelisted NFT smart contracts can have their nft put on sale");
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
 
             IERC721(tokenContractAddress).safeTransferFrom(msg.sender, address(this), tokenIDs[i], "");
             require(s.erc721tokensAddressAndIDToUnderSale[tokenContractAddress][tokenIDs[i]] == false, "This token is already under sale"); 
             internalRegister721Auction(tokenIDs[i], tokenContractAddress, gbmPreset, startTimestamp, currencyID, msg.sender, endTimestamp, startingBid);
-
+            unchecked{ i++;}
         }
     }
 
@@ -179,10 +183,12 @@ contract GBMPrimaryAndSecondaryAuctionRegistrationFacet is GBMPrimaryAuctionRegi
 
         require(s.secondarySaleNFTContractWhitelist[tokenContractAddress], "Only whitelisted NFT smart contracts can have their nft put on sale");
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
 
-                IERC1155(tokenContractAddress).safeTransferFrom(msg.sender, address(this), tokenIDs[i], amounts[i], "");
-                internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, msg.sender, 0, 0);
+            IERC1155(tokenContractAddress).safeTransferFrom(msg.sender, address(this), tokenIDs[i], amounts[i], "");
+            internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, msg.sender, 0, 0);
+            unchecked{ i++; }
         }
     }
 
@@ -208,10 +214,12 @@ contract GBMPrimaryAndSecondaryAuctionRegistrationFacet is GBMPrimaryAuctionRegi
 
         require(s.secondarySaleNFTContractWhitelist[tokenContractAddress], "Only whitelisted NFT smart contracts can have their nft put on sale");
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
 
-                IERC1155(tokenContractAddress).safeTransferFrom(msg.sender, address(this), tokenIDs[i], amounts[i], "");
-                internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, msg.sender, endTimestamp, startingBid);
+            IERC1155(tokenContractAddress).safeTransferFrom(msg.sender, address(this), tokenIDs[i], amounts[i], "");
+            internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, msg.sender, endTimestamp, startingBid);
+            unchecked{ i++; }
         }
     }
 

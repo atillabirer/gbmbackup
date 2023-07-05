@@ -87,8 +87,8 @@ contract GBMDirectSalePrimaryFacet is IGBMEventsFacet, IGBMDirectSalePrimaryFace
                                     ) external onlyAdmin() {
 
         
-
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth; ){
             if(!(IERC721(tokenContractAddress).ownerOf(tokenIDs[i]) == msg.sender)){ //If the token is NOT in the sender wallet
                         require(IERC721(tokenContractAddress).ownerOf(tokenIDs[i]) == address(this), "A token must be in your wallet or in escrow if you are putting it up for direct sale"); //then it must be in escrow
                     } else { //If the token is in the sender wallet
@@ -112,7 +112,8 @@ contract GBMDirectSalePrimaryFacet is IGBMEventsFacet, IGBMDirectSalePrimaryFace
                                                     0x73ad2146,
                                                     address(0) //Useless for 721
                                                 );
-                    }
+            unchecked{ i++;}                 
+        }
        
     }
 
@@ -184,8 +185,9 @@ contract GBMDirectSalePrimaryFacet is IGBMEventsFacet, IGBMDirectSalePrimaryFace
                                         uint256 endTimestamp
                                     ) external onlyAdmin() {
 
-                                        
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+
+        uint256 _lgth =  tokenIDs.length;                               
+        for(uint256 i = 0; i < _lgth;){
 
             //For secondary direct sale, need a reentrancy semaphore
             address _origin;
@@ -215,6 +217,7 @@ contract GBMDirectSalePrimaryFacet is IGBMEventsFacet, IGBMDirectSalePrimaryFace
                                             0x973bb640,
                                             _origin
                                         );
+            unchecked{ i++;}
         }
     }
 
@@ -302,8 +305,11 @@ contract GBMDirectSalePrimaryFacet is IGBMEventsFacet, IGBMDirectSalePrimaryFace
             } // No else. A freshly pushed address is initialized to 0x0
 
 
-            if (_from != msg.sender) {
-                //Prevent doing a stay in the same place move.
+            if (_from != msg.sender &&   //Prevent doing a stay in the same place move.
+                //Prevent token thievery
+                (_from == address(0) || _from == _beneficiary || s.erc721tokensAddressAndIDToEscrower[_tkc][_tokenID] == _beneficiary)
+            ) {
+              
                 IERC721(_tkc).safeTransferFrom(_from, msg.sender, _tokenID);
             }
 

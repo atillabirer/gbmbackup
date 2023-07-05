@@ -82,10 +82,11 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 currencyID, 
                                         address beneficiary) external onlyAdmin() {
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
             require(IERC721(tokenContractAddress).ownerOf(tokenIDs[i]) == address(this), "Please deposit the token in escrow first");
-
             internalRegister721Auction(tokenIDs[i], tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, 0, 0);
+            unchecked{ i++; }
         }
     }
 
@@ -110,10 +111,11 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 startingBid
                                         ) external onlyAdmin() {
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
             require(IERC721(tokenContractAddress).ownerOf(tokenIDs[i]) == address(this), "Please deposit the token in escrow first");
-
             internalRegister721Auction(tokenIDs[i], tokenContractAddress, gbmPreset, startTimestamp, currencyID, beneficiary, endTimestamp, startingBid);
+            unchecked{ i++; }
         }
     }
 
@@ -189,11 +191,13 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 currencyID, 
                                         address beneficiary) external onlyAdmin() {
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){
-                require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenIDs[i]][beneficiary] + amounts[i]) <= 
-                    s.erc1155tokensAddressAndIDToEscrowerAmount[tokenContractAddress][tokenIDs[i]][beneficiary]
-                    , "You cannot put that many 1155 tokens on sale without depositing more first");
-                internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, 0 , 0);
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
+            require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenIDs[i]][beneficiary] + amounts[i]) <= 
+                s.erc1155tokensAddressAndIDToEscrowerAmount[tokenContractAddress][tokenIDs[i]][beneficiary]
+                , "You cannot put that many 1155 tokens on sale without depositing more first");
+            internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, 0 , 0);
+            unchecked{ i++; }
         }
 
     }
@@ -221,11 +225,13 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 startingBid
                                     ) external onlyAdmin() {
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){
-                require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenIDs[i]][beneficiary] + amounts[i]) <= 
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
+            require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenIDs[i]][beneficiary] + amounts[i]) <= 
                     s.erc1155tokensAddressAndIDToEscrowerAmount[tokenContractAddress][tokenIDs[i]][beneficiary]
                     , "You cannot put that many 1155 tokens on sale without depositing more first");
-                internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, endTimestamp , startingBid);
+            internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, endTimestamp , startingBid);
+            unchecked{ i++; }
         }
 
     }

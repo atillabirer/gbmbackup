@@ -128,9 +128,11 @@ contract GBMPrimaryAuctionRegistrationFacetUnsafe is GBMPrimaryAuctionRegistrati
                                         uint256 currencyID, 
                                         address beneficiary) external onlyAdmin() {
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){
-                internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, 0 , 0);
-        }
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
+            internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, 0 , 0);
+            unchecked{ i++; }
+       }
 
     }
 
@@ -158,8 +160,10 @@ contract GBMPrimaryAuctionRegistrationFacetUnsafe is GBMPrimaryAuctionRegistrati
                                         uint256 startingBid
                                     ) external onlyAdmin() {
 
-        for(uint256 i = 0; i < tokenIDs.length; i++){   
-                internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, endTimestamp , startingBid);
+        uint256 _lgth =  tokenIDs.length;
+        for(uint256 i = 0; i < _lgth;){
+            internalRegister1155AuctionUnsafe(tokenIDs[i], tokenContractAddress, amounts[i], gbmPreset, startTimestamp, currencyID, beneficiary, endTimestamp , startingBid);
+            unchecked{ i++; }
         }
 
     }

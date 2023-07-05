@@ -39,8 +39,10 @@ contract GBMAuctionBiddingFacet is IGBMAuctionBiddingFacet, IGBMEventsFacet {
 
         require(s.saleToStartTimestamp[auctionID] != 0, "Auction doesn't exist");
 
+        require(newBidAmount > previousHighestBidAmount, "The new bid need to be higher than the previous bid");
+        
         //Checking that the previousHighestBidAmount matches
-        require(previousHighestBidAmount ==s.saleToBidValues[auctionID][_previousBidIndex],
+        require(previousHighestBidAmount == s.saleToBidValues[auctionID][_previousBidIndex],
             "The previous highest bid do not match");
 
         //Checking that the auction has started

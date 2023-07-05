@@ -64,11 +64,9 @@ On top fo those sequence, the JSON object deployerStatus can be exported/importe
 */
 
 
-const hre = require("hardhat");
-const prompt = require("prompt-sync")();
 const { getSelectors, FacetCutAction } = require("./libraries/diamond.ts");
 import { ethers } from "hardhat";
-import config from "../hardhat.config";
+import hardhatconfig from "../hardhat.config";
 
 let hardhatHelpers = require("@nomicfoundation/hardhat-network-helpers");  // << Required for time dependendant test
 
