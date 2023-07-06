@@ -22,6 +22,9 @@ contract ERC1155Generic is IERC1155, IERC165 {
     uint256[] public tokenIDArray;
 
     mapping(bytes4 => bool) supportedInterfaces;
+
+    mapping (uint256 => string) internal m_tokenURI;
+
     
     /// @notice Constructor
     /// @dev Please change the values in here if you want more specific values, or make the constructor takes arguments
@@ -200,17 +203,28 @@ contract ERC1155Generic is IERC1155, IERC165 {
             tokenIDArray.push(_id);
         }
 
+        m_tokenURI[_id] = _uri;
         emit URI(_uri, _id);
     }
 
     function setURI(uint256 _id, string calldata _uri) external{
         require(msg.sender == owner);
+        m_tokenURI[_id] = _uri;
         emit URI(_uri, _id);
+    }
+
+    
+    /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
+    /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
+    ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+    ///  Metadata JSON Schema".
+    function uri(uint256 _tokenId) external view returns (string memory){
+        return m_tokenURI[_tokenId];
     }
 
 
     function getTokenIDArray() external view returns(uint256[] memory){
-
+        return tokenIDArray;
     }
 
     /// @notice Check if an address is a contract

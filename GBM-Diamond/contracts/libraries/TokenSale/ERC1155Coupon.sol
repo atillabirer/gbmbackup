@@ -207,6 +207,11 @@ contract ERC1155Coupon is IERC1155, IERC165 {
             require(IERC1155TokenReceiver(msg.sender).onERC1155Received(msg.sender, msg.sender, _id, _value, "") == bytes4(0xf23a6e61));
         }
 
+        if(!occupiedTokenID[_id]){
+            occupiedTokenID[_id] = true;
+            tokenIDArray.push(_id);
+        }
+
         emit URI(c_tokenURI, _id);
     }
 
@@ -249,8 +254,13 @@ contract ERC1155Coupon is IERC1155, IERC165 {
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
     ///  3986. The URI may point to a JSON file that conforms to the "ERC721
     ///  Metadata JSON Schema".
-    function tokenURI(uint256 /*_tokenId */) external view returns (string memory){
+    function uri(uint256 /*_tokenId */) external view returns (string memory){
         return c_tokenURI;
+    }
+
+
+    function getTokenIDArray() external view returns(uint256[] memory){
+        return tokenIDArray;
     }
 
 

@@ -225,8 +225,7 @@ contract GBMPrimaryAuctionRegistrationFacet is IGBMPrimaryAuctionRegistrationFac
                                         uint256 startingBid
                                     ) external onlyAdmin() {
 
-        uint256 _lgth =  tokenIDs.length;
-        for(uint256 i = 0; i < _lgth;){
+        for(uint256 i = 0; i < tokenIDs.length;){
             require((s.erc1155tokensAddressAndIDToEscrowerUnderSaleAmount[tokenContractAddress][tokenIDs[i]][beneficiary] + amounts[i]) <= 
                     s.erc1155tokensAddressAndIDToEscrowerAmount[tokenContractAddress][tokenIDs[i]][beneficiary]
                     , "You cannot put that many 1155 tokens on sale without depositing more first");
