@@ -79,6 +79,7 @@ let signer:any; //= wallets[0]; //This signer object is gonna be used to create 
 let deployerStatus:any = {}; //The current status of the deployment
 deployerStatus.commandHistory = [];
 deployerStatus.deployedFacets = {};
+deployerStatus.latestDeployedGBMPresetIndex = 0;
 let tokenURIList = require("./libraries/NFTTestList.json").nftarray;
 
 let logger: (msg: string) => void;
@@ -109,6 +110,10 @@ export function setDeployerStatus(_deployerStatus: string) {
     if(deployerStatus.deployedFacets == undefined){
         deployerStatus.deployedFacets = [];
     }
+    if(deployerStatus.latestDeployedGBMPresetIndex == undefined){
+        deployerStatus.latestDeployedGBMPresetIndex = 0;
+    }
+    
 }
 
 export function getDeployerStatus(){
@@ -282,14 +287,13 @@ async function doStep_d_c(){
 }
 
 
-let latestDeployedGBMPresetIndex = 0;
 
 
 //Set a GBM preset in the diamond
 async function doStep_s_p(arg:string){
     const theDiamond =  await ethers.getContractAt("GBM_Interface", deployerStatus.deployedFacets["Diamond"], signer);
 
-    latestDeployedGBMPresetIndex++;
+    deployerStatus.latestDeployedGBMPresetIndex++;
 
     if(arg.substring(0,5) == "s_p_+"){ //Case of all presets   at once
         let ending = parseInt(arg.substring(5));
@@ -299,8 +303,8 @@ async function doStep_s_p(arg:string){
             logger("Setting GBM Preset #" +  dapreset.presetIndex + " 🚀 ⚙️");
 
 
-            if((latestDeployedGBMPresetIndex) !=  dapreset.presetIndex){
-                dapreset.presetIndex = "" + latestDeployedGBMPresetIndex;
+            if((deployerStatus.latestDeployedGBMPresetIndex) !=  dapreset.presetIndex){
+                dapreset.presetIndex = "" + deployerStatus.latestDeployedGBMPresetIndex;
             }
 
             let continuer = true;
@@ -372,8 +376,8 @@ async function doStep_s_p(arg:string){
 
         let continuer = true;
 
-        if((latestDeployedGBMPresetIndex) !=  dapreset.presetIndex){
-            dapreset.presetIndex = "" + latestDeployedGBMPresetIndex;
+        if((deployerStatus.latestDeployedGBMPresetIndex) !=  dapreset.presetIndex){
+            dapreset.presetIndex = "" + deployerStatus.latestDeployedGBMPresetIndex;
         }
 
         while (continuer) {
