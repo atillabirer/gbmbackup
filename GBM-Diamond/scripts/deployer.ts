@@ -103,6 +103,12 @@ export function setLogger(loggerCallback: (msg: string) => void){
 
 export function setDeployerStatus(_deployerStatus: string) {
     deployerStatus = JSON.parse(_deployerStatus);
+    if(deployerStatus.commandHistory == undefined){
+        deployerStatus.commandHistory = [];
+    }
+    if(deployerStatus.deployedFacets == undefined){
+        deployerStatus.deployedFacets = [];
+    }
 }
 
 export function getDeployerStatus(){

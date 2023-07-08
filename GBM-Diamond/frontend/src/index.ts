@@ -86,6 +86,8 @@ sockServer.on("connection", (ws) => {
       case "RESUME":
         setDeployerStatus(commands[1]);
         break;
+      case "PURGE":
+        setDeployerStatus("{}");
       default:
     }
   });

@@ -125,7 +125,11 @@ async function connectToDeployer() {
 
   webSocket.onopen = (event) => {
     let lastDeploymentState = localStorage.getItem("deploymentStatus");
-    if (lastDeploymentState) webSocket.send(`RESUME || ${lastDeploymentState}`);
+    if (lastDeploymentState) {
+      webSocket.send(`RESUME || ${lastDeploymentState}`);
+    } else {
+      webSocket.send(`PURGE`);
+    }
     webSocket.send(`DEPLOY || ${deploymentSteps[step]}`);
   };
 
