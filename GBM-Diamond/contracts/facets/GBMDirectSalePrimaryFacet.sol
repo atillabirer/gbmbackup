@@ -311,6 +311,10 @@ contract GBMDirectSalePrimaryFacet is IGBMEventsFacet, IGBMDirectSalePrimaryFace
             ) {
               
                 IERC721(_tkc).safeTransferFrom(_from, msg.sender, _tokenID);
+            } else if (
+                _from != _beneficiary
+            ) {
+                revert("The seller doesn't own the token anymore");
             }
 
             //If we were keeping track of escrow, unescrow the token
