@@ -108,7 +108,7 @@ export function setDeployerStatus(_deployerStatus: string) {
         deployerStatus.commandHistory = [];
     }
     if(deployerStatus.deployedFacets == undefined){
-        deployerStatus.deployedFacets = [];
+        deployerStatus.deployedFacets = {};
     }
     if(deployerStatus.latestDeployedGBMPresetIndex == undefined){
         deployerStatus.latestDeployedGBMPresetIndex = 0;
@@ -117,6 +117,7 @@ export function setDeployerStatus(_deployerStatus: string) {
 }
 
 export function getDeployerStatus(){
+
     return JSON.stringify(deployerStatus);
 }
 
@@ -197,6 +198,7 @@ async function doStep_f_d(arg:string){
     });
     await facet.deployed();
     deployerStatus.deployedFacets[arg.substring(4)] = facet.address;
+    console.log( deployerStatus.deployedFacets);
 }
 
 async function doStep_d_d(){
