@@ -198,7 +198,6 @@ async function doStep_f_d(arg:string){
     });
     await facet.deployed();
     deployerStatus.deployedFacets[arg.substring(4)] = facet.address;
-    console.log( deployerStatus.deployedFacets);
 }
 
 async function doStep_d_d(){
