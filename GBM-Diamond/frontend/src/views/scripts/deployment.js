@@ -121,7 +121,7 @@ async function connectToDeployer() {
       deploymentSteps
     );
   }
-  let step = deploymentStatus ? deploymentStatus.commandHistory.length : 0;
+  let step = (deploymentStatus && deploymentStatus.commandHistory) ? deploymentStatus.commandHistory.length : 0;
 
   webSocket.onopen = (event) => {
     let lastDeploymentState = localStorage.getItem("deploymentStatus");
