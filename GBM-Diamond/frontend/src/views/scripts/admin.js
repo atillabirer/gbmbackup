@@ -1,6 +1,4 @@
-function storeNewDeploymentStatus() {
-  localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
-}
+let freeCurrencyIndexOnChain = 1;
 
 const adminAddressActions = {
   init: async function () {
@@ -19,9 +17,11 @@ const adminAddressActions = {
   },
   setGBMAdmin: async function () {
     // ToDo: Add valid hex check (although the contract side also does one too)
-    await gbmContracts.methods
-      .setGBMAdmin(document.getElementById("new-admin-address").value)
-      .send({ from: window.ethereum.selectedAddress });
+    await freezeAndSendToMetamask(() =>
+      gbmContracts.methods
+        .setGBMAdmin(document.getElementById("new-admin-address").value)
+        .send({ from: window.ethereum.selectedAddress })
+    );
   },
 };
 
@@ -42,28 +42,36 @@ const logoActions = {
     document.getElementById("logo-upload").hidden =
       !document.getElementById("logo-upload").hidden;
   },
-  updateLogoByLink: function () {
+  async updateLogoByLink() {
     deploymentStatus.logo = document.getElementById("logo-url").value;
     document.getElementById("logo-upload-success").hidden = false;
-    storeNewDeploymentStatus();
+    await storeNewDeploymentStatus(deploymentStatus);
   },
   imageUpload: function () {
     document.getElementById("image-upload").click();
   },
-  imgFound: function (event) {
-    var reader = new FileReader();
-    reader.onload = function (event) {
-      deploymentStatus.logo = event.target.result;
-      document.getElementById("logo-upload-success").hidden = false;
-      storeNewDeploymentStatus();
-    };
+  async imgFound(event) {
+    if (event.target.files[0]?.size > 10000000) {
+      alert("File size must be under 10MB!");
+      return;
+    }
+
+    const reader = new FileReader();
+
     reader.readAsDataURL(event.target.files[0]);
+
+    reader.onload = async function (e) {
+      deploymentStatus.logo = e.target.result;
+
+      document.getElementById("logo-upload-success").hidden = false;
+      await storeNewDeploymentStatus(deploymentStatus);
+    };
   },
-  resetToDefault: function () {
+  async resetToDefault() {
     document.getElementById("logo-url").value = "./images/gbm-logo.png";
     deploymentStatus.logo = document.getElementById("logo-url").value;
     document.getElementById("logo-upload-success").hidden = false;
-    storeNewDeploymentStatus();
+    await storeNewDeploymentStatus(deploymentStatus);
   },
 };
 
@@ -88,7 +96,7 @@ const colorActions = {
     };
   },
   initDone: false,
-  init: async function () {
+  async init() {
     this.currentColors = deploymentStatus.colours;
     const colourElements = Array.from(
       document.getElementsByClassName("color-picker")
@@ -105,24 +113,24 @@ const colorActions = {
       elements[i].dispatchEvent(new Event("change"));
     }
   },
-  pairFieldToPreview: function (element) {
-    element.onchange = function () {
+  async pairFieldToPreview(element) {
+    element.onchange = async function () {
       if (colorActions.initDone) {
         colorActions.currentColors[colorActions.colourMapping[element.id]] =
           element.value;
         deploymentStatus.colours = colorActions.currentColors;
-        storeNewDeploymentStatus();
-        pageInitializer.loadCustomCss();
+        await storeNewDeploymentStatus(deploymentStatus);
+        pageInitializer.loadCustomCss(deploymentStatus);
       }
       document.getElementById(`${element.id}-preview`).style.backgroundColor =
         element.value;
     };
   },
-  resetToDefault: function () {
+  async resetToDefault() {
     deploymentStatus.colours = this.returnDefaultColours();
     this.currentColors = deploymentStatus.colours;
-    storeNewDeploymentStatus();
-    pageInitializer.loadCustomCss();
+    await storeNewDeploymentStatus(deploymentStatus);
+    pageInitializer.loadCustomCss(deploymentStatus);
     const colourElements = Array.from(
       document.getElementsByClassName("color-picker")
     );
@@ -133,88 +141,130 @@ const colorActions = {
 };
 
 const currencyActions = {
-  currentCurrencies: [],
-  init: async function () {
-    this.fetchCurrencies();
-    this.generateCurrencyElements();
+  //   currentCurrencies: [],
+  async init() {
+    await this.renderCurrencies();
   },
-  fetchCurrencies: function () {
-    this.currentCurrencies = Object.values(
-      deploymentStatus.registeredCurrencies
-    );
-    this.currentCurrencies = this.currentCurrencies.map((currency, index) => ({
-      ...currency,
-      currencyAddress:
-        index > 0
-          ? deploymentStatus.ERC20[index - 1]
-          : currency.currencyAddress,
-    }));
-  },
-  generateCurrencyElements: function () {
-    const currencyContainer = document.getElementById("currency-display");
-    for (i = 0; i < this.currentCurrencies.length; i++) {
-      let currencyToAdd = document.createElement("div");
-      currencyToAdd.classList.add(
-        "configuration-default-preset-group",
-        "currency-row"
+
+  async renderCurrencies() {
+    let runLoop = true;
+
+    while (runLoop) {
+      const currencyOnChain = await this.fetchCurrency(
+        freeCurrencyIndexOnChain
       );
-      currencyToAdd.innerHTML = `
+
+      if (!currencyOnChain) {
+        runLoop = false;
+        break;
+      }
+
+      this.generateCurrencyElement(currencyOnChain);
+
+      deploymentStatus.ERC20[freeCurrencyIndexOnChain - 1] =
+        currencyOnChain.currencyAddress;
+
+      deploymentStatus.registeredCurrencies[freeCurrencyIndexOnChain] =
+        currencyOnChain;
+
+      freeCurrencyIndexOnChain++;
+    }
+
+    await storeNewDeploymentStatus(deploymentStatus);
+  },
+
+  async fetchCurrency(_index) {
+    const [currencyAddress, currencyName] = await Promise.all([
+      this.getCurrencyAddress(_index),
+      this.getCurrencyName(_index),
+    ]);
+
+    if (
+      !currencyName &&
+      currencyAddress === "0x0000000000000000000000000000000000000000"
+    ) {
+      return null;
+    }
+
+    return {
+      currencyIndex: _index,
+      currencyAddress: currencyAddress,
+      currencyName: currencyName,
+      currencyDisplayName: currencyName,
+    };
+  },
+
+  generateCurrencyElement(currency) {
+    const currencyContainer = document.getElementById("currency-display");
+
+    let currencyToAdd = document.createElement("div");
+    currencyToAdd.classList.add(
+      "configuration-default-preset-group",
+      "currency-row"
+    );
+
+    currencyToAdd.innerHTML = `
       <div class="currency-column currency-header">${
-        this.currentCurrencies[i].currencyName
+        currency.currencyName
       }</div>
       <div class="currency-column">${
-        i === 0
+        currency.currencyIndex === 0
           ? "Native"
-          : shortenAddress(this.currentCurrencies[i].currencyAddress)
+          : shortenAddress(currency.currencyAddress)
       }</div>
-      ${
-        i === 0
-          ? ""
-          : `<div class="currency-column currency-remove" onclick="currencyActions.removeCurrency(${i})">Remove</div>`
-      }
-      `;
-      currencyContainer.appendChild(currencyToAdd);
-    }
+        <div class="currency-column currency-remove" onclick="currencyActions.removeCurrency(${
+          currency.currencyIndex
+        })">Remove</div>`;
+
+    currencyContainer.appendChild(currencyToAdd);
   },
-  removeCurrency: function (_index) {
-    deploymentStatus.ERC20.splice(_index - 1, 1);
-    let temp = JSON.parse(
-      JSON.stringify(
-        Object.assign({}, [{}, ...currencyActions.currentCurrencies])
+
+  async removeCurrency(_index) {
+    await freezeAndSendToMetamask(() =>
+      this.updateCurrencyOnChain(
+        _index,
+        "0x0000000000000000000000000000000000000000",
+        ""
       )
     );
-    delete temp[0];
-    delete temp[_index+1];
-    deploymentStatus.registeredCurrencies = temp;
-    storeNewDeploymentStatus();
+
     window.location.reload();
   },
-  addCurrency: async function () {
+
+  async addCurrency() {
     let symbol = document.getElementById("currency-symbol-input").value;
     let address = document.getElementById("currency-address-input").value;
 
     // TODO Add check for valid contract address
 
+    await freezeAndSendToMetamask(() =>
+      this.updateCurrencyOnChain(freeCurrencyIndexOnChain, address, symbol)
+    );
 
-    await gbmContracts.methods
-      .setCurrencyAddressAndName(
-        deploymentStatus.ERC20.length + 1,
-        address,
-        symbol
-      )
-      .send({ from: window.ethereum.selectedAddress });
-
-    this.currentCurrencies.push({
-      currencyIndex: deploymentStatus.ERC20.length + 1,
-      currencyAddress: address,
-      currencyName: symbol,
-      currencyDisplayName: symbol,
-    });
-    deploymentStatus.registeredCurrencies = this.currentCurrencies;
-    deploymentStatus.ERC20.push(address);
-    storeNewDeploymentStatus();
     window.location.reload();
   },
+
+  async getCurrencyAddress(index) {
+    return await gbmContracts.methods.getCurrencyAddress(index).call();
+  },
+
+  async getCurrencyName(index) {
+    return await gbmContracts.methods.getCurrencyName(index).call();
+  },
+
+  async updateCurrencyOnChain(index, address, symbol) {
+    await gbmContracts.methods
+      .setCurrencyAddressAndName(index, address, symbol)
+      .send({ from: window.ethereum.selectedAddress });
+  },
+
+  //   treatCurrentCurrencies() {
+  //     return this.currentCurrencies.reduce((acc, currentCurrency) => {
+  //       acc[currentCurrency.currencyIndex] = currentCurrency;
+
+  //       return acc;
+  //     }, {});
+  //   },
 };
 
 const sliderActions = {
@@ -382,28 +432,30 @@ const presetActions = {
           .getAttribute("selected-value")
     );
 
-    await gbmContracts.methods
-      .setGBMPreset(
-        parseInt(
-          document
-            .getElementById("select-preset")
-            .getAttribute("selected-value")
-        ) + 1,
-        document.getElementById("preset-auction-duration").value, // Auction Duration
-        document.getElementById("preset-hammertime").value, // Hammer Time Duration
-        document.getElementById("preset-cancellation").value, // Cancellation Period Duration
-        document.getElementById("preset-step").value, // Step Min
-        document.getElementById("preset-incentive-min").value, // Incentive Min
-        document.getElementById("preset-incentive-max").value, // Incentive Max
-        document.getElementById("preset-multiplier").value, // Incentive Growth Multiplier
-        0, // Minimum bid
-        document.getElementById("preset-name").value
-      )
-      .send({
-        from: window.ethereum.selectedAddress,
-        to: diamondAddress,
-        gasLimit: 300000,
-      });
+    await freezeAndSendToMetamask(() =>
+      gbmContracts.methods
+        .setGBMPreset(
+          parseInt(
+            document
+              .getElementById("select-preset")
+              .getAttribute("selected-value")
+          ) + 1,
+          document.getElementById("preset-auction-duration").value, // Auction Duration
+          document.getElementById("preset-hammertime").value, // Hammer Time Duration
+          document.getElementById("preset-cancellation").value, // Cancellation Period Duration
+          document.getElementById("preset-step").value, // Step Min
+          document.getElementById("preset-incentive-min").value, // Incentive Min
+          document.getElementById("preset-incentive-max").value, // Incentive Max
+          document.getElementById("preset-multiplier").value, // Incentive Growth Multiplier
+          0, // Minimum bid
+          document.getElementById("preset-name").value
+        )
+        .send({
+          from: window.ethereum.selectedAddress,
+          to: diamondAddress,
+          gasLimit: 300000,
+        })
+    );
 
     window.location.reload();
   },

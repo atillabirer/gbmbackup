@@ -184,6 +184,10 @@ h3 {
   font-weight: 700;
 }
 
-.currency-remove { 
+.currency-remove {
   text-decoration: underline;
+}
+
+.currency-remove:hover {
+  cursor: pointer;
 }

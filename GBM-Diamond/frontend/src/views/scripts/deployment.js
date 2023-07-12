@@ -1,22 +1,274 @@
+// CREATE OF FACTORY FUNCTIONS
+
+const logoActionsProto = {
+  init: async function () {
+    document.getElementById("logo-update-first").checked = true;
+    document.getElementById("logo-update-second").false = false;
+    document.getElementById("logo-url").hidden = false;
+    document.getElementById("logo-upload").hidden = true;
+    document.getElementById("logo-url").value = "./images/gbm-logo.png";
+    document
+      .getElementById("image-upload")
+      .addEventListener("change", this.imgFound);
+  },
+  toggleLogoUploadField: function () {
+    document.getElementById("logo-url").hidden =
+      !document.getElementById("logo-url").hidden;
+    document.getElementById("logo-upload").hidden =
+      !document.getElementById("logo-upload").hidden;
+  },
+  updateLogoByLink: function () {
+    document.getElementById("logo-upload-success").hidden = false;
+    this.updateCSS();
+  },
+  imageUpload: function () {
+    document.getElementById("image-upload").click();
+  },
+  imgFound: function (event) {
+    var reader = new FileReader();
+    reader.onload = function (event) {
+      document.getElementById("logo-url").value = event.target.result;
+      document.getElementById("logo-upload-success").hidden = false;
+      logoActions.updateCSS();
+      deploymentStatus =
+        JSON.parse(localStorage.getItem("deploymentStatus")) || {};
+      deploymentStatus.logo = document.getElementById("logo-url").value;
+      localStorage.setItem(
+        "deploymentStatus",
+        JSON.stringify(deploymentStatus)
+      );
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  },
+  resetToDefault: function () {
+    document.getElementById("logo-url").value = "./images/gbm-logo.png";
+    document.getElementById("logo-upload-success").hidden = true;
+    this.updateCSS();
+  },
+  updateCSS: function () {
+    document.getElementById("nav-bar-logo").src =
+      document.getElementById("logo-url").value;
+  },
+};
+
+function createLogoActions() {
+  return Object.create(logoActionsProto);
+}
+
+const colorActionsProto = {
+  currentColors: {},
+  colourMapping: {
+    "color-background": "background",
+    "color-font": "text",
+    "color-primary": "primary",
+    "color-secondary": "selection",
+    "color-fields": "secondary",
+    "color-important": "tertiary",
+  },
+  returnDefaultColours: function () {
+    return {
+      background: "#085F63",
+      text: "#FFFFFF",
+      primary: "#49BEB7",
+      selection: "#FACF5A",
+      secondary: "#05848A",
+      tertiary: "#FF5959",
+    };
+  },
+  initDone: false,
+  init: async function () {
+    this.currentColors = this.returnDefaultColours();
+    const colourElements = Array.from(
+      document.getElementsByClassName("color-picker")
+    );
+    colourElements.forEach((element) => this.pairFieldToPreview(element));
+
+    this.initializeColours(colourElements);
+    this.initDone = true;
+  },
+  initializeColours: function (elements) {
+    for (i = 0; i < elements.length; i++) {
+      elements[i].value =
+        this.currentColors[this.colourMapping[elements[i].id]].toUpperCase();
+      elements[i].dispatchEvent(new Event("change"));
+    }
+  },
+  updateCSS: function () {
+    const r = document.querySelector(":root");
+    r.style.setProperty("--primary", this.currentColors.primary);
+    r.style.setProperty("--secondary", this.currentColors.secondary);
+    r.style.setProperty("--tertiary", this.currentColors.tertiary);
+    r.style.setProperty("--background", this.currentColors.background);
+    r.style.setProperty("--selection", this.currentColors.selection);
+    r.style.setProperty("--text", this.currentColors.text);
+  },
+  pairFieldToPreview: function (element) {
+    element.onchange = function () {
+      if (colorActions.initDone) {
+        colorActions.currentColors[colorActions.colourMapping[element.id]] =
+          element.value;
+        colorActions.updateCSS();
+        deploymentStatus =
+          JSON.parse(localStorage.getItem("deploymentStatus")) || {};
+        deploymentStatus.colours = colorActions.currentColors;
+        localStorage.setItem(
+          "deploymentStatus",
+          JSON.stringify(deploymentStatus)
+        );
+      }
+      document.getElementById(`${element.id}-preview`).style.backgroundColor =
+        element.value;
+    };
+  },
+  resetToDefault: function () {
+    this.currentColors = this.returnDefaultColours();
+    this.updateCSS();
+    const colourElements = Array.from(
+      document.getElementsByClassName("color-picker")
+    );
+    this.initDone = false;
+    this.initializeColours(colourElements);
+    this.initDone = true;
+  },
+};
+
+function createColorActions() {
+  return Object.create(colorActionsProto);
+}
+
+const NetworkActionsProto = {
+  //   this.getHardhatConfig = async function () {
+  async getHardhatConfig() {
+    const response = await fetch("/hardhat");
+
+    return await response.json();
+  },
+
+  //   this.getHardhatConfigPublicKeys = function () {
+  getHardhatConfigPublicKeys() {
+    return Object.keys(hardhatConf.default.networks).reduce(
+      (acc, currNetwork) => {
+        const accounts = hardhatConf.default.networks[currNetwork].accounts;
+
+        if (accounts?.length > 0) {
+          const publicKeysForAccounts = accounts.map(
+            (account) => web3.eth.accounts.privateKeyToAccount(account).address
+          );
+
+          return [...new Set([...acc, ...publicKeysForAccounts])];
+        }
+
+        return acc;
+      },
+      []
+    );
+  },
+
+  //   this.checkIsMetamaskPublicKeyCorrect = function () {
+  checkIsMetamaskPublicKeyCorrect() {
+    return this.getHardhatConfigPublicKeys().includes(
+      window.ethereum.selectedAddress
+    );
+  },
+
+  //   this.checkDefaultNetworkHasAccount = function () {
+  checkDefaultNetworkHasAccount() {
+    return !!hardhatConf.default.networks[hardhatConf.default.defaultNetwork]
+      ?.accounts;
+  },
+
+  //   this.displayWarningBox = function (text) {
+  displayWarningBox(text) {
+    const p = document.getElementById("network-warning-p");
+    p.style.display = "block";
+    p.innerHTML = `<strong>WARNING:</strong> ${text}`;
+  },
+
+  //   this.removeWarningBox = function () {
+  removeWarningBox() {
+    const p = document.getElementById("network-warning-p");
+    p.style.display = "none";
+  },
+
+  //   this.handleWarningTextBox = function (selectedNetwork) {
+  handleWarningTextBox(selectedNetwork) {
+    if (
+      selectedNetwork === "mainnet" &&
+      !this.checkIsMetamaskPublicKeyCorrect()
+    ) {
+      const textToDisplay =
+        "Your selected Metamask account private key is not included in hardhat.config.ts👷 ⚙️ for this network! This action will fail, if you want to use this account add it to hardhat.config.ts👷 ⚙️ and relaunch the app.";
+      this.displayWarningBox(textToDisplay);
+    } else if (
+      selectedNetwork === "hardhat" &&
+      this.checkDefaultNetworkHasAccount()
+    ) {
+      const textToDisplay =
+        "Deployment will fail, your default network in hardhat.config.ts👷 ⚙️ contains accounts array! If you want to use local hardhat option please change the default network or remove accounts as this option will impersonate metamask address, don't forget to relaunch the app!";
+      this.displayWarningBox(textToDisplay);
+    } else {
+      this.removeWarningBox();
+    }
+  },
+
+  // this.handlingDescriptionText = function(selectedNetwork){
+  handlingDescriptionText(selectedNetwork) {
+    const descriptionBox = document.querySelectorAll(
+      ".left-column-description"
+    )[0];
+
+    if (selectedNetwork === "mainnet") {
+      descriptionBox.innerHTML = `<br /><b>Live Blockchain</b> : <br />Make sure you have
+        properly edited the hardhat.config.ts 👷 ⚙️ file to set the proper defaultNetwork
+        and the associated account private key with the currently connected metamask address 🖋️ 🦊.`;
+    } else if (selectedNetwork === "hardhat") {
+      descriptionBox.innerHTML = `<br /><b>Local Hardhat</b> : <br />Make sure you have
+        properly edited the hardhat.config.ts 👷 ⚙️ file to set the proper defaultNetwork.
+        The defaultNetwork must be running in a hardhat node.`;
+    }
+  },
+};
+
+// Still can't decide which function to use simple factory function or using constructor functions
+// function CreateNetworkActions() {
+function createNetworkActions() {
+  return Object.create(NetworkActionsProto);
+}
+
+// ################################# Handling logic for deployment page #########################
+
 let defaultPresets;
+let hardhatConf;
 let terminal = document.getElementById("terminal");
 
-if (deploymentStatus?.finished) displayDeployedDAppStatus();
+const networkActions = createNetworkActions();
+const logoActions = createLogoActions();
+const colorActions = createColorActions();
+
+if (deploymentStatus?.finished) displayDeployedDAppStatus(deploymentStatus);
 else initDeploymentPage();
 
-generateSelectDropdown(
-  "select-network",
-  ["hardhat", "mainnet"],
-  ["Local Hardhat", "Live Blockchain - 👷 ⚙️ 🦊"],
-  () => {}
-);
+function generateNetworkDropdownAndCheckForWarning() {
+  generateSelectDropdown(
+    "select-network",
+    ["hardhat", "mainnet"],
+    ["Local Hardhat", "Live Blockchain - 👷 ⚙️ 🦊"],
+    (e) => {
+      const selectedNetwork = [...e.target.attributes][0].value;
+
+      networkActions.handleWarningTextBox(selectedNetwork);
+      networkActions.handlingDescriptionText(selectedNetwork);
+    }
+  );
+
+  networkActions.handleWarningTextBox("hardhat");
+  networkActions.handlingDescriptionText("hardhat");
+}
 
 async function generateTheDeployOptions() {
   let deploymentConf = await (
     await fetch("../config/deploymentConf.json")
   ).json();
-
-  console.log(deploymentConf);
 
   let idList = Object.keys(deploymentConf);
   let dispNames = [];
@@ -27,8 +279,6 @@ async function generateTheDeployOptions() {
 
   generateSelectDropdown("select-version", idList, dispNames, () => {});
 }
-
-generateTheDeployOptions();
 
 async function initDeploymentPage() {
   // If logged on to metamask, populate the deployer address
@@ -52,8 +302,13 @@ async function initDeploymentPage() {
   // Set default preset values
   defaultPresets = await (await fetch("/presets")).json();
 
+  hardhatConf = await networkActions.getHardhatConfig();
+
   await colorActions.init();
   await logoActions.init();
+
+  generateNetworkDropdownAndCheckForWarning();
+  generateTheDeployOptions();
 }
 
 function isAdminDeployer(_onChangeValue) {
@@ -139,7 +394,7 @@ async function connectToDeployer() {
     terminal.scrollTop = terminal.scrollHeight;
   };
 
-  webSocket.onmessage = (event) => {
+  webSocket.onmessage = async (event) => {
     let receivedMsg = event.data;
     let commands = receivedMsg.split(" || ");
     switch (commands[0]) {
@@ -153,9 +408,9 @@ async function connectToDeployer() {
         step++;
         if (step >= deploymentSteps.length) {
           displayNewMessageOnTerminal("Deployment done ✅");
-          finalizeDeployment();
+          await finalizeDeployment();
           setTimeout(() => {
-            pageInitializer.loadCustomCss();
+            pageInitializer.loadCustomCss(deploymentStatus);
             pageInitializer.flipVisibility();
             webSocket.close(); // Very dirty way to not show the onclose message for now :)
           }, 2000);
@@ -174,14 +429,7 @@ function displayNewMessageOnTerminal(msg) {
   terminal.scrollTop = terminal.scrollHeight;
 }
 
-function finalizeDeployment() {
-  localStorage.setItem(
-    "deploymentStatus",
-    `${localStorage
-      .getItem("deploymentStatus")
-      .slice(0, -1)}, "finished": true}`
-  );
-
+async function finalizeDeployment() {
   const colours = {
     primary: document.getElementById("color-primary").value,
     secondary: document.getElementById("color-fields").value,
@@ -206,21 +454,10 @@ function finalizeDeployment() {
   deploymentStatus.colours = colours;
   deploymentStatus.details = deploymentDetails;
   deploymentStatus.logo = document.getElementById("logo-url").value;
+  deploymentStatus.finished = true;
 
-  localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
-  displayDeployedDAppStatus();
-}
-
-function displayDeployedDAppStatus() {
-  // Display the values from the previous deployment
-  document.getElementById("deployed-network").innerHTML =
-    deploymentStatus.details.network;
-  document.getElementById("deployed-version").innerHTML =
-    deploymentStatus.details.version;
-  document.getElementById("deployed-deployer").innerHTML =
-    deploymentStatus.details.deployer;
-  document.getElementById("deployed-admin").innerHTML =
-    deploymentStatus.details.admin;
+  await storeNewDeploymentStatus(deploymentStatus);
+  displayDeployedDAppStatus(deploymentStatus);
 }
 
 document.getElementById("file-upload").addEventListener("change", onChange);
@@ -259,130 +496,24 @@ function initReset() {
   window.location.reload();
 }
 
-const logoActions = {
-  init: async function () {
-    document.getElementById("logo-update-first").checked = true;
-    document.getElementById("logo-update-second").false = false;
-    document.getElementById("logo-url").hidden = false;
-    document.getElementById("logo-upload").hidden = true;
-    document.getElementById("logo-url").value = "./images/gbm-logo.png";
-    document
-      .getElementById("image-upload")
-      .addEventListener("change", this.imgFound);
-  },
-  toggleLogoUploadField: function () {
-    document.getElementById("logo-url").hidden =
-      !document.getElementById("logo-url").hidden;
-    document.getElementById("logo-upload").hidden =
-      !document.getElementById("logo-upload").hidden;
-  },
-  updateLogoByLink: function () {
-    document.getElementById("logo-upload-success").hidden = false;
-    this.updateCSS();
-  },
-  imageUpload: function () {
-    document.getElementById("image-upload").click();
-  },
-  imgFound: function (event) {
-    var reader = new FileReader();
-    reader.onload = function (event) {
-      document.getElementById("logo-url").value = event.target.result;
-      document.getElementById("logo-upload-success").hidden = false;
-      logoActions.updateCSS();
-      deploymentStatus =
-        JSON.parse(localStorage.getItem("deploymentStatus")) || {};
-      deploymentStatus.logo = document.getElementById("logo-url").value;
-      localStorage.setItem(
-        "deploymentStatus",
-        JSON.stringify(deploymentStatus)
-      );
-    };
-    reader.readAsDataURL(event.target.files[0]);
-  },
-  resetToDefault: function () {
-    document.getElementById("logo-url").value = "./images/gbm-logo.png";
-    document.getElementById("logo-upload-success").hidden = true;
-    this.updateCSS();
-  },
-  updateCSS: function () {
-    document.getElementById("nav-bar-logo").src =
-      document.getElementById("logo-url").value;
-  },
-};
+async function initResetExistingDApp() {
+  localStorage.clear();
 
-const colorActions = {
-  currentColors: {},
-  colourMapping: {
-    "color-background": "background",
-    "color-font": "text",
-    "color-primary": "primary",
-    "color-secondary": "selection",
-    "color-fields": "secondary",
-    "color-important": "tertiary",
-  },
-  returnDefaultColours: function () {
-    return {
-      background: "#085F63",
-      text: "#FFFFFF",
-      primary: "#49BEB7",
-      selection: "#FACF5A",
-      secondary: "#05848A",
-      tertiary: "#FF5959",
-    };
-  },
-  initDone: false,
-  init: async function () {
-    this.currentColors = this.returnDefaultColours();
-    const colourElements = Array.from(
-      document.getElementsByClassName("color-picker")
-    );
-    colourElements.forEach((element) => this.pairFieldToPreview(element));
+  deploymentStatus = undefined;
 
-    this.initializeColours(colourElements);
-    this.initDone = true;
-  },
-  initializeColours: function (elements) {
-    for (i = 0; i < elements.length; i++) {
-      elements[i].value =
-        this.currentColors[this.colourMapping[elements[i].id]].toUpperCase();
-      elements[i].dispatchEvent(new Event("change"));
-    }
-  },
-  updateCSS: function () {
-    const r = document.querySelector(":root");
-    r.style.setProperty("--primary", this.currentColors.primary);
-    r.style.setProperty("--secondary", this.currentColors.secondary);
-    r.style.setProperty("--tertiary", this.currentColors.tertiary);
-    r.style.setProperty("--background", this.currentColors.background);
-    r.style.setProperty("--selection", this.currentColors.selection);
-    r.style.setProperty("--text", this.currentColors.text);
-  },
-  pairFieldToPreview: function (element) {
-    element.onchange = function () {
-      if (colorActions.initDone) {
-        colorActions.currentColors[colorActions.colourMapping[element.id]] =
-          element.value;
-        colorActions.updateCSS();
-        deploymentStatus =
-          JSON.parse(localStorage.getItem("deploymentStatus")) || {};
-        deploymentStatus.colours = colorActions.currentColors;
-        localStorage.setItem(
-          "deploymentStatus",
-          JSON.stringify(deploymentStatus)
-        );
-      }
-      document.getElementById(`${element.id}-preview`).style.backgroundColor =
-        element.value;
-    };
-  },
-  resetToDefault: function () {
-    this.currentColors = this.returnDefaultColours();
-    this.updateCSS();
-    const colourElements = Array.from(
-      document.getElementsByClassName("color-picker")
-    );
-    this.initDone = false;
-    this.initializeColours(colourElements);
-    this.initDone = true;
-  },
-};
+  const useDeployDAppView = document.querySelector(".dApp-exists");
+
+  useDeployDAppView.hidden = true;
+
+  let elements2 = document.getElementsByClassName("deployment-missing");
+  for (let i = 0; i < elements2.length; i++) {
+    elements2[i].hidden = false;
+  }
+
+  let elements = document.getElementsByClassName("deployment-found");
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].hidden = true;
+  }
+
+  await initDeploymentPage();
+}

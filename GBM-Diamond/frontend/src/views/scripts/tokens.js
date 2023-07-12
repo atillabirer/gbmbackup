@@ -1,4 +1,5 @@
 let tokenUris;
+let tokenUris1155;
 let collectionNames1155;
 let tokens1155;
 let auctionTypeCount = {
@@ -16,82 +17,81 @@ Array.from(document.getElementsByClassName("filter-btn")).forEach(
   }
 );
 
-const tokenFetcher = {
+const TokenFetcherProto = {
   getTokens: async function () {
-    // tokens1155 = (await Promise.allSettled(erc1155contracts.map(
-    //   async (item, index) => await this.get1155Tokens(index)
-    // ))).map(result => result.value);
+    const [token721Result, tokens1155Result] = await Promise.all([
+      this.get721Tokens(),
+      this.get1155Tokens(),
+    ]);
 
     return {
-      tokens721: await this.get721Tokens(),
-      tokens1155: [await this.get1155Tokens(0)],
+      tokens721: token721Result,
+      tokens1155: tokens1155Result,
     };
   },
   get721Tokens: async function () {
-    const tokenAmount = await erc721contracts[0].methods.totalSupply().call();
-    const keysArray = [...Array(parseInt(tokenAmount) + 1).keys()].slice(1);
+    let keysArray = [];
 
-    const tokensURIs = Promise.all(
-      keysArray.map(
-        async (item) => await erc721contracts[0].methods.tokenURI(item).call()
-      )
-    );
-    const tokenOwners = Promise.all(
-      keysArray.map(
-        async (item) => await erc721contracts[0].methods.ownerOf(item).call()
-      )
-    );
-    const escrowed = Promise.all(
-      keysArray.map(
-        async (item) =>
-          await gbmContracts.methods
-            .getERC721Token_depositor(erc721contractAddresses[0], item)
-            .call()
-      )
-    );
+    for (let i = 0; i < erc721contracts.length; i++) {
+      const tokenAmount = await erc721contracts[i].methods.totalSupply().call();
+
+      keysArray = [
+        ...keysArray,
+        ...[...Array(parseInt(tokenAmount) + 1).keys()]
+          .slice(1)
+          .map((item) => ({ contractIndex: i, key: item })),
+      ];
+    }
+
+    const [uris721, owners721, escrowed721] = await Promise.allSettled([
+      this.getErc721TokensURIs(keysArray),
+      this.getErc721TokenOwners(keysArray),
+      this.getErc721Escrowed(keysArray),
+    ]);
 
     return {
-      uris721: await tokensURIs,
-      owners721: await tokenOwners,
-      escrowed721: await escrowed,
+      uris721: uris721.value?.map((v) => v?.value),
+      owners721: owners721.value?.map((v) => v?.value),
+      escrowed721: escrowed721.value?.map((v) => v?.value),
     };
   },
-  get1155Tokens: async function (_erc1155contractIndex) {
-    // const tokenAmount = await erc1155contracts[_erc1155contractIndex].methods.getTokenIDArray().call();
-    // console.log(tokenAmount);
-    // const keysArray = [...Array(parseInt(tokenAmount) + 1).keys()].slice(1);
-    /*
-      Missing a way to get the tokens present in the contract (and URIs)
-    */
-    const keysArray = [11, 12, 13, 14, 15];
+  get1155Tokens: async function () {
+    const getErc1155TokensIDs = await this.getErc1155TokenIDs();
 
-    const owned = (
-      await erc1155contracts[_erc1155contractIndex].methods
-        .balanceOfBatch([window.ethereum.selectedAddress], keysArray)
-        .call()
-    ).map((item, index) => {
-      return {
-        tokenId: keysArray[index],
-        amount: parseInt(item),
-      };
-    });
+    const keysArray = getErc1155TokensIDs.reduce((acc, currValue, index) => {
+      const modifiedCurrentValue = currValue?.value
+        ? currValue.value.map((v) => ({
+            contractIndex: index,
+            key: parseInt(v),
+          }))
+        : [];
 
-    let escrowed = await Promise.all(
-      keysArray.map(async (item) => ({
-        tokenId: item,
-        amount: await gbmContracts.methods
-          .getERC1155Token_depositor(
-            deploymentStatus.ERC1155[_erc1155contractIndex],
-            item,
-            window.ethereum.selectedAddress
-          )
-          .call(),
-      }))
-    );
+      return [...acc, ...modifiedCurrentValue];
+    }, []);
+
+    // Constructing the array to make it easier to get balance of the batch
+    const arrayToGetBatchBalances = keysArray.reduce((acc, curr) => {
+      acc[curr.contractIndex] ||= [];
+
+      acc[curr.contractIndex] = [...acc[curr.contractIndex], curr.key];
+
+      return acc;
+    }, []);
+
+    const [itemUris1155, itemOwned1155, itemEscrowed1155] =
+      await Promise.allSettled([
+        this.getErc1155TokensURIs(keysArray),
+        this.getErc1155OwnerAmounts(arrayToGetBatchBalances),
+        this.getErc1155Escrowed(keysArray),
+      ]);
 
     return {
-      owned1155: owned,
-      escrowed1155: escrowed,
+      uris1155: itemUris1155?.value?.map((v) => v.value),
+      owned1155: itemOwned1155?.value?.reduce(
+        (acc, currValue) => [...acc, ...(currValue?.value || [])],
+        []
+      ),
+      escrowed1155: itemEscrowed1155?.value?.map((v) => v.value),
     };
   },
   getCollectionNames: async function () {
@@ -99,9 +99,213 @@ const tokenFetcher = {
       erc1155contracts.map(async (contract) => contract.methods.name().call())
     );
   },
+  // HELPER FUNCTIONS
+  async getErc721TokensURIs(keysArray) {
+    return await Promise.allSettled(
+      keysArray.map(async (item) => {
+        const tokenUri = await erc721contracts[item.contractIndex].methods
+          .tokenURI(item.key)
+          .call();
+
+        return {
+          tokenAddress:
+            erc721contracts[item.contractIndex]._address.toLowerCase(),
+          tokenId: item.key,
+          tokenUri,
+        };
+      })
+    );
+  },
+
+  async getErc721TokenOwners(keysArray) {
+    return await Promise.allSettled(
+      keysArray.map(async (item) => {
+        const owner = await erc721contracts[item.contractIndex].methods
+          .ownerOf(item.key)
+          .call();
+
+        return {
+          tokenAddress:
+            erc721contracts[item.contractIndex]._address.toLowerCase(),
+          tokenId: item.key,
+          owner: owner?.toLowerCase(),
+        };
+      })
+    );
+  },
+
+  async getErc721Escrowed(keysArray) {
+    return await Promise.allSettled(
+      keysArray.map(async (item) => {
+        const depositor = await gbmContracts.methods
+          .getERC721Token_depositor(
+            erc721contractAddresses[item.contractIndex],
+            item.key
+          )
+          .call();
+
+        return {
+          tokenAddress:
+            erc721contracts[item.contractIndex]._address.toLowerCase(),
+          tokenId: item.key,
+          depositor: depositor?.toLowerCase(),
+        };
+      })
+    );
+  },
+
+  async getErc1155TokenIDs() {
+    return await Promise.allSettled(
+      erc1155contracts?.map(
+        async (sContract) => await sContract.methods.getTokenIDArray().call()
+      )
+    );
+  },
+
+  async getErc1155TokensURIs(keysArray) {
+    return await Promise.allSettled(
+      keysArray.map(async (item) => {
+        const tokenUri = await erc1155contracts[item.contractIndex].methods
+          .uri(item.key)
+          .call();
+
+        return {
+          tokenAddress:
+            erc1155contracts[item.contractIndex]._address.toLowerCase(),
+          tokenId: item.key,
+          tokenUri,
+        };
+      })
+    );
+  },
+
+  async getErc1155OwnerAmounts(arrayToGetBalances) {
+    return await Promise.allSettled(
+      arrayToGetBalances.map(async (itemKeyArray, itemIndex) => {
+        const res = await erc1155contracts[itemIndex].methods
+          .balanceOfBatch([window.ethereum.selectedAddress], itemKeyArray)
+          .call();
+
+        return res.map((item, index) => ({
+          tokenAddress: erc1155contracts[itemIndex]._address.toLowerCase(),
+          owner: window.ethereum.selectedAddress.toLowerCase(),
+          tokenId: itemKeyArray[index],
+          amount: parseInt(item),
+        }));
+      })
+    );
+  },
+
+  async getErc1155Escrowed(keysArray) {
+    return await Promise.allSettled(
+      keysArray.map(async (item) => {
+        const res = await gbmContracts.methods
+          .getERC1155Token_depositor(
+            deploymentStatus.ERC1155[item.contractIndex],
+            item.key,
+            window.ethereum.selectedAddress
+          )
+          .call();
+
+        return {
+          tokenAddress:
+            deploymentStatus.ERC1155[item.contractIndex].toLowerCase(),
+          depositor: window.ethereum.selectedAddress.toLowerCase(),
+          tokenId: item.key,
+          amount: parseInt(res),
+        };
+      })
+    );
+  },
 };
 
-const cardGenerator = {
+function createTokenFetcher() {
+  return Object.create(TokenFetcherProto);
+}
+
+const LiveAuctionsHandlerProto = {
+  async getTokensOnSale(_beneficiaries) {
+    const tokensOnSale = await Promise.allSettled(
+      _beneficiaries.map(async (item) => {
+        const [tokenAddress, tokenId, tokenKind, amount] = await Promise.all([
+          this.getSaleTokenAddress(item.saleId),
+          this.getSaleTokenId(item.saleId),
+          this.getSaleTokenKind(item.saleId),
+          this.getSaleTokenAmount(item.saleId),
+        ]);
+
+        return {
+          owner: item.beneficiary,
+          saleId: item.saleId,
+          tokenAddress,
+          tokenId,
+          tokenKind,
+          amount,
+        };
+      })
+    );
+
+    return tokensOnSale.map((t) => t?.value);
+  },
+
+  async getOngoingAuctions() {
+    const salesAmount = await this.getTotalNumberOfSales();
+    const keysArray = [...Array(parseInt(salesAmount) + 1).keys()].slice(1);
+    let ongoingAuctions = await Promise.all(
+      keysArray.map(async (item) => {
+        const check = await this.getSaleTokenClaimed(item);
+
+        return !check ? item : 0;
+      })
+    );
+
+    ongoingAuctions = ongoingAuctions.filter((item) => item > 0);
+    return ongoingAuctions;
+  },
+
+  async getAuctionBeneficiaries(saleIDs) {
+    return await Promise.all(
+      saleIDs.map(async (saleId) => ({
+        beneficiary: await this.getSaleTokenBeneficiary(saleId),
+        saleId,
+      }))
+    );
+  },
+
+  async getTotalNumberOfSales() {
+    return await gbmContracts.methods.getTotalNumberOfSales().call();
+  },
+
+  async getSaleTokenClaimed(item) {
+    return await gbmContracts.methods.getSale_Claimed(item).call();
+  },
+
+  async getSaleTokenBeneficiary(saleId) {
+    return await gbmContracts.methods.getSale_Beneficiary(saleId).call();
+  },
+
+  async getSaleTokenAddress(saleId) {
+    return await gbmContracts.methods.getSale_TokenAddress(saleId).call();
+  },
+
+  async getSaleTokenId(saleId) {
+    return await gbmContracts.methods.getSale_TokenID(saleId).call();
+  },
+
+  async getSaleTokenKind(saleId) {
+    return await gbmContracts.methods.getSale_TokenKind(saleId).call();
+  },
+
+  async getSaleTokenAmount(saleId) {
+    return await gbmContracts.methods.getSale_TokenAmount(saleId).call();
+  },
+};
+
+function createLiveAuctionsHandler() {
+  return Object.create(LiveAuctionsHandlerProto);
+}
+
+const CardGeneratorProto = {
   generateAllCards: async function (
     _beneficiaries,
     _escrowed721,
@@ -111,224 +315,184 @@ const cardGenerator = {
   ) {
     const container = document.getElementById("nft-container");
     container.innerHTML = "";
-    await this.generateTokensOnSale(_beneficiaries);
-    await this.generateTokensInEscrow721(_escrowed721, _beneficiaries);
-    for (x = 0; x < _escrowed1155.length; x++) {
-      await this.generateTokensInEscrow1155(
-        _escrowed1155[x],
-        _beneficiaries,
-        x
-      );
-    }
+
+    const tokensOnSale = await liveAuctionsHandler.getTokensOnSale(
+      _beneficiaries
+    );
+
+    await this.generateTokensOnSale(tokensOnSale);
+    await this.generateTokensInEscrow721(_escrowed721, tokensOnSale);
+    await this.generateTokensInEscrow1155(_escrowed1155, tokensOnSale);
     await this.generateTokensOwned721(_owners721);
-    for (x = 0; x < _owned1155.length; x++) {
-      await this.generateTokensOwned1155(_owned1155[x], x);
-    }
+    await this.generateTokensOwned1155(_owned1155);
   },
-  generateTokensOnSale: async function (_beneficiaries) {
-    let ownedTokens = await Promise.all(
-      _beneficiaries.map(async (item, index) => {
-        return {
-          owner: item.beneficiary,
-          saleId: item.saleId,
-          tokenAddress: await gbmContracts.methods
-            .getSale_TokenAddress(item.saleId)
-            .call(),
-          tokenId: await gbmContracts.methods
-            .getSale_TokenID(item.saleId)
-            .call(),
-          tokenKind: await gbmContracts.methods
-            .getSale_TokenKind(item.saleId)
-            .call(),
-          tokenAmount: await gbmContracts.methods
-            .getSale_TokenAmount(item.saleId)
-            .call(),
-        };
-      })
-    );
 
-    ownedTokens = ownedTokens.filter(
+  generateTokensOnSale: async function (_tokensOnSale) {
+    const ownedTokens = _tokensOnSale.filter(
       (item) =>
-        item.owner.toLowerCase() ===
-          window.ethereum.selectedAddress.toLowerCase() &&
-        deploymentStatus.ERC1155.indexOf(item.tokenAddress) < 1
+        item?.owner?.toLowerCase() ===
+        window.ethereum.selectedAddress.toLowerCase()
+      //    && deploymentStatus.ERC1155.indexOf(item.tokenAddress) < 1 [QUESTION] DON'T really understand why is this here removing it for now
     );
 
-    for (i = 0; i < ownedTokens.length; i++) {
-      // let fetchedData = await getNFTAndCacheMedia(
-      //   tokenUris[parseInt(ownedTokens[i].tokenId) - 1]
-      // );
-      let fetchedData = await (
-        await fetch(`/whale/${ownedTokens[i].tokenId}/json`)
-      ).json();
-
-      let tokenToPass = {
-        tokenId: ownedTokens[i].tokenId,
-        name: fetchedData.name || "GBM Whale",
-        description: fetchedData.description,
-        image: fetchedData.image,
-      };
-
-      //TODO Name if 1155
-
-      this.generateTokenElement(
-        tokenToPass,
-        "nft-on-auction",
-        "View Auction",
-        `redirectToAuction(${ownedTokens[i].saleId})`,
-        ownedTokens[i].tokenKind === "0x73ad2146"
-          ? undefined
-          : ownedTokens[i].tokenAmount
-      );
-    }
-  },
-  generateTokensInEscrow721: async function (_escrowed, _beneficiaries) {
-    let tokensOnSale = await Promise.all(
-      _beneficiaries.map(
-        async (item, index) =>
-          await gbmContracts.methods.getSale_TokenID(item.saleId).call()
+    await Promise.allSettled(
+      ownedTokens.map(
+        async (ownedToken) =>
+          await this.treatTokenElement(
+            ownedToken,
+            "nft-on-auction",
+            "View Auction",
+            `redirectToAuction`
+          )
       )
     );
 
-    let ownedTokens = _escrowed
-      .map((item, index) => {
-        return { owner: item, tokenId: index + 1 };
-      })
-      .filter(
-        (item) =>
-          item.owner.toLowerCase() ===
-            window.ethereum.selectedAddress.toLowerCase() &&
-          !tokensOnSale.includes(item.tokenId.toString())
-      );
-
-    for (i = 0; i < ownedTokens.length; i++) {
-      let fetchedData = await getNFTAndCacheMedia(
-        tokenUris[parseInt(ownedTokens[i].tokenId) - 1]
-      );
-
-      let tokenToPass = {
-        tokenId: ownedTokens[i].tokenId,
-        name: fetchedData.name || "GBM Whale",
-        description: fetchedData.description,
-        image: fetchedData.image,
-      };
-
-      this.generateTokenElement(
-        tokenToPass,
-        "nft-escrowed",
-        "Start new auction",
-        `createNewAuction(${ownedTokens[i].tokenId}, 'ERC721')`
-      );
-    }
+    // Leaving the for loop option on just in case we want to revert back to it
+    // for (i = 0; i < ownedTokens.length; i++) {
+    //   await this.treatTokenElement(
+    //     ownedTokens[i],
+    //     "nft-on-auction",
+    //     "View Auction",
+    //     `redirectToAuction(${ownedTokens[i].saleId})`
+    //   );
+    // }
   },
-  generateTokensInEscrow1155: async function (
-    _escrowed,
-    _beneficiaries,
-    index
-  ) {
-    let tokensOnSale = (
-      await Promise.all(
-        _beneficiaries.map(async (item, index) => {
-          return {
-            tokenId: parseInt(
-              await gbmContracts.methods.getSale_TokenID(item.saleId).call()
-            ),
-            tokenKind: await gbmContracts.methods
-              .getSale_TokenKind(item.saleId)
-              .call(),
-            tokenAmount: parseInt(
-              await gbmContracts.methods.getSale_TokenAmount(item.saleId).call()
-            ),
-          };
-        })
+
+  generateTokensInEscrow721: async function (_escrowed, _tokensOnSale) {
+    const ownedTokens = _escrowed.filter(
+      (item) =>
+        item?.depositor === window.ethereum.selectedAddress.toLowerCase() &&
+        !_tokensOnSale.includes(item?.tokenId.toString())
+    );
+
+    await Promise.allSettled(
+      ownedTokens.map(
+        async (ownedToken) =>
+          await this.treatTokenElement(
+            { ...ownedToken, tokenKind: "0x73ad2146" /*ERC721*/ },
+            "nft-escrowed",
+            "Start new auction",
+            `createNewAuction`
+          )
       )
-    )
+    );
+  },
+
+  generateTokensInEscrow1155: async function (_escrowed, _tokensOnSale) {
+    const inEscrow1155 = _escrowed;
+    _tokensOnSale
       .filter((item) => item.tokenKind === "0x973bb640")
       .forEach((item) => {
-        let check = _escrowed.findIndex(
-          (token) => token.tokenId === item.tokenId
+        let check = inEscrow1155.findIndex(
+          (token) => token?.tokenId === item?.tokenId
         );
         if (check === -1) return;
-        _escrowed[check].amount -= item.tokenAmount;
+        inEscrow1155[check].amount -= item.amount;
       });
 
-    _escrowed = _escrowed.filter((item) => item.amount > 0);
+    const ownedTokens = inEscrow1155.filter(
+      (item) =>
+        item?.amount > 0 &&
+        item.depositor === window.ethereum.selectedAddress.toLowerCase()
+    );
 
-    for (i = 0; i < _escrowed.length; i++) {
-      let fetchedData = await (
-        await fetch(`/whale/${_escrowed[i].tokenId}/json`)
-      ).json();
-
-      let tokenToPass = {
-        tokenId: _escrowed[i].tokenId,
-        name: collectionNames1155[index],
-        description: fetchedData.description,
-        image: fetchedData.image,
-      };
-
-      this.generateTokenElement(
-        tokenToPass,
-        "nft-escrowed",
-        "Start new auction",
-        `createNewAuction(${_escrowed[i].tokenId}, 'ERC1155', ${index})`,
-        _escrowed[i].amount
-      );
-    }
+    await Promise.allSettled(
+      ownedTokens.map(
+        async (ownedToken) =>
+          await this.treatTokenElement(
+            { ...ownedToken, tokenKind: "0x973bb640" /*ERC1155*/ },
+            "nft-escrowed",
+            "Start new auction",
+            `createNewAuction`
+          )
+      )
+    );
   },
+
   generateTokensOwned721: async function (_tokens) {
-    let ownedTokens = _tokens
-      .map((item, index) => {
-        return { owner: item, tokenId: index + 1 };
-      })
-      .filter(
-        (item) =>
-          item.owner.toLowerCase() ===
-          window.ethereum.selectedAddress.toLowerCase()
-      );
+    const ownedTokens = _tokens.filter(
+      (item) => item.owner === window.ethereum.selectedAddress.toLowerCase()
+    );
 
-    for (i = 0; i < ownedTokens.length; i++) {
-      let fetchedData = await getNFTAndCacheMedia(
-        tokenUris[parseInt(ownedTokens[i].tokenId) - 1]
-      );
-
-      let tokenToPass = {
-        tokenId: ownedTokens[i].tokenId,
-        name: fetchedData.name || "GBM Whale",
-        description: fetchedData.description,
-        image: fetchedData.image,
-      };
-
-      this.generateTokenElement(
-        tokenToPass,
-        "nft-owned",
-        "Put in NFT Contract Drop",
-        `sendToEscrow(${ownedTokens[i].tokenId})`
-      );
-    }
+    await Promise.allSettled(
+      ownedTokens.map(
+        async (ownedToken) =>
+          await this.treatTokenElement(
+            { ...ownedToken, tokenKind: "0x73ad2146" /*ERC721*/ },
+            "nft-owned",
+            "Put in NFT Contract Drop",
+            `sendToEscrow`
+          )
+      )
+    );
   },
-  generateTokensOwned1155: async function (_tokens, index) {
-    let ownedTokens = _tokens.filter((item) => item.amount > 0);
-    for (i = 0; i < ownedTokens.length; i++) {
-      let fetchedData = await (
-        await fetch(`/whale/${ownedTokens[i].tokenId}/json`)
-      ).json();
 
-      let tokenToPass = {
-        tokenId: ownedTokens[i].tokenId,
-        name: collectionNames1155[index],
-        description: fetchedData.description,
-        image: fetchedData.image,
-      };
+  generateTokensOwned1155: async function (_tokens) {
+    const ownedTokens = _tokens.filter((item) => item.amount > 0);
 
-      this.generateTokenElement(
-        tokenToPass,
-        "nft-owned",
-        "Put in NFT Contract Drop",
-        `sendToEscrow1155(${ownedTokens[i].tokenId}, ${index})`,
-        ownedTokens[i].amount
-      );
-    }
+    await Promise.allSettled(
+      ownedTokens.map(
+        async (ownedToken) =>
+          await this.treatTokenElement(
+            { ...ownedToken, tokenKind: "0x973bb640" /*ERC1155*/ },
+            "nft-owned",
+            "Put in NFT Contract Drop",
+            `sendToEscrow1155`
+          )
+      )
+    );
   },
+
+  // Helper functions
+  async treatTokenElement(
+    _ownedToken,
+    _className,
+    _buttonText,
+    _buttonCallbackSignature
+  ) {
+    const metadataURI = [
+      ...(_ownedToken?.tokenKind === "0x73ad2146" ? tokenUris : tokenUris1155),
+    ].find(
+      (t) =>
+        t?.tokenId === parseInt(_ownedToken?.tokenId) &&
+        t?.tokenAddress === _ownedToken?.tokenAddress.toLowerCase()
+    )?.tokenUri;
+
+    const erc1155ContractIndex = erc1155contracts.findIndex(
+      (sContract) =>
+        sContract._address.toLowerCase() ===
+        _ownedToken?.tokenAddress.toLowerCase()
+    );
+
+    const fetchedData = await getNFTAndCacheMedia(metadataURI);
+
+    let tokenToPass = {
+      tokenId: _ownedToken.tokenId,
+      name:
+        _ownedToken?.tokenKind === "0x73ad2146"
+          ? fetchedData.name || "GBM Whale"
+          : collectionNames1155[erc1155ContractIndex],
+      description: fetchedData.description,
+      image: fetchedData.image,
+    };
+
+    const buttonCallback = this.generateButtonCallbackSignature(
+      _buttonCallbackSignature,
+      _ownedToken.tokenKind,
+      _ownedToken.tokenId,
+      erc1155ContractIndex,
+      _ownedToken.saleId
+    );
+
+    this.generateTokenElement(
+      tokenToPass,
+      _className,
+      _buttonText,
+      buttonCallback,
+      _ownedToken.tokenKind === "0x73ad2146" ? undefined : _ownedToken.amount
+    );
+  },
+
   generateTokenElement: function (
     _token,
     _className,
@@ -393,7 +557,35 @@ const cardGenerator = {
     tokenEl.innerHTML = tokenInnerHTML;
     container.appendChild(tokenEl);
   },
+
+  generateButtonCallbackSignature(
+    _signature,
+    _tokenKind,
+    _tokenId,
+    _contractIndex,
+    _saleId
+  ) {
+    const signaturesMap = {
+      redirectToAuction: `redirectToAuction(${_saleId})`,
+      createNewAuction:
+        _tokenKind === "0x73ad2146"
+          ? `createNewAuction(${_tokenId}, 'ERC721')`
+          : `createNewAuction(${_tokenId}, 'ERC1155', ${_contractIndex})`,
+      sendToEscrow: `sendToEscrow(${_tokenId})`,
+      sendToEscrow1155: `sendToEscrow1155(${_tokenId}, ${_contractIndex})`,
+    };
+
+    return signaturesMap[_signature];
+  },
 };
+
+function createCardGenerator() {
+  return Object.create(CardGeneratorProto);
+}
+
+const tokenFetcher = createTokenFetcher();
+const liveAuctionsHandler = createLiveAuctionsHandler();
+const cardGenerator = createCardGenerator();
 
 onScriptLoad();
 
@@ -425,55 +617,39 @@ async function generateTokens() {
   collectionNames1155 = await tokenFetcher.getCollectionNames();
 
   const { uris721, owners721, escrowed721 } = tokens721;
-  const owned1155All = tokens1155.map((contract) => contract.owned1155);
-  const escrowed1155All = tokens1155.map((contract) => contract.escrowed1155);
+  const { uris1155, owned1155, escrowed1155 } = tokens1155;
 
   tokenUris = uris721;
-  const auctions = await getOngoingAuctions();
-  const beneficiaries = await getAuctionBeneficiaries(auctions);
+  tokenUris1155 = uris1155;
+  const auctions = await liveAuctionsHandler.getOngoingAuctions();
+
+  const beneficiaries = await liveAuctionsHandler.getAuctionBeneficiaries(
+    auctions
+  );
+
   await cardGenerator.generateAllCards(
     beneficiaries,
     escrowed721,
     owners721,
-    escrowed1155All,
-    owned1155All
+    escrowed1155,
+    owned1155
   );
 }
-
-async function getOngoingAuctions() {
-  const salesAmount = await gbmContracts.methods.getTotalNumberOfSales().call();
-  const keysArray = [...Array(parseInt(salesAmount) + 1).keys()].slice(1);
-  let ongoingAuctions = await Promise.all(
-    keysArray.map(async (item) => {
-      const check = await gbmContracts.methods.getSale_Claimed(item).call();
-      return !check ? item : 0;
-    })
-  );
-
-  ongoingAuctions = ongoingAuctions.filter((item) => item > 0);
-  return ongoingAuctions;
-}
-
-const getAuctionBeneficiaries = async (saleIDs) =>
-  await Promise.all(
-    saleIDs.map(async (item) => {
-      return {
-        beneficiary: await gbmContracts.methods
-          .getSale_Beneficiary(item)
-          .call(),
-        saleId: item,
-      };
-    })
-  );
 
 async function createNewAuction(_tokenId, _tokenKind, _index) {
   location.href = `${window.location.protocol}//${window.location.host}/create?tokenId=${_tokenId}&tokenKind=${_tokenKind}&contractIndex=${_index}`;
 }
 
 async function sendToEscrow(tokenId) {
-  await freezeAndSendToMetamask(() => erc721contracts[0].methods
-    .safeTransferFrom(window.ethereum.selectedAddress, diamondAddress, tokenId)
-    .send({ from: window.ethereum.selectedAddress }))
+  await freezeAndSendToMetamask(() =>
+    erc721contracts[0].methods
+      .safeTransferFrom(
+        window.ethereum.selectedAddress,
+        diamondAddress,
+        tokenId
+      )
+      .send({ from: window.ethereum.selectedAddress })
+  );
   // await erc721contracts[0].methods
   //   .safeTransferFrom(window.ethereum.selectedAddress, diamondAddress, tokenId)
   //   .send({ from: window.ethereum.selectedAddress });
@@ -481,15 +657,17 @@ async function sendToEscrow(tokenId) {
 
 //TODO implement amount
 async function sendToEscrow1155(tokenId, index) {
-  await erc1155contracts[index].methods
-    .safeTransferFrom(
-      window.ethereum.selectedAddress,
-      diamondAddress,
-      tokenId,
-      1,
-      0
-    )
-    .send({ from: window.ethereum.selectedAddress });
+  await freezeAndSendToMetamask(() =>
+    erc1155contracts[index].methods
+      .safeTransferFrom(
+        window.ethereum.selectedAddress,
+        diamondAddress,
+        tokenId,
+        1,
+        0
+      )
+      .send({ from: window.ethereum.selectedAddress })
+  );
 }
 
 //TODO apply for 1155

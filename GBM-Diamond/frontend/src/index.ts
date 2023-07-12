@@ -11,7 +11,7 @@ import { WebSocketServer } from "ws";
 const sockServer = new WebSocketServer({ port: 443 });
 
 const app: Application = express();
-app.use(express.json());
+app.use(express.json({ limit: "12mb" }));
 app.use(express.static(path.join(__dirname + "/views")));
 
 const PORT = 3000;
@@ -26,6 +26,16 @@ app.get("/presets", async (req: Request, res: Response) => {
     .json(
       JSON.parse(require(`../../scripts/libraries/gbm.default.config.ts`).conf)
     );
+});
+
+app.get("/hardhat", async (req: Request, res: Response) => {
+  res.status(200).send(require("../../hardhat.config"));
+});
+
+app.get("/deploymentStatus", async (req, res) => {
+  const depStatus = getDeployerStatus();
+
+  res.status(200).send(depStatus);
 });
 
 app.get("/:view", async (req: Request, res: Response) => {
@@ -58,6 +68,18 @@ app.get("/whale/:id/:jsonOrImage", async (req: Request, res: Response) => {
     }
   } catch {
     res.status(500).send("No such token!");
+  }
+});
+
+app.post("/updateDeploymentStatus", async (req: Request, res: Response) => {
+  const { body } = req;
+
+  try {
+    setDeployerStatus(JSON.stringify(body));
+
+    res.status(201).send({ updated: true });
+  } catch (error) {
+    res.status(500).send("Generic server error!");
   }
 });
 

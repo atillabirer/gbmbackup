@@ -228,15 +228,18 @@ const tokenSaleProcess = {
       ],
     });
 
-    newTokenContract = await deployTx
-      .send({
-        from: window.ethereum.selectedAddress,
-        gas: await deployTx.estimateGas(),
-      })
-      .once("transactionHash", (txhash) => {
-        console.log(`Mining deployment transaction ...`);
-        console.log(txhash);
-      });
+    await freezeAndSendToMetamask(async () => {
+      newTokenContract = await deployTx
+        .send({
+          from: window.ethereum.selectedAddress,
+          gas: await deployTx.estimateGas(),
+        })
+        .once("transactionHash", (txhash) => {
+          console.log(`Mining deployment transaction ...`);
+          console.log(txhash);
+        });
+    });
+
     console.log(`Contract deployed at ${newTokenContract.options.address}`);
     if (deploymentStatus.tokens === undefined) deploymentStatus.tokens = [];
     deploymentStatus.ERC1155.push(newTokenContract.options.address);
@@ -247,23 +250,27 @@ const tokenSaleProcess = {
     _distributionTokenIds,
     _distributionAmounts
   ) {
-    await newTokenContract.methods
-      .mintBatch(_distributionTokenIds, _distributionAmounts)
-      .send({ from: window.ethereum.selectedAddress });
+    await freezeAndSendToMetamask(() =>
+      newTokenContract.methods
+        .mintBatch(_distributionTokenIds, _distributionAmounts)
+        .send({ from: window.ethereum.selectedAddress })
+    );
   },
   transferBatchToDiamond: async function (
     _distributionTokenIds,
     _distributionAmounts
   ) {
-    await newTokenContract.methods
-      .safeBatchTransferFrom(
-        window.ethereum.selectedAddress,
-        diamondAddress,
-        _distributionTokenIds,
-        _distributionAmounts,
-        0
-      )
-      .send({ from: window.ethereum.selectedAddress });
+    await freezeAndSendToMetamask(() =>
+      newTokenContract.methods
+        .safeBatchTransferFrom(
+          window.ethereum.selectedAddress,
+          diamondAddress,
+          _distributionTokenIds,
+          _distributionAmounts,
+          0
+        )
+        .send({ from: window.ethereum.selectedAddress })
+    );
   },
   startAuctionBatch: async function () {
     let selectDuration = document.getElementById("select-duration");
@@ -293,41 +300,43 @@ const tokenSaleProcess = {
     let tokenIDUnroll = [];
     let tokenAmountUnroll = [];
     for (let i = 0; i < distribution[0].length; i++) {
-
-      if(distribution[1][i] != 0){
-        let amountForThisAuction = parseInt(document.getElementById("auction-amount-input-" + distribution[0][i]).value);
+      if (distribution[1][i] != 0) {
+        let amountForThisAuction = parseInt(
+          document.getElementById("auction-amount-input-" + distribution[0][i])
+            .value
+        );
 
         for (let j = 0; j < amountForThisAuction; j++) {
           tokenIDUnroll.push(distribution[0][i]);
           tokenAmountUnroll.push(1);
         }
-
       }
     }
 
-    console.log(presetNumber)
+    console.log(presetNumber);
 
-    await gbmContracts.methods
-      .safeRegister1155auctionBatch(
-        tokenIDUnroll,
-        tokenAmountUnroll,
-        deploymentStatus.tokens[deploymentStatus.tokens.length - 1],
-        presetNumber,
-        getStartTime(),
-        currencyIndexToUse,
-        window.ethereum.selectedAddress
-      )
-      .send({ from: window.ethereum.selectedAddress });
+    await freezeAndSendToMetamask(() =>
+      gbmContracts.methods
+        .safeRegister1155auctionBatch(
+          tokenIDUnroll,
+          tokenAmountUnroll,
+          deploymentStatus.tokens[deploymentStatus.tokens.length - 1],
+          presetNumber,
+          getStartTime(),
+          currencyIndexToUse,
+          window.ethereum.selectedAddress
+        )
+        .send({ from: window.ethereum.selectedAddress })
+    );
   },
   generateBundleGridDisplay: function (_bundles) {
     let grid = document.getElementById("bundle-grid");
     grid.innerHTML = "";
     this.generateBundleGridHeader(grid);
     for (i = 0; i < _bundles.length; i++) {
-      if(_bundles[i].totalAuctions != 0){
+      if (_bundles[i].totalAuctions != 0) {
         this.generateBundleRow(grid, _bundles[i]);
       }
-     
     }
   },
   generateBundleGridHeader: function (_gridElement) {
@@ -353,7 +362,9 @@ const tokenSaleProcess = {
     );
     _gridElement.appendChild(
       this.generateBundleGridItem(
-        `<input id="auction-amount-input-${_bundle.size}" class="gbm-input-boxed h-2 bundle-grid-input" onchange="tokenSaleProcess.calculateSelectedAuctions()" value="${
+        `<input id="auction-amount-input-${
+          _bundle.size
+        }" class="gbm-input-boxed h-2 bundle-grid-input" onchange="tokenSaleProcess.calculateSelectedAuctions()" value="${
           _bundle.totalAuctions - _bundle.createdAuctions
         }"/>`,
         false
@@ -452,11 +463,11 @@ async function moveToStep(_step) {
     case 3:
       //TODO Dynamically generate the array below
       let bundles = [];
-      for(let i =0; i<distribution[0].length; i++){
+      for (let i = 0; i < distribution[0].length; i++) {
         bundles.push({
           createdAuctions: 0,
-          totalAuctions:  distribution[1][i],
-          size:  distribution[0][i]
+          totalAuctions: distribution[1][i],
+          size: distribution[0][i],
         });
       }
 
@@ -490,25 +501,25 @@ function convertStepToValue(_step) {
   return mappingStepis[_step];
 }
 
-
 let createdAuctions = {};
 
-async function refreshUnderAuctionBundle(){
-  for(let i =0; i<distribution[0].length; i++){
+async function refreshUnderAuctionBundle() {
+  for (let i = 0; i < distribution[0].length; i++) {
     createdAuctions[i] = await gbmContracts.methods
-    .getERC1155Token_UnderSaleByDepositor(
-      newTokenContract.options.address,
-      distribution[0][i],
-      window.ethereum.selectedAddress
-    ).call();
+      .getERC1155Token_UnderSaleByDepositor(
+        newTokenContract.options.address,
+        distribution[0][i],
+        window.ethereum.selectedAddress
+      )
+      .call();
   }
 
   let bundles = [];
-  for(let i =0; i<distribution[0].length; i++){
+  for (let i = 0; i < distribution[0].length; i++) {
     bundles.push({
       createdAuctions: createdAuctions[i],
-      totalAuctions:  distribution[1][i],
-      size:  distribution[0][i]
+      totalAuctions: distribution[1][i],
+      size: distribution[0][i],
     });
   }
 
@@ -516,5 +527,4 @@ async function refreshUnderAuctionBundle(){
 
   tokenSaleProcess.generateBundleGridDisplay(bundles);
   tokenSaleProcess.calculateSelectedAuctions();
-
 }

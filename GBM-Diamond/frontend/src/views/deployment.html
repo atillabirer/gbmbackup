@@ -15,6 +15,31 @@
         <p class="gbm-header">Please connect your MetaMask wallet.</p>
       </div>
       <div class="metamask-found" hidden>
+        <div class="dApp-exists" hidden>
+          <!-- <div class="gbm-header successful-deployment-header">Deployment</div> -->
+          <div class="successful-deployment-details">
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">
+                A GBM dApp is already deployed on this instance.
+              </div>
+            </div>
+
+            <div>
+              <button
+                id="deployExistingDApp"
+                class="gbm-btn rounded h-4 left-column mt-2 text-large bold"
+              >
+                Use deployed GBM dApp
+              </button>
+            </div>
+            <button
+              class="gbm-btn transparent rounded h-4 left-column mt-2 text-large bold"
+              onclick="initResetExistingDApp()"
+            >
+              Erase and deploy new GBM dApp
+            </button>
+          </div>
+        </div>
         <div class="deployment-found" hidden>
           <div class="gbm-header successful-deployment-header">
             The GBM dApp has been deployed successfully!
@@ -63,12 +88,8 @@
                 <div class="gbm-header left-column-option-label">Network</div>
                 <div class="left-column-option-fields">
                   <span id="select-network" class="gbm-select"></span>
-                  <p class="left-column-description">
-                    <br /><b>Live Blockchain</b> : <br />Make sure you have
-                    properly edited the hardhat.config.ts 👷 ⚙️ file to set the
-                    proper defaultNetwork and the associated account private key
-                    with the currently connected metamask address 🖋️ 🦊.
-                  </p>
+                  <p id="network-warning-p"></p>
+                  <p class="left-column-description"></p>
                 </div>
               </div>
               <div class="left-column-option">

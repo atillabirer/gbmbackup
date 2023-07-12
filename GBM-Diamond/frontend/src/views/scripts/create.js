@@ -254,16 +254,18 @@ async function startNewAuction(
     /// @param beneficiary The address of whom should the proceed from the sales goes to.
     */
   //console.log(gbmContracts.methods.safeRegister721Auction(${tokenID}, ${tokenContractAddress}, ${gbmPreset}, ${startTimestamp}, ${currencyID}, ${beneficiary})`)
-  await gbmContracts.methods
-    .safeRegister721Auction(
-      tokenID,
-      tokenContractAddress,
-      gbmPreset,
-      startTimestamp,
-      currencyID,
-      beneficiary
-    )
-    .send({ from: window.ethereum.selectedAddress });
+  await freezeAndSendToMetamask(() =>
+    gbmContracts.methods
+      .safeRegister721Auction(
+        tokenID,
+        tokenContractAddress,
+        gbmPreset,
+        startTimestamp,
+        currencyID,
+        beneficiary
+      )
+      .send({ from: window.ethereum.selectedAddress })
+  );
 }
 
 async function startNewAuction721Custom(
@@ -275,18 +277,20 @@ async function startNewAuction721Custom(
   beneficiary,
   minimumBid
 ) {
-  await gbmContracts.methods
-    .safeRegister721Auction_Custom(
-      tokenID,
-      tokenContractAddress,
-      gbmPreset,
-      startTimestamp,
-      currencyID,
-      beneficiary,
-      0,
-      web3.utils.toWei(minimumBid)
-    )
-    .send({ from: window.ethereum.selectedAddress });
+  await freezeAndSendToMetamask(() =>
+    gbmContracts.methods
+      .safeRegister721Auction_Custom(
+        tokenID,
+        tokenContractAddress,
+        gbmPreset,
+        startTimestamp,
+        currencyID,
+        beneficiary,
+        0,
+        web3.utils.toWei(minimumBid)
+      )
+      .send({ from: window.ethereum.selectedAddress })
+  );
 }
 
 async function startNewAuction1155Custom(
@@ -299,19 +303,21 @@ async function startNewAuction1155Custom(
   beneficiary,
   minimumBid
 ) {
-  await gbmContracts.methods
-    .safeRegister1155auction_Custom(
-      tokenID,
-      tokenContractAddress,
-      amount,
-      gbmPreset,
-      startTimestamp,
-      currencyID,
-      beneficiary,
-      0,
-      web3.utils.toWei(minimumBid)
-    )
-    .send({ from: window.ethereum.selectedAddress });
+  await freezeAndSendToMetamask(() =>
+    gbmContracts.methods
+      .safeRegister1155auction_Custom(
+        tokenID,
+        tokenContractAddress,
+        amount,
+        gbmPreset,
+        startTimestamp,
+        currencyID,
+        beneficiary,
+        0,
+        web3.utils.toWei(minimumBid)
+      )
+      .send({ from: window.ethereum.selectedAddress })
+  );
 }
 
 function toggleStartDateSelection(_visible) {

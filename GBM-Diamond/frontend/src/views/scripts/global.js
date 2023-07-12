@@ -12,23 +12,42 @@ let metamaskTrigger;
 let tokenImages = {};
 let tokenNames = {};
 let logo = "./images/gbm-logo.png";
+let adminAddress;
+let diamondOwnerAddress;
 
 // Functions to run on page load
 
 const pageInitializer = {
   init: async function () {
+    this.setDeploymentStatus();
     this.loadContractAddresses();
-    this.loadCustomCss();
+    this.setUpMetamask();
     this.addNavBar();
     this.addFooter();
     this.addFreezeBar();
-    this.setUpMetamask();
+    await this.checkDeploymentState();
     await this.isConnected();
-    this.checkDeploymentState();
+    this.loadCustomCss(deploymentStatus);
+
+    await this.setGlobalAdminAddress();
+    await this.setGlobalDiamondOwnerAddress();
   },
-  loadContractAddresses: function () {
-    if (!deploymentStatus) return;
+
+  setDeploymentStatus() {
+    if (!deploymentStatus || deploymentStatus === "undefined") return;
     deploymentStatus = JSON.parse(deploymentStatus);
+  },
+
+  async fetchDeploymentStatus() {
+    if (!deploymentStatus?.commandHistory?.length) {
+      const response = await fetch("/deploymentStatus");
+      const data = await response.json();
+
+      return data?.commandHistory?.length ? data : null;
+    }
+  },
+
+  loadContractAddresses: function () {
     try {
       diamondAddress = deploymentStatus.deployedFacets["Diamond"];
       erc721contractAddresses = deploymentStatus.ERC721;
@@ -36,18 +55,20 @@ const pageInitializer = {
     } catch {}
   },
 
-  loadCustomCss: function () {
-    if (!deploymentStatus) return;
-    if (!deploymentStatus.colours) return;
+  loadCustomCss: function (data) {
+    if (!data) return;
+    if (!data.colours) return;
 
     const r = document.querySelector(":root");
-    r.style.setProperty("--primary", deploymentStatus.colours.primary);
-    r.style.setProperty("--secondary", deploymentStatus.colours.secondary);
-    r.style.setProperty("--tertiary", deploymentStatus.colours.tertiary);
-    r.style.setProperty("--background", deploymentStatus.colours.background);
-    r.style.setProperty("--selection", deploymentStatus.colours.selection);
-    r.style.setProperty("--text", deploymentStatus.colours.text);
-    logo = deploymentStatus.logo;
+    r.style.setProperty("--primary", data.colours.primary);
+    r.style.setProperty("--secondary", data.colours.secondary);
+    r.style.setProperty("--tertiary", data.colours.tertiary);
+    r.style.setProperty("--background", data.colours.background);
+    r.style.setProperty("--selection", data.colours.selection);
+    r.style.setProperty("--text", data.colours.text);
+    logo = data.logo;
+    const logoImg = document.querySelector("#nav-bar-logo");
+    logoImg.src = logo;
   },
   addNavBar: function () {
     let navBar = document.createElement("div");
@@ -157,7 +178,9 @@ const pageInitializer = {
     let footer = document.createElement("div");
     footer.classList.add("footer");
     footer.innerHTML = `
-      <img src="images/section-divider-vector.svg" loading="lazy" alt="" class="section-divider-bottom">
+      <a href="https://www.gbm.auction" target="_blank">
+        <img src="images/PoweredbyGBMBadge-LightGreen.svg" loading="lazy" alt="" class="copyright">
+      </a>
       <div class="copyright">© Copyright 2018-2023 GBM. All rights reserved.</div>
     `;
     document.body.appendChild(footer);
@@ -244,20 +267,66 @@ const pageInitializer = {
         )
       : undefined;
   },
-  checkDeploymentState: function () {
-    if (deploymentStatus?.finished) this.flipVisibility();
-  },
-  flipVisibility: function () {
-    let elements = document.getElementsByClassName("deployment-found");
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].hidden = false;
-    }
 
+  async checkDeploymentState() {
+    const onMemoryDeploymentStatus = await this.fetchDeploymentStatus();
+
+    if (onMemoryDeploymentStatus)
+      this.handleShowOptionToUseDeployedApp(onMemoryDeploymentStatus);
+    else if (deploymentStatus?.finished) this.flipVisibility();
+    else if (
+      (!deploymentStatus || deploymentStatus === "undefined") &&
+      window.location.pathname !== "/"
+    )
+      window.location.assign("/");
+  },
+
+  handleShowOptionToUseDeployedApp(data) {
+    if (window.location.pathname === "/")
+      this.showOptionToUseDeployedDApp(data);
+    else window.location.assign("/");
+  },
+
+  showOptionToUseDeployedDApp(data) {
+    const useDeployDAppView = document.querySelector(".dApp-exists");
+
+    useDeployDAppView.hidden = false;
+
+    const useDeployedDAppButton = useDeployDAppView.querySelector(
+      "#deployExistingDApp"
+    );
+
+    useDeployedDAppButton.onclick = () => {
+      localStorage.setItem("deploymentStatus", JSON.stringify(data));
+
+      useDeployDAppView.hidden = true;
+      this.showDeploymentFoundElements();
+      displayDeployedDAppStatus(data);
+      this.loadCustomCss(data);
+    };
+
+    this.hideDeploymentMissingElements();
+  },
+
+  flipVisibility: function () {
+    this.showDeploymentFoundElements();
+    this.hideDeploymentMissingElements();
+  },
+
+  hideDeploymentMissingElements() {
     let elements2 = document.getElementsByClassName("deployment-missing");
     for (let i = 0; i < elements2.length; i++) {
       elements2[i].hidden = true;
     }
   },
+
+  showDeploymentFoundElements() {
+    let elements = document.getElementsByClassName("deployment-found");
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].hidden = false;
+    }
+  },
+
   enableWeb3DependentElements: async function () {
     // Toggle between no-metamask/metamask states
     Array.from(document.getElementsByClassName("metamask-missing")).forEach(
@@ -290,6 +359,58 @@ const pageInitializer = {
     }.js`;
 
     document.body.appendChild(script);
+  },
+
+  async setGlobalDiamondOwnerAddress() {
+    diamondOwnerAddress = (await this.getGBMAdmin())?.toLowerCase();
+
+    if (
+      diamondOwnerAddress &&
+      deploymentStatus &&
+      deploymentStatus?.details.admin?.toLowerCase() !== diamondOwnerAddress
+    ) {
+      await storeNewDeploymentStatus({
+        ...deploymentStatus,
+        details: {
+          ...deploymentStatus.details,
+          deployer: diamondOwnerAddress,
+        },
+      });
+    }
+  },
+
+  async getGBMDiamondOwner() {
+    return await gbmContracts.methods.owner().call();
+  },
+
+  async setGlobalAdminAddress() {
+    adminAddress = (await this.getGBMAdmin())?.toLowerCase();
+    if (
+      adminAddress &&
+      deploymentStatus &&
+      deploymentStatus?.details.admin?.toLowerCase() !== adminAddress
+    ) {
+      await storeNewDeploymentStatus({
+        ...deploymentStatus,
+        details: {
+          ...deploymentStatus.details,
+          admin: adminAddress,
+        },
+      });
+    }
+  },
+
+  async getGBMAdmin() {
+    return await gbmContracts.methods.getGBMAdmin().call();
+  },
+
+  isMetamaskAccountOwnerOrAdmin() {
+    return {
+      admin: window?.ethereum?.selectedAddress?.toLowerCase() === adminAddress,
+      diamondOwner:
+        window?.ethereum?.selectedAddress?.toLowerCase() ===
+        diamondOwnerAddress,
+    };
   },
 };
 
@@ -396,7 +517,7 @@ function generateSelectDropdown(
         "selected-index",
         targeted.getAttribute("index")
       );
-      _onclick();
+      _onclick(e);
     }
     selectContainer.classList.toggle("expanded");
   };
@@ -557,25 +678,31 @@ const auctionFunctions = {
       if (
         web3.utils.toBN(approvedAmount).cmp(web3.utils.toBN(newAmount)) === -1
       ) {
-        await erc20contractToBid.methods
-          .approve(diamondAddress, newAmount)
-          .send({ from: window.ethereum.selectedAddress });
+        await freezeAndSendToMetamask(() =>
+          erc20contractToBid.methods
+            .approve(diamondAddress, newAmount)
+            .send({ from: window.ethereum.selectedAddress })
+        );
       }
     }
-    await gbmContracts.methods.bid(_auctionId, newAmount, oldAmount).send({
-      from: window.ethereum.selectedAddress,
-      to: diamondAddress,
-      value:
-        _currencyAddress !== "0x0000000000000000000000000000000000000000"
-          ? 0
-          : newAmount,
-      gasLimit: 300000,
-    });
+    await freezeAndSendToMetamask(() =>
+      gbmContracts.methods.bid(_auctionId, newAmount, oldAmount).send({
+        from: window.ethereum.selectedAddress,
+        to: diamondAddress,
+        value:
+          _currencyAddress !== "0x0000000000000000000000000000000000000000"
+            ? 0
+            : newAmount,
+        gasLimit: 300000,
+      })
+    );
   },
   claimToken: async function (_saleId) {
-    await gbmContracts.methods
-      .claim(_saleId)
-      .send({ from: window.ethereum.selectedAddress });
+    await freezeAndSendToMetamask(() =>
+      gbmContracts.methods
+        .claim(_saleId)
+        .send({ from: window.ethereum.selectedAddress })
+    );
   },
   addCurrencyToMetamask: async function (_currency) {
     if (_currency.address !== "0x0000000000000000000000000000000000000000") {
@@ -748,6 +875,44 @@ async function freezeAndSendToMetamask(_functionCall) {
     .catch(() => {
       freezer.style.display = "none";
     });
+}
+
+function displayDeployedDAppStatus(data) {
+  // Display the values from the previous deployment
+  document.getElementById("deployed-network").innerHTML = data.details.network;
+
+  document.getElementById("deployed-version").innerHTML = data.details.version;
+
+  document.getElementById("deployed-deployer").innerHTML =
+    data.details.deployer;
+
+  document.getElementById("deployed-admin").innerHTML = data.details.admin;
+}
+
+async function storeNewDeploymentStatus(data) {
+  const jsonDeploymentStatus = JSON.stringify(data);
+
+  localStorage.setItem("deploymentStatus", jsonDeploymentStatus);
+
+  await storeNewDeploymentStatusInServerMemory(jsonDeploymentStatus);
+}
+
+async function storeNewDeploymentStatusInServerMemory(jsonDeploymentStatus) {
+  try {
+    const response = await fetch("/updateDeploymentStatus", {
+      method: "POST",
+      body: jsonDeploymentStatus,
+      headers: new Headers({ "Content-Type": "application/json" }),
+    });
+
+    const data = await response.json();
+
+    if (!data?.updated)
+      alert("ERROR: Deployment status update in backend failed!");
+  } catch (error) {
+    console.error(error);
+    alert("ERROR: Deployment status update in backend failed!");
+  }
 }
 
 pageInitializer.init();

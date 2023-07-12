@@ -6,7 +6,7 @@
   border: 2px solid white;
   background-color: #555753;
   border-radius: 10px;
-  height: 100vh
+  height: 100vh;
 }
 
 .configuration-terminal-text {
@@ -108,4 +108,14 @@ input[type="color"] {
   font-size: medium;
   margin-top: 5px;
   cursor: pointer;
+}
+
+#network-warning-p {
+  background-color: #ff5959;
+  border: none;
+  display: none;
+  color: white;
+  padding: 15px 10px;
+  border-radius: 10px;
+  border: 2px solid white;
 }
