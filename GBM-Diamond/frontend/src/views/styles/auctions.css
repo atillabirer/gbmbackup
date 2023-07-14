@@ -524,3 +524,18 @@
   width: 150px;
   border-radius: 11px;
 }
+
+@media (max-device-width: 768px), (max-width: 768px) {
+  .auction-wrapper > .auction-grid-row {
+    display: none;
+  }
+  .auction-grid-rows-container .auction-grid-item {
+    grid-template-columns: 1fr 2fr;
+  }
+  .auction-grid-rows-container .auction-grid-item .auction-item-current-timer {
+    grid-column: span 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
