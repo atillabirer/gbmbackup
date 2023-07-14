@@ -165,7 +165,6 @@ const pageInitializer = {
 
     const hamburgerMenu = document.querySelector('.metamask-found > .gbm-btn')
     const menus = document.querySelector('.deployment-found')
-    window.addEventListener('click', () => { menus.style.setProperty('display', 'none') })
     hamburgerMenu.addEventListener('click', (e) => {
       e.stopPropagation()
       if (menus.style?.display === 'block') {
