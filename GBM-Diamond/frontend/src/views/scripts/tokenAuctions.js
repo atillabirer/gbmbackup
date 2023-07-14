@@ -321,8 +321,8 @@ async function getAuctionInfoMinimal(saleID) {
       tokenName = await tokenContract.methods.name().call();
       tokenNames[tokenAddressFetched] = tokenName;
     } else {
-      tokenNames[tokenAddressFetched] = `GBM Whales`;
-      tokenName = `GBM Whales`;
+      tokenNames[tokenAddressFetched] = `Stellaswap GBM Whales`;
+      tokenName = `Stellaswap GBM Whales`;
     }
   }
 

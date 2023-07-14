@@ -470,7 +470,7 @@ const CardGeneratorProto = {
       tokenId: _ownedToken.tokenId,
       name:
         _ownedToken?.tokenKind === "0x73ad2146"
-          ? fetchedData.name || "GBM Whale"
+          ? fetchedData.name || "Stellaswap GBM Whale"
           : collectionNames1155[erc1155ContractIndex],
       description: fetchedData.description,
       image: fetchedData.image,
@@ -518,7 +518,7 @@ const CardGeneratorProto = {
           ${
             //     <div class="nft-company">
             //     <img class="nft-company-image" src="images/hardhat.svg">
-            //     <div class="nft-company-name">GBM</div>
+            //     <div class="nft-company-name">Stellaswap GBM</div>
             // </div>
 
             //   _amount !== undefined && _className == 'nft-escrowed' ? `<button

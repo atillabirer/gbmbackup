@@ -123,8 +123,8 @@ async function getAuctionInfoMinimal(saleID) {
         .call();
       tokenNames[tokenAddressFetched] = tokenName;
     } else {
-      tokenNames[tokenAddressFetched] = `GBM Whales`;
-      tokenName = `GBM Whales`;
+      tokenNames[tokenAddressFetched] = `Stellaswap GBM Whales`;
+      tokenName = `Stellaswap GBM Whales`;
     }
   }
 
@@ -179,7 +179,7 @@ async function generateAuctionElement(auction, index) {
                   // }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
                 }${auction.tokenName} #${auction.tokenID}</div>
                 <div class="auction-item-flex subtitle"><img src="images/hardhat.svg" loading="lazy" alt="" class="company-icon">
-                <div class="text-block">GBM</div>
+                <div class="text-block">Stellaswap GBM</div>
                 </div>
             </div>
             </div>

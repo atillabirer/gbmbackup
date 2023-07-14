@@ -24,7 +24,7 @@ async function onScriptLoad() {
   document.getElementById("start-date-selector").style.display = "none";
 
   const title = document.getElementById("token-title");
-  title.innerHTML = `GBM Whale #${tokenId}`;
+  title.innerHTML = `Stellaswap GBM Whale #${tokenId}`;
 
   const image = document.getElementsByClassName("token-media")[0];
   image.src = `/whale/${tokenId}/image`;

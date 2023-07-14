@@ -153,7 +153,7 @@ async function generateSaleElements(_sale) {
     description = fetched.description;
   } else {
     imageLink = `/whale/${_sale.tokenID}/image`;
-    description = "GBM Whale, An NFT used for testing purposes";
+    description = "Stellaswap GBM Whale, An NFT used for testing purposes";
   }
 
   document.getElementById("description-container").innerHTML = description;
