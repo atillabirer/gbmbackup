@@ -700,13 +700,18 @@ input:checked + .gbm-slider:before {
     padding-left: 3rem;
     padding-right: 3rem;
   }
-  .nav-metamask {
+  .nav-bar .flex-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav-bar .nav-metamask {
     display: block;
   }
   .nav-metamask > .metamask-found {
-    padding-top: 3rem;
     display: flex;
     justify-content: space-between;
+    gap: 1rem;
   }
   .nav-metamask > .metamask-found > .gbm-btn {
     display: block;
@@ -718,6 +723,7 @@ input:checked + .gbm-slider:before {
     display: none;
   }
   .nav-bottom-row > .deployment-found .flex-row {
+    flex-direction: column;
     align-items: flex-end;
     gap: 1.5rem;
   }

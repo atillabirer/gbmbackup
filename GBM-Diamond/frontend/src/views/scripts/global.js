@@ -215,7 +215,7 @@ const pageInitializer = {
       <a href="https://www.gbm.auction" target="_blank">
         <img src="images/PoweredbyGBMBadge-LightGreen.svg" loading="lazy" alt="" class="copyright">
       </a>
-      <div class="copyright">© Copyright 2018-2023 Stellaswap GBM. All rights reserved.</div>
+      <div class="copyright">© Copyright 2018-2023 Stellaswap. All rights reserved.</div>
     `;
     document.body.appendChild(footer);
   },
