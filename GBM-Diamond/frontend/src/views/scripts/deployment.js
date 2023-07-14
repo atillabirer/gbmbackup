@@ -323,9 +323,19 @@ const colorActionsProto = {
     "color-fields": "secondary",
     "color-important": "tertiary",
   },
+  returnDefaultColours: function () {
+    return {
+      background: "#1E193E",
+      text: "#FFFFFF",
+      primary: "#E2107B",
+      selection: "#FACF5A",
+      secondary: "#000000",
+      tertiary: "#FF5959",
+    };
+  },
   initDone: false,
   init: async function () {
-    this.currentColors = window.COLOR_PALLETE;
+    this.currentColors = this.returnDefaultColours();
     const colourElements = Array.from(
       document.getElementsByClassName("color-picker")
     );
@@ -369,7 +379,7 @@ const colorActionsProto = {
     };
   },
   resetToDefault: function () {
-    this.currentColors = window.COLOR_PALLETE;
+    this.currentColors = this.returnDefaultColours();
     this.updateCSS();
     const colourElements = Array.from(
       document.getElementsByClassName("color-picker")
