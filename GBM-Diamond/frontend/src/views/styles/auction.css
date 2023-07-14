@@ -378,7 +378,7 @@
 
   .token-name {
     font-weight: 400;
-    font-size: 3.2rem;
+    font-size: 2.5rem;
   }
 
   .status-container {
@@ -392,26 +392,30 @@
 
   .info-value {
     padding: 20px 0;
-    font-size: 2.6rem;
+    font-size: 2.5rem;
     font-weight: bolder;
+  }
+
+  #timerCountdown {
+    font-size: 2rem;
   }
 
   .bid-btn {
     margin-top: 3rem;
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
   .share-btn {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
   #bids-disabled-upper-msg {
-    font-size: 50px;
+    font-size: 2rem;
     margin-bottom: 5px;
   }
 
   #bids-disabled-lower-msg {
-    font-size: 2rem;
+    font-size: 1.3rem;
   }
 
   #description-container, #description-container2 {
@@ -448,5 +452,15 @@
 
   #details-container {
     line-height: inherit;
+  }
+
+  .auction-status {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 50px;
+  }
+
+  .auction-status .status-container {
+    width: 100%;
   }
 }
