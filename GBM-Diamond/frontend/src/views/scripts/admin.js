@@ -67,8 +67,8 @@ const logoActions = {
       await storeNewDeploymentStatus(deploymentStatus);
     };
   },
-  async resetToDefault() {
-    document.getElementById("logo-url").value = "./images/gbm-logo.png";
+  resetToDefault: async function () {
+    document.getElementById("logo-url").value = "./images/logo.svg";
     deploymentStatus.logo = document.getElementById("logo-url").value;
     document.getElementById("logo-upload-success").hidden = false;
     await storeNewDeploymentStatus(deploymentStatus);
@@ -84,16 +84,6 @@ const colorActions = {
     "color-secondary": "selection",
     "color-fields": "secondary",
     "color-important": "tertiary",
-  },
-  returnDefaultColours: function () {
-    return {
-      background: "#085F63",
-      text: "#FFFFFF",
-      primary: "#49BEB7",
-      selection: "#FACF5A",
-      secondary: "#05848A",
-      tertiary: "#FF5959",
-    };
   },
   initDone: false,
   async init() {
@@ -127,7 +117,7 @@ const colorActions = {
     };
   },
   async resetToDefault() {
-    deploymentStatus.colours = this.returnDefaultColours();
+    deploymentStatus.colours = window.COLOR_PALLETE;
     this.currentColors = deploymentStatus.colours;
     await storeNewDeploymentStatus(deploymentStatus);
     pageInitializer.loadCustomCss(deploymentStatus);

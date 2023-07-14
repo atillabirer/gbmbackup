@@ -8,7 +8,7 @@ import {
 } from "../../scripts/deployer";
 import { WebSocketServer } from "ws";
 
-const sockServer = new WebSocketServer({ port: 443 });
+const sockServer = new WebSocketServer({ port: 444 });
 
 const app: Application = express();
 app.use(express.json({ limit: "12mb" }));

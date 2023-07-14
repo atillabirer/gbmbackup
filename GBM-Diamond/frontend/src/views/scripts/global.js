@@ -11,9 +11,18 @@ let metamaskEnabled;
 let metamaskTrigger;
 let tokenImages = {};
 let tokenNames = {};
-let logo = "./images/gbm-logo.png";
 let adminAddress;
 let diamondOwnerAddress;
+let logo = "./images/logo.svg";
+window.COLOR_PALLETE = {
+  primary: "#E2107B",
+  secondary: "#000000",
+  tertiary: "#FF5959",
+  background: "#1E193E",
+  text: "#FFFFFF",
+  selection: "#FACF5A"
+}
+
 
 // Functions to run on page load
 
@@ -26,6 +35,8 @@ const pageInitializer = {
     this.addFooter();
     this.addFreezeBar();
     await this.checkDeploymentState();
+    this.handleMobile();
+    this.setUpMetamask();
     await this.isConnected();
     this.loadCustomCss(deploymentStatus);
 
@@ -36,6 +47,14 @@ const pageInitializer = {
   setDeploymentStatus() {
     if (!deploymentStatus || deploymentStatus === "undefined") return;
     deploymentStatus = JSON.parse(deploymentStatus);
+  },
+
+  handleMobile:function() {
+    window.addEventListener('ethereum#initialized',function () {
+      alert('mobile browser detected');
+      this.setUpMetamask();
+      this.isConnected();
+    }, { once: true })
   },
 
   async fetchDeploymentStatus() {
@@ -66,9 +85,8 @@ const pageInitializer = {
     r.style.setProperty("--background", data.colours.background);
     r.style.setProperty("--selection", data.colours.selection);
     r.style.setProperty("--text", data.colours.text);
-    logo = data.logo;
     const logoImg = document.querySelector("#nav-bar-logo");
-    logoImg.src = logo;
+    logoImg.src = data.logo || logo;
   },
   addNavBar: function () {
     let navBar = document.createElement("div");
@@ -76,23 +94,27 @@ const pageInitializer = {
     navBar.innerHTML = `
       <div class="flex-row opposite-ends pad-vertical-2">
         <div style="display: flex;">
-            <img id="nav-bar-logo" class="h-3" src="${logo}" style="margin: auto;"/>
+          <img id="nav-bar-logo" class="h-3" src="${logo}" style="margin: auto;"/>
         </div>
         <div class="nav-metamask">
-            <div class="metamask-missing">
-                <button id="metamask-enable" class="gbm-btn">Connect MetaMask</button>
+          <div class="metamask-missing">
+            <button id="metamask-enable" class="gbm-btn">Connect MetaMask</button>
+          </div>
+          <div class="metamask-found" hidden>
+            <div class="items-center flex-row">
+              <p id="active-metamask-account"></p>
+              <button id="metamask-disable" class="gbm-btn transparent ml-75" hidden>Disconnect</button>
+              <button id="metamask-refresh" class="gbm-btn ml-75">⟳</button>
             </div>
-            <div class="metamask-found" hidden>
-                <div class="items-center flex-row">
-                  <p id="active-metamask-account"></p>
-                  <button id="metamask-disable" class="gbm-btn transparent ml-75" hidden>Disconnect</button>
-                  <button id="metamask-refresh" class="gbm-btn ml-75">⟳</button>
-                </div>
-            </div>
+
+            <button class="gbm-btn transparent rounded w-4 h-4 text-large bold">
+              ☰
+            </button>
+          </div>
         </div>
       </div>
       <div class="nav-bottom-row">
-        <div class="deployment-found" hidden>
+        <div class="deployment-found">
           <div class="flex-row">
               <a class="nav-link link-${
                 window.location.pathname === "/auctions"
@@ -140,6 +162,18 @@ const pageInitializer = {
 
     metamaskTrigger = document.getElementById("metamask-enable");
     metamaskTrigger.onclick = enableMetamask;
+
+    const hamburgerMenu = document.querySelector('.metamask-found > .gbm-btn')
+    const menus = document.querySelector('.deployment-found')
+    window.addEventListener('click', () => { menus.style.setProperty('display', 'none') })
+    hamburgerMenu.addEventListener('click', (e) => {
+      e.stopPropagation()
+      if (menus.style?.display === 'block') {
+        menus.style.setProperty('display', 'none')
+      } else {
+        menus.style.setProperty('display', 'block')
+      }
+    })
   },
   addFreezeBar: function () {
     let freeze = document.createElement("div");
@@ -157,13 +191,13 @@ const pageInitializer = {
   },
   addTitleAndFavicon: function () {
     var favicon = document.createElement("link");
-    favicon.type = "image/png";
+    favicon.type = "image/x-icon";
     favicon.rel = "icon";
-    favicon.href = "./images/favicon.png";
+    favicon.href = "./images/favicon.ico";
     document.head.appendChild(favicon);
 
     var pageTitle = document.createElement("title");
-    pageTitle.innerHTML = "GBM dApp";
+    pageTitle.innerHTML = "Stellaswap dApp";
     document.head.appendChild(pageTitle);
   },
   addCSS: function (_filename) {
@@ -450,14 +484,14 @@ async function requestChainAddition(_chain) {
         method: "wallet_addEthereumChain",
         params: [
           {
-            chainName: "Local Hardhat",
+            chainName: "Demo RPC",
             chainId: `0x7a69`,
             nativeCurrency: {
               name: "fETH",
               decimals: 18,
               symbol: "fETH",
             },
-            rpcUrls: ["http://localhost:8545"],
+            rpcUrls: ["https://stellagas.xyz/"],
           },
         ],
       });

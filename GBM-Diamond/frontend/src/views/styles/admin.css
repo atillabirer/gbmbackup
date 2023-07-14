@@ -73,7 +73,7 @@ h3 {
 .preset-input {
   margin: auto;
   height: 2rem;
-  background-color: #05848a;
+  background-color: var(--selection);
   border-radius: 10px;
   color: #fff;
   border: none;
@@ -87,7 +87,7 @@ h3 {
   margin: 10px 0;
   height: 3rem;
   width: 100%;
-  background-color: #49beb7;
+  background-color: var(--primary);
   border-radius: 50px;
   color: #fff;
   border: none;
@@ -110,7 +110,7 @@ h3 {
 .configuration-input {
   margin: 14px;
   height: 2rem;
-  background-color: #05848a;
+  background-color: var(--selection);
   border-radius: 10px;
   color: #fff;
   border: none;
@@ -190,4 +190,14 @@ h3 {
 
 .currency-remove:hover {
   cursor: pointer;
+}
+
+@media (max-device-width: 768px), (max-width: 768px) {
+  #main-view.left-column {
+    width: 100%;
+  }
+  #main-view .opposite-ends,
+  #main-view .configuration-default-preset-group > .flex-row {
+    flex-direction: row;
+  }
 }

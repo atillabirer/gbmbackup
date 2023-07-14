@@ -98,7 +98,7 @@ async function generateSaleElements(_sale) {
   )[0].innerHTML = `${collectionName}`;
   document.getElementsByClassName("token-name")[0].innerHTML = `${
     standards[_sale.tokenKind] === "ERC-1155"
-      ? `<div style="color: var(--primary); margin-right: 10px; font-size: inherit;">${_sale.tokenAmount}x</div> `
+      ? `<div style="color: ${window.COLOR_PALLETE.primary}; margin-right: 10px; font-size: inherit;">${_sale.tokenAmount}x</div> `
       : ""
   } #${_sale.tokenID}`;
 

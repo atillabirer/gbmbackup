@@ -132,3 +132,29 @@
   max-width: 100px;
   
 }
+
+@media (max-device-width: 768px), (max-width: 768px) {
+  .page-title {
+    font-size: 4rem;
+  }
+  .step-header {
+    font-size: 2rem;
+  }
+  .width-limiter { 
+    max-width: none;
+  }
+  .gbm-header {
+    font-size: 1rem;
+  }
+  .gbm-subtitle {
+    font-size: 0.8rem;
+    line-height: 1.5rem;
+  }
+  .step-description {
+    font-size: 0.8rem;
+    line-height: 1rem;
+  }
+  .rangecontainer {
+    margin: 0 auto;
+  }
+}

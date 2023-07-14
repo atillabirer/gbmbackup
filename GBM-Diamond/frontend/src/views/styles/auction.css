@@ -338,7 +338,7 @@
 
 .incentive-box-right {
   width: 55%;
-  background-color: #49beb7;
+  background-color: var(--primary);
   padding: 7px;
   text-align: center;
   font-weight: 700;

@@ -511,7 +511,7 @@ const CardGeneratorProto = {
       <div class="nft-info">
           <div class="nft-name flex-row">${
             _amount !== undefined
-              ? `<div style="color: var(--primary); font-weight: 400">${_amount}x&nbsp;</div>`
+              ? `<div style="color: ${window.COLOR_PALLETE.primary}; font-weight: 400">${_amount}x&nbsp;</div>`
               : ""
           }${_token.name} #${_token.tokenId}</div>
           <div class="flex-row" style="margin-top: 15px;">

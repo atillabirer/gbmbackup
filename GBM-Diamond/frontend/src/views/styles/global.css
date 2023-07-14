@@ -1,11 +1,11 @@
 :root {
-  --primary: #49beb7;
-  --secondary: #05848a;
-  --tertiary: #ff5959;
-  --background: #085f63;
-  --text: white;
+  --primary: #E2107B;
+  --secondary: #000000;
+  --tertiary: #FF5959;
+  --background: #1E193E;
+  --text: #FFFFFF;
+  --selection: #FACF5A;
   --border-secondary: #49beb74d;
-  --selection: #facf5a;
   --disabled: #c4c4c4;
   --disabled-text: #f1f1f1;
 }
@@ -21,6 +21,7 @@ body {
   font-family: "Roboto", sans-serif;
   display: flex;
   flex-direction: column;
+  align-items: center;
   margin: 2rem 8rem;
 }
 
@@ -28,6 +29,17 @@ body {
   display: block;
   justify-content: space-around;
   padding-bottom: 4rem;
+}
+
+.nav-bar,
+.page-content,
+.footer {
+  width: 100%;
+  max-width: 1184px;
+}
+
+.nav-metamask > .metamask-found > .gbm-btn {
+  display: none;
 }
 
 #active-metamask-account {
@@ -534,6 +546,22 @@ input:checked + .gbm-slider:before {
   height: 4rem;
 }
 
+.w-1 {
+  width: 1rem;
+}
+
+.w-2 {
+  width: 2rem;
+}
+
+.w-3 {
+  width: 3rem;
+}
+
+.w-4 {
+  width: 4rem;
+}
+
 .pad-vertical-2 {
   padding: 2rem 0;
 }
@@ -661,17 +689,45 @@ input:checked + .gbm-slider:before {
   body {
     margin: 0;
   }
+  .left-column-description {
+    font-size: 0.6rem;
+    line-height: 1rem;
+  }
   .flex-row {
     flex-direction: column;
   }
-  .nav-metamask {
-    display: none;
-  }
-  .nav-bottom-row {
-    display: none;
-  }
   .nav-bar {
-    padding-bottom: 0;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  .nav-metamask {
+    display: block;
+  }
+  .nav-metamask > .metamask-found {
+    padding-top: 3rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  .nav-metamask > .metamask-found > .gbm-btn {
+    display: block;
+  }
+  .nav-metamask > .metamask-found .flex-row {
+    flex-direction: row;
+  }
+  .nav-bottom-row > .deployment-found {
+    display: none;
+  }
+  .nav-bottom-row > .deployment-found .flex-row {
+    align-items: flex-end;
+    gap: 1.5rem;
+  }
+  .nav-bottom-row > .deployment-found a {
+    display: inline-block;
+    width: fit-content;
+    padding: 0;
+  }
+  .page-content {
+    padding: 0 3rem;
   }
   .footer {
     /* width: 100%; */
