@@ -115,7 +115,7 @@ const pageInitializer = {
         </div>
       </div>
       <div class="nav-bottom-row">
-        <div class="deployment-found">
+        <div class="deployment-found hide-mobile">
           <div class="flex-row">
               <a class="nav-link link-${
                 window.location.pathname === "/auctions"
@@ -165,14 +165,13 @@ const pageInitializer = {
     metamaskTrigger.onclick = enableMetamask;
 
     const hamburgerMenu = document.querySelector('.metamask-found > .gbm-btn')
-    const menus = document.querySelector('.deployment-found')
+    const menus = document.querySelector('.nav-bottom-row > .deployment-found')
+    window.addEventListener('click', () => {
+      menus.classList.add('hide-mobile')
+    })
     hamburgerMenu.addEventListener('click', (e) => {
       e.stopPropagation()
-      if (menus.style?.display === 'block') {
-        menus.style.setProperty('display', 'none')
-      } else {
-        menus.style.setProperty('display', 'block')
-      }
+      menus.classList.toggle('hide-mobile')
     })
   },
   addFreezeBar: function () {

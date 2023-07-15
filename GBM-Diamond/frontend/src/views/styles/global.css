@@ -728,7 +728,7 @@ input:checked + .gbm-slider:before {
   .nav-metamask > .metamask-found .flex-row {
     flex-direction: row;
   }
-  .nav-bottom-row > .deployment-found {
+  .nav-bottom-row > .deployment-found.hide-mobile {
     display: none;
   }
   .nav-bottom-row > .deployment-found .flex-row {
