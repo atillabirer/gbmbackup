@@ -28,7 +28,7 @@ body {
 .nav-bar {
   display: block;
   justify-content: space-around;
-  padding-bottom: 4rem;
+  padding-bottom: 2rem;
 }
 
 .nav-bar,
@@ -38,8 +38,17 @@ body {
   max-width: 1184px;
 }
 
+#connect-wallet-container {
+  margin-bottom: 2rem;
+  text-align: right;
+}
+
 .nav-metamask > .metamask-found > .gbm-btn {
   display: none;
+}
+
+.nav-bottom-row {
+  margin-top: 2rem;
 }
 
 #active-metamask-account {

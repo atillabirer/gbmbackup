@@ -92,14 +92,15 @@ const pageInitializer = {
     let navBar = document.createElement("div");
     navBar.classList.add("nav-bar");
     navBar.innerHTML = `
-      <div class="flex-row opposite-ends pad-vertical-2">
+    <div class="pad-vertical-2">
+      <div id="connect-wallet-container" class="metamask-missing">
+        <button id="metamask-enable" class="gbm-btn">Connect MetaMask</button>
+      </div>
+      <div class="flex-row opposite-ends">
         <div style="display: flex;">
           <img id="nav-bar-logo" class="h-3" src="${logo}" style="margin: auto;"/>
         </div>
         <div class="nav-metamask">
-          <div class="metamask-missing">
-            <button id="metamask-enable" class="gbm-btn">Connect MetaMask</button>
-          </div>
           <div class="metamask-found" hidden>
             <div class="items-center flex-row">
               <p id="active-metamask-account"></p>
@@ -147,7 +148,7 @@ const pageInitializer = {
           </div>
         </div>
       </div>
-    `;
+    </div>`;
 
     this.addTitleAndFavicon();
 
@@ -210,10 +211,13 @@ const pageInitializer = {
   addFooter: function () {
     let footer = document.createElement("div");
     footer.classList.add("footer");
+    // footer.innerHTML = `
+    //   <a href="https://www.gbm.auction" target="_blank">
+    //     <img src="images/PoweredbyGBMBadge-LightGreen.svg" loading="lazy" alt="" class="copyright">
+    //   </a>
+    //   <div class="copyright">© Copyright 2018-2023 Stellaswap. All rights reserved.</div>
+    // `;
     footer.innerHTML = `
-      <a href="https://www.gbm.auction" target="_blank">
-        <img src="images/PoweredbyGBMBadge-LightGreen.svg" loading="lazy" alt="" class="copyright">
-      </a>
       <div class="copyright">© Copyright 2018-2023 Stellaswap. All rights reserved.</div>
     `;
     document.body.appendChild(footer);
