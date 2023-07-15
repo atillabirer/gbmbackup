@@ -741,13 +741,14 @@ input:checked + .gbm-slider:before {
     width: fit-content;
     padding: 0;
   }
-  .page-content {
-    padding: 0 3rem;
-  }
   .footer {
     /* width: 100%; */
     text-align: left;
     margin: 5rem 0 2rem 0.5rem;
+  }
+  .page-content,
+  .copyright {
+    padding: 0 3rem;
   }
   .copyright {
     font-size: 14px;

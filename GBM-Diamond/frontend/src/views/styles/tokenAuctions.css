@@ -135,6 +135,13 @@
   justify-content: space-evenly;
 }
 
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 2rem;
+}
+
 .auction-container {
   width: 100%;
   background-color: #fff;
@@ -151,8 +158,6 @@
 
 .filter-grid-row-item {
   width: 100%;
-  margin: 0 50px;
-  min-width: 400px;
 }
 
 .filter-grid-row-item div {
@@ -425,8 +430,6 @@
   grid-column-gap: 8px;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 8px;
-  margin-bottom: 12px;
   line-height: 1.2px;
   display: flex;
 }
@@ -577,8 +580,13 @@
   position: relative;
   background-color: var(--secondary);
   border-radius: 2px;
-  margin-top: 20px;
+  margin-top: 40px;
   margin-left: 2px;
+}
+
+.rangecontainer {
+  margin-top: 32px;
+  margin-bottom: 20px
 }
 
 .range-selected {
@@ -588,4 +596,49 @@
   position: absolute;
   border-radius: 5px;
   background-color: var(--primary);
+}
+
+.range-price {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+}
+
+/* mobile */
+@media (max-device-width: 768px), (max-width: 768px) {
+  .page-title {
+    font-size: 3rem;
+  }
+  .gbm-header {
+    font-size: 0.8rem;
+  }
+  .range-price > div > p,
+  .step-option-fields > p {
+    font-size: 0.6rem;
+  }
+  .auction-grid-item {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .auction-grid-item .auction-item-flex:last-child,
+  .auction-item-bidder {
+    display: none;
+  }
+  .auction-item-current-timer {
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .auction-item-current-timer > button {
+    grid-column-start: 3;
+  }
+}
+
+/* large desktop */
+@media (min-device-width: 1330px), (min-width: 1330px) {
+  .filters-grid {
+    grid-template-columns: 1fr 1fr 400px;
+    gap: 50px;
+    padding: 0 50px;
+  }
 }

@@ -451,7 +451,7 @@
   }
 
   #details-container {
-    line-height: inherit;
+    line-height: 150%;
   }
 
   .auction-status {
