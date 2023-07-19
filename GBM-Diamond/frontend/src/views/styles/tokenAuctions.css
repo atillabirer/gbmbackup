@@ -31,7 +31,7 @@
 }
 
 .lds-roller div:after {
-  content: " ";
+  content: ' ';
   display: block;
   position: absolute;
   width: 7px;
@@ -167,7 +167,7 @@
 .auction-grid-item {
   border-bottom: 1px solid var(--primary);
   grid-template-rows: auto;
-  grid-template-columns: 1fr 1fr 1fr 1.5fr;
+  grid-template-columns: repeat(4, 1fr);
   padding: 28px 0;
 }
 
@@ -187,9 +187,7 @@
 .auction-grid-row {
   grid-row-gap: 16px;
   grid-column-gap: 16px;
-  grid-template-rows: auto auto;
-  grid-template-columns: 1fr 1fr;
-  grid-auto-columns: 1fr;
+  grid-template-columns: repeat(4, 1fr);
   display: grid;
 }
 
@@ -236,7 +234,6 @@
 }
 
 .filter-btn {
-  flex-wrap: wrap;
   justify-content: space-between;
   align-content: center;
   align-items: center;
@@ -353,13 +350,6 @@
   display: flex;
 }
 
-.auction-grid-item {
-  border-bottom: 1px solid var(--primary);
-  grid-template-rows: auto;
-  grid-template-columns: 1fr 1fr 1fr 1.5fr;
-  padding: 28px 0;
-}
-
 .auction-grid-item.title {
   padding-top: 0;
   padding-bottom: 21px;
@@ -374,7 +364,6 @@
 .auction-item-flex.subtitle {
   grid-column-gap: 8px;
   color: var(--background);
-  font-size: 20px;
 }
 
 .auction-item-name {
@@ -564,7 +553,7 @@
   border: none;
 }
 
-.range-input input::-webkit-slider-thumb{
+.range-input input::-webkit-slider-thumb {
   pointer-events: auto;
   width: 25px;
   height: 25px;
@@ -586,7 +575,7 @@
 
 .rangecontainer {
   margin-top: 32px;
-  margin-bottom: 20px
+  margin-bottom: 20px;
 }
 
 .range-selected {
@@ -619,9 +608,8 @@
   .auction-grid-item {
     grid-template-columns: repeat(3, 1fr);
   }
-  .auction-grid-item .auction-item-flex:last-child,
   .auction-item-bidder {
-    display: none;
+    font-size: 0.6rem;
   }
   .auction-item-current-timer {
     grid-column: span 3;
@@ -640,5 +628,14 @@
     grid-template-columns: 1fr 1fr 400px;
     gap: 50px;
     padding: 0 50px;
+  }
+}
+
+@media (max-device-width: 768px), (max-width: 768px) {
+  .auction-wrapper > .auction-grid-row > .auction-item-flex:last-child {
+    display: none;
+  }
+  .auction-item-name.countdown.ended {
+    padding-left: 78px;
   }
 }

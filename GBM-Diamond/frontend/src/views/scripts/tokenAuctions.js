@@ -370,39 +370,39 @@ async function generateAuctionElement(auction, index) {
 
   const auctionInnerHTML = `
         <div class="auction-grid-row auction-grid-item">
-            <div class="auction-item-flex"><img src="${
-              auction.tokenImage
-            }" loading="lazy" alt="" class="nft-image">
+          <div class="auction-item-flex"><img src="${
+            auction.tokenImage
+          }" loading="lazy" alt="" class="nft-image">
             <div>
                 <div class="auction-item-name">${auction.tokenID}</div>
                 <div class="auction-item-flex subtitle">
-                <div class="text-block">${auction.tokenName}</div>
+                  <div class="text-block">${auction.tokenName}</div>
                 </div>
             </div>
-            </div>
-            <div class="auction-item-current-bid">
+          </div>
+          <div class="auction-item-current-bid">
             <div class="auction-item-name">${web3.utils.fromWei(
               auction.pricePerToken.toString()
             )} ${auction.currencyName}</div>
-            <div class="auction-item-bidder">per ${auction.tokenName}</div>
+            <div class="auction-item-flex subtitle">per ${auction.tokenName}</div>
             </div>
             <div class="auction-item-current-bid">
-            <div class="auction-item-name">${auction.highestBidValue} ${
-    auction.currencyName
-  }</div>
-            <div class="auction-item-bidder">${shortenAddress(
-              auction.highestBidBidder
-            )}</div>
+              <div class="auction-item-name">${auction.highestBidValue} ${
+                auction.currencyName
+              }</div>
+              <div class="auction-item-flex subtitle">${shortenAddress(
+                auction.highestBidBidder
+              )}</div>
             </div>
             <div class="auction-item-current-timer">
-            <div class="time-flex-wrap">
+              <div class="time-flex-wrap">
                 <div id="circle-${index}" class="auction-time-circle" style="display: none"></div>
                 <div id="timer-${index}" class="auction-item-name countdown">Loading...</div>
             </div>
             <button id="button-${index}" class="gbm-btn bid-now-btn" onclick="redirectToAuction(${
-    auction.saleID
-  })" style="display: none">Bid now</a>
-            </div>
+              auction.saleID
+            })" style="display: none">Bid now</a>
+          </div>
         </div>
     `;
 
@@ -476,6 +476,7 @@ function startElementCountdownTimer(_auction, _index) {
   if (timestamp > 0) {
     if (auctionStatus === "auction-live") bidBtn.style.display = "block";
     auctionEl.classList.add(auctionStatus);
+    timer.classList.remove('ended');
     timer.innerHTML = `${messagePrefix} in ${countdownDisplay(timestamp)}`;
     countdowns[_index] = setInterval(function () {
       timestamp--;
@@ -493,6 +494,7 @@ function startElementCountdownTimer(_auction, _index) {
     auctionStatus = "auction-ended";
     auctionEl.classList.add(auctionStatus);
     circle.style.display = "none";
+    timer.classList.add('ended');
     timer.innerHTML = "Ended";
   }
 }

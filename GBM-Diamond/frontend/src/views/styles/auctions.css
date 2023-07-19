@@ -220,7 +220,6 @@
 }
 
 .filter-btn {
-  flex-wrap: wrap;
   justify-content: space-between;
   align-content: center;
   align-items: center;

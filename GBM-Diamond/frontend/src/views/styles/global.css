@@ -22,7 +22,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 2rem 8rem;
+  padding: 2rem 8rem;
 }
 
 .nav-bar {
@@ -55,6 +55,7 @@ body {
   color: var(--primary);
   font-weight: 700;
   font-size: 20px;
+  text-align: right;
 }
 
 .nav-link {
@@ -185,7 +186,8 @@ input::-webkit-input-placeholder {
   border-radius: 13px;
   padding: 0;
   box-shadow: rgba(0, 0, 0, 0.1) 3px 3px 5px 0px;
-  color: var(--secondary);
+  color: var(--text);
+  background-color: var(--secondary);
 }
 
 .gbm-select.expanded label {
@@ -195,7 +197,7 @@ input::-webkit-input-placeholder {
   color: var(--primary);
 }
 .gbm-select.expanded input:checked + label {
-  color: var(--secondary);
+  color: var(--primary);
 }
 
 .gbm-input-boxed {
@@ -222,7 +224,8 @@ input::-webkit-input-placeholder {
 
 .gbm-checkbox {
   color: var(--text);
-  display: block;
+  display: inline-block;
+  width: fit-content;
   position: relative;
   padding: 1rem 2.5rem;
   cursor: pointer;
@@ -700,7 +703,7 @@ input:checked + .gbm-slider:before {
 
 @media (max-device-width: 768px), (max-width: 768px) {
   body {
-    margin: 0;
+    padding: 2rem 0;
   }
   .left-column-description {
     font-size: 0.6rem;
@@ -724,6 +727,7 @@ input:checked + .gbm-slider:before {
   .nav-metamask > .metamask-found {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 1rem;
   }
   .nav-metamask > .metamask-found > .gbm-btn {
