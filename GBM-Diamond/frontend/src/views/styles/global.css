@@ -694,6 +694,10 @@ input:checked + .gbm-slider:before {
   margin: auto;
 }
 
+.configuration-default-preset-group > .flex-row {
+  flex-direction: row;
+}
+
 @media (max-device-width: 768px), (max-width: 768px) {
   body {
     margin: 0;

@@ -196,8 +196,7 @@ h3 {
   #main-view.left-column {
     width: 100%;
   }
-  #main-view .opposite-ends,
-  #main-view .configuration-default-preset-group > .flex-row {
+  #main-view .opposite-ends {
     flex-direction: row;
   }
 }
