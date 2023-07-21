@@ -48,6 +48,9 @@ async function onScriptLoad() {
 
 async function loadGBMAuctions() {
   try {
+    if (!deploymentStatus || !deploymentStatus.ERC1155) {
+      window.location.reload(); //localstorage fix
+    }
     const auctionNo = await getNumberOfAuctions();
     auctions = await loadAuctions(auctionNo);
     auctions = auctions.filter((_auction) => _auction); // Filter out undefined (meaning non-token) auctions
@@ -96,7 +99,7 @@ function generateFilterConditions() {
   document.getElementById("current-bid").value = 10;
   document.getElementById("current-bid-display").value = currentBidRange[10];
 
-  document.getElementById("bundle-size-min").onchange = function (event) {
+  document.getElementById("bundle-size-min").onchange = function(event) {
     if (
       parseInt(event.target.value) >
       parseInt(document.getElementById("bundle-size-max").value)
@@ -118,7 +121,7 @@ function generateFilterConditions() {
     filterAuctions();
   };
 
-  document.getElementById("bundle-size-max").onchange = function (event) {
+  document.getElementById("bundle-size-max").onchange = function(event) {
     if (
       parseInt(event.target.value) <
       parseInt(document.getElementById("bundle-size-min").value)
@@ -131,16 +134,16 @@ function generateFilterConditions() {
     }
     document.getElementById("bundle-size-display-max").value =
       currentBundleRange[event.target.value];
-      range.style.left = (document.getElementById("bundle-size-min").value / 10) * 100 + "%";
-      range.style.right =
-        100 - (event.target.value / 10) * 100 + "%";
+    range.style.left = (document.getElementById("bundle-size-min").value / 10) * 100 + "%";
+    range.style.right =
+      100 - (event.target.value / 10) * 100 + "%";
     document.getElementsByClassName(
       "auction-grid-rows-container"
     )[0].innerHTML = "";
     filterAuctions();
   };
 
-  document.getElementById("current-bid").onchange = function (event) {
+  document.getElementById("current-bid").onchange = function(event) {
     document.getElementById("current-bid-display").value =
       currentBidRange[event.target.value];
     document.getElementsByClassName(
@@ -150,7 +153,7 @@ function generateFilterConditions() {
   };
 
   document.getElementById("show-cheapest").checked = false;
-  document.getElementById("show-cheapest").onchange = function (event) {
+  document.getElementById("show-cheapest").onchange = function(event) {
     filterAuctions();
   };
 }
@@ -370,9 +373,8 @@ async function generateAuctionElement(auction, index) {
 
   const auctionInnerHTML = `
         <div class="auction-grid-row auction-grid-item">
-          <div class="auction-item-flex"><img src="${
-            auction.tokenImage
-          }" loading="lazy" alt="" class="nft-image">
+          <div class="auction-item-flex"><img src="${auction.tokenImage
+    }" loading="lazy" alt="" class="nft-image">
             <div>
                 <div class="auction-item-name">${auction.tokenID}</div>
                 <div class="auction-item-flex subtitle">
@@ -382,26 +384,24 @@ async function generateAuctionElement(auction, index) {
           </div>
           <div class="auction-item-current-bid">
             <div class="auction-item-name">${web3.utils.fromWei(
-              auction.pricePerToken.toString()
-            )} ${auction.currencyName}</div>
+      auction.pricePerToken.toString()
+    )} ${auction.currencyName}</div>
             <div class="auction-item-flex subtitle">per ${auction.tokenName}</div>
             </div>
             <div class="auction-item-current-bid">
-              <div class="auction-item-name">${auction.highestBidValue} ${
-                auction.currencyName
-              }</div>
+              <div class="auction-item-name">${auction.highestBidValue} ${auction.currencyName
+    }</div>
               <div class="auction-item-flex subtitle">${shortenAddress(
-                auction.highestBidBidder
-              )}</div>
+      auction.highestBidBidder
+    )}</div>
             </div>
             <div class="auction-item-current-timer">
               <div class="time-flex-wrap">
                 <div id="circle-${index}" class="auction-time-circle" style="display: none"></div>
                 <div id="timer-${index}" class="auction-item-name countdown">Loading...</div>
             </div>
-            <button id="button-${index}" class="gbm-btn bid-now-btn" onclick="redirectToAuction(${
-              auction.saleID
-            })" style="display: none">Bid now</a>
+            <button id="button-${index}" class="gbm-btn bid-now-btn" onclick="redirectToAuction(${auction.saleID
+    })" style="display: none">Bid now</a>
           </div>
         </div>
     `;
@@ -433,13 +433,13 @@ async function retrieveNewAuction(newAuction) {
 
 function subscribeToNewAuctions(callback) {
   gbmContracts.events
-    .AuctionRegistration_NewAuction({}, function (error, event) {
+    .AuctionRegistration_NewAuction({}, function(error, event) {
       // console.log(event);
     })
-    .on("data", function (event) {
+    .on("data", function(event) {
       callback(event.returnValues);
     })
-    .on("changed", function (event) {
+    .on("changed", function(event) {
       // console.log(event);
     })
     .on("error", console.error);
@@ -478,7 +478,7 @@ function startElementCountdownTimer(_auction, _index) {
     auctionEl.classList.add(auctionStatus);
     timer.classList.remove('ended');
     timer.innerHTML = `${messagePrefix} in ${countdownDisplay(timestamp)}`;
-    countdowns[_index] = setInterval(function () {
+    countdowns[_index] = setInterval(function() {
       timestamp--;
       if (timestamp >= 0)
         timer.innerHTML = `${messagePrefix} in ${countdownDisplay(timestamp)}`;

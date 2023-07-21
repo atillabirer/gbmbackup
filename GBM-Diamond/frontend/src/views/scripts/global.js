@@ -27,7 +27,7 @@ window.COLOR_PALLETE = {
 // Functions to run on page load
 
 const pageInitializer = {
-  init: async function () {
+  init: async function() {
     this.setDeploymentStatus();
     this.loadContractAddresses();
     this.setUpMetamask();
@@ -45,12 +45,23 @@ const pageInitializer = {
   },
 
   setDeploymentStatus() {
-    if (!deploymentStatus || deploymentStatus === "undefined") return;
+    //if (!deploymentStatus || deploymentStatus === "undefined") return;
+
     deploymentStatus = JSON.parse(deploymentStatus);
+    fetch('/config/config.json')
+
+      .then((blob) => blob.json())
+      .then((json) => {
+        localStorage.setItem('deploymentStatus', JSON.stringify(json));
+        deploymentStatus = JSON.parse(localStorage.getItem('deploymentStatus'));
+        console.log(json);
+        //storeNewDeploymentStatusInServerMemory(json)
+
+      })
   },
 
-  handleMobile:function() {
-    window.addEventListener('ethereum#initialized',function () {
+  handleMobile: function() {
+    window.addEventListener('ethereum#initialized', function() {
       alert('mobile browser detected');
       this.setUpMetamask();
       this.isConnected();
@@ -66,15 +77,15 @@ const pageInitializer = {
     }
   },
 
-  loadContractAddresses: function () {
+  loadContractAddresses: function() {
     try {
       diamondAddress = deploymentStatus.deployedFacets["Diamond"];
       erc721contractAddresses = deploymentStatus.ERC721;
       erc1155contractAddresses = deploymentStatus.ERC1155;
-    } catch {}
+    } catch { }
   },
 
-  loadCustomCss: function (data) {
+  loadCustomCss: function(data) {
     if (!data) return;
     if (!data.colours) return;
 
@@ -88,7 +99,7 @@ const pageInitializer = {
     const logoImg = document.querySelector("#nav-bar-logo");
     logoImg.src = data.logo || logo;
   },
-  addNavBar: function () {
+  addNavBar: function() {
     let navBar = document.createElement("div");
     navBar.classList.add("nav-bar");
     navBar.innerHTML = `
@@ -117,34 +128,28 @@ const pageInitializer = {
       <div class="nav-bottom-row">
         <div class="deployment-found hide-mobile">
           <div class="flex-row">
-              <a class="nav-link link-${
-                window.location.pathname === "/auctions"
-                  ? `stay"`
-                  : `leave" href="/auctions"`
-              }>Browse Auctions</a>
-              <a class="nav-link link-${
-                window.location.pathname === "/tokens"
-                  ? `stay"`
-                  : `leave" href="/tokens"`
-              }>My NFTs</a>
-              <a class="nav-link link-${
-                window.location.pathname === "/admin"
-                  ? `stay"`
-                  : `leave" href="/admin"`
-              }>Admin Panel</a>
-              <a class="nav-link link-${
-                window.location.pathname === "/" ? `stay"` : `leave" href="/"`
-              }>Deployment</a>
-              <a class="nav-link link-${
-                window.location.pathname === "/tokenSale"
-                  ? `stay"`
-                  : `leave" href="/tokenSale"`
-              }>Token Sale</a>
-              <a class="nav-link link-${
-                window.location.pathname === "/tokenAuctions"
-                  ? `stay"`
-                  : `leave" href="/tokenAuctions"`
-              }>Token Auctions</a>
+              <a class="nav-link link-${window.location.pathname === "/auctions"
+        ? `stay"`
+        : `leave" href="/auctions"`
+      }>Browse Auctions</a>
+              <a class="nav-link link-${window.location.pathname === "/tokens"
+        ? `stay"`
+        : `leave" href="/tokens"`
+      }>My NFTs</a>
+              <a class="nav-link link-${window.location.pathname === "/admin"
+        ? `stay"`
+        : `leave" href="/admin"`
+      }>Admin Panel</a>
+              <a class="nav-link link-${window.location.pathname === "/" ? `stay"` : `leave" href="/"`
+      }>Deployment</a>
+              <a class="nav-link link-${window.location.pathname === "/tokenSale"
+        ? `stay"`
+        : `leave" href="/tokenSale"`
+      }>Token Sale</a>
+              <a class="nav-link link-${window.location.pathname === "/tokenAuctions"
+        ? `stay"`
+        : `leave" href="/tokenAuctions"`
+      }>Token Auctions</a>
           </div>
         </div>
       </div>
@@ -174,7 +179,7 @@ const pageInitializer = {
       menus.classList.toggle('hide-mobile')
     })
   },
-  addFreezeBar: function () {
+  addFreezeBar: function() {
     let freeze = document.createElement("div");
     freeze.classList.add("freeze");
     freeze.innerHTML = `
@@ -188,7 +193,7 @@ const pageInitializer = {
     `;
     document.body.insertBefore(freeze, document.body.children[0]);
   },
-  addTitleAndFavicon: function () {
+  addTitleAndFavicon: function() {
     var favicon = document.createElement("link");
     favicon.type = "image/x-icon";
     favicon.rel = "icon";
@@ -199,7 +204,7 @@ const pageInitializer = {
     pageTitle.innerHTML = "Stellaswap GBM dApp";
     document.head.appendChild(pageTitle);
   },
-  addCSS: function (_filename) {
+  addCSS: function(_filename) {
     var pageCSS = document.createElement("link");
     pageCSS.type = "text/css";
     pageCSS.rel = "stylesheet";
@@ -207,7 +212,7 @@ const pageInitializer = {
 
     document.head.appendChild(pageCSS);
   },
-  addFooter: function () {
+  addFooter: function() {
     let footer = document.createElement("div");
     footer.classList.add("footer");
     // footer.innerHTML = `
@@ -221,7 +226,7 @@ const pageInitializer = {
     `;
     document.body.appendChild(footer);
   },
-  setUpMetamask: function () {
+  setUpMetamask: function() {
     if (ethereum && ethereum.on) {
       const handleConnect = () => {
         console.log("Handling 'connect' event");
@@ -252,7 +257,7 @@ const pageInitializer = {
       };
     }
   },
-  isConnected: async function () {
+  isConnected: async function() {
     const accounts = await ethereum.request({ method: "eth_accounts" });
     if (accounts.length) {
       await this.loadContracts();
@@ -287,20 +292,20 @@ const pageInitializer = {
       console.log("Metamask is not connected");
     }
   },
-  loadContracts: async function () {
+  loadContracts: async function() {
     abis = await (await fetch("../config/abis.json")).json();
 
     web3 = new Web3(window.ethereum);
     gbmContracts = new web3.eth.Contract(abis["gbm"], diamondAddress);
     erc721contracts = erc721contractAddresses
       ? erc721contractAddresses.map(
-          (_address) => new web3.eth.Contract(abis["erc721"], _address)
-        )
+        (_address) => new web3.eth.Contract(abis["erc721"], _address)
+      )
       : undefined;
     erc1155contracts = erc1155contractAddresses
       ? erc1155contractAddresses.map(
-          (_address) => new web3.eth.Contract(abis["erc1155"], _address)
-        )
+        (_address) => new web3.eth.Contract(abis["erc1155"], _address)
+      )
       : undefined;
   },
 
@@ -314,7 +319,7 @@ const pageInitializer = {
       (!deploymentStatus || deploymentStatus === "undefined") &&
       window.location.pathname !== "/"
     )
-      window.location.assign("/");
+      return;
   },
 
   handleShowOptionToUseDeployedApp(data) {
@@ -344,7 +349,7 @@ const pageInitializer = {
     this.hideDeploymentMissingElements();
   },
 
-  flipVisibility: function () {
+  flipVisibility: function() {
     this.showDeploymentFoundElements();
     this.hideDeploymentMissingElements();
   },
@@ -363,7 +368,7 @@ const pageInitializer = {
     }
   },
 
-  enableWeb3DependentElements: async function () {
+  enableWeb3DependentElements: async function() {
     // Toggle between no-metamask/metamask states
     Array.from(document.getElementsByClassName("metamask-missing")).forEach(
       (_element) => (_element.hidden = true)
@@ -388,11 +393,10 @@ const pageInitializer = {
 
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = `scripts/${
-      window.location.pathname.substring(1) === ""
-        ? "deployment"
-        : window.location.pathname.substring(1)
-    }.js`;
+    script.src = `scripts/${window.location.pathname.substring(1) === ""
+      ? "deployment"
+      : window.location.pathname.substring(1)
+      }.js`;
 
     document.body.appendChild(script);
   },
@@ -465,7 +469,7 @@ function enableMetamask() {
       console.error(err);
     });
 
-  requestChainAddition("0x7a69");
+  requestChainAddition("0x507");
 }
 
 /* 
@@ -480,20 +484,21 @@ async function requestChainAddition(_chain) {
       params: [{ chainId: _chain }],
     });
   } catch (err) {
+    console.log("chain")
     // This error code indicates that the chain has not been added to MetaMask
     if (err.code === 4902) {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
           {
-            chainName: "Demo RPC",
-            chainId: `0x7a69`,
+            chainName: "Moonbase Alpha Testnet",
+            chainId: `0x507`,
             nativeCurrency: {
               name: "fETH",
               decimals: 18,
               symbol: "fETH",
             },
-            rpcUrls: ["https://stellagas.xyz/"],
+            rpcUrls: ["https://rpc.api.moonbase.moonbeam.network/"],
           },
         ],
       });
@@ -533,14 +538,12 @@ function generateSelectDropdown(
   selectContainer.setAttribute("selected-value", _options[_checkOverride ?? 0]);
   selectContainer.setAttribute("selected-index", _checkOverride ?? 0);
   for (i = 0; i < _options.length; i++) {
-    selectContainer.innerHTML += `<input type="radio" name="${_spanId}" index="${i}" value="${
-      _options[i]
-    }" id="${_options[i]}" ${
-      i === (_checkOverride ?? 0) ? "checked" : ""
-    }/><label for="${_options[i]}">${_display[i]}</label>`;
+    selectContainer.innerHTML += `<input type="radio" name="${_spanId}" index="${i}" value="${_options[i]
+      }" id="${_options[i]}" ${i === (_checkOverride ?? 0) ? "checked" : ""
+      }/><label for="${_options[i]}">${_display[i]}</label>`;
   }
 
-  document.getElementById(_spanId).onclick = function (e) {
+  document.getElementById(_spanId).onclick = function(e) {
     e.preventDefault();
     e.stopPropagation();
     let targeted = document.getElementById(e.target.getAttribute("for"));
@@ -558,7 +561,7 @@ function generateSelectDropdown(
     selectContainer.classList.toggle("expanded");
   };
 
-  document.onclick = function (e) {
+  document.onclick = function(e) {
     Array.from(document.getElementsByClassName("gbm-select")).forEach(
       (_selectElement) => {
         _selectElement.classList.remove("expanded");
@@ -586,13 +589,12 @@ function countdownDisplay(_timestamp) {
     hours = timecalc(_timestamp, 60 * 60) % 24,
     minutes = timecalc(_timestamp, 60) % 60,
     seconds = timecalc(_timestamp, 1) % 60;
-  return `${days > 0 ? `${days}d ` : ""}${hours > 0 ? `${hours}h ` : ""}${
-    minutes > 0 ? `${minutes}m ` : ""
-  }${seconds > 0 ? `${seconds}s` : ""}`;
+  return `${days > 0 ? `${days}d ` : ""}${hours > 0 ? `${hours}h ` : ""}${minutes > 0 ? `${minutes}m ` : ""
+    }${seconds > 0 ? `${seconds}s` : ""}`;
 }
 
 const auctionFunctions = {
-  getAuctionInfo: async function (_saleID) {
+  getAuctionInfo: async function(_saleID) {
     let _highBidValueRaw = await gbmContracts.methods
       .getSale_HighestBid_Value(_saleID)
       .call();
@@ -652,13 +654,13 @@ const auctionFunctions = {
       ),
     };
   },
-  getNumberOfBids: async function (_saleId) {
+  getNumberOfBids: async function(_saleId) {
     const availableBids = await gbmContracts.methods
       .getSale_NumberOfBids(_saleId)
       .call();
     return availableBids;
   },
-  loadBids: async function (_saleId, _noOfBids) {
+  loadBids: async function(_saleId, _noOfBids) {
     const bidsArray = Promise.all(
       [...Array(parseInt(_noOfBids) + 1).keys()].map(
         async (item, index) => await this.getBidInfo(_saleId, index)
@@ -666,7 +668,7 @@ const auctionFunctions = {
     );
     return (await bidsArray).slice(1);
   },
-  getBidInfo: async function (_saleID, _bidIndex) {
+  getBidInfo: async function(_saleID, _bidIndex) {
     return {
       bidValue: web3.utils.fromWei(
         await gbmContracts.methods.getSale_Bid_Value(_saleID, _bidIndex).call()
@@ -693,7 +695,7 @@ const auctionFunctions = {
         .call(),
     };
   },
-  submitBid: async function (
+  submitBid: async function(
     _auctionId,
     _newBidAmount,
     _previousHighestBidAmount,
@@ -733,14 +735,14 @@ const auctionFunctions = {
       })
     );
   },
-  claimToken: async function (_saleId) {
+  claimToken: async function(_saleId) {
     await freezeAndSendToMetamask(() =>
       gbmContracts.methods
         .claim(_saleId)
         .send({ from: window.ethereum.selectedAddress })
     );
   },
-  addCurrencyToMetamask: async function (_currency) {
+  addCurrencyToMetamask: async function(_currency) {
     if (_currency.address !== "0x0000000000000000000000000000000000000000") {
       const params = {
         type: "ERC20",
@@ -764,12 +766,12 @@ const convertToMinutes = (_secondsString) => parseInt(_secondsString) / 60;
 const convertToPercentage = (_valueInK) => parseInt(_valueInK) / 1000;
 
 const creationFunctions = {
-  pageInitSpecifics: async function () {
+  pageInitSpecifics: async function() {
     document.getElementById("start-date-selector").style.display = "none";
     await this.populatePresets();
     this.generateBreakdown();
   },
-  populatePresets: async function () {
+  populatePresets: async function() {
     const { names, presets } = await this.getPresets();
     gbmPresetNames = names;
     gbmPresets = presets;
@@ -812,7 +814,7 @@ const creationFunctions = {
       2
     );
   },
-  getPresets: async function () {
+  getPresets: async function() {
     const presetAmount = await gbmContracts.methods
       .getGBMPresetsAmount()
       .call();
@@ -835,7 +837,7 @@ const creationFunctions = {
       names: (await presetsNames).slice(1),
     };
   },
-  generateBreakdown: function () {
+  generateBreakdown: function() {
     let selectDuration = document.getElementById("select-duration");
     let selectIncentive = document.getElementById("select-incentive");
 
@@ -874,26 +876,26 @@ const creationFunctions = {
     }
     document.getElementById("time-specifics").innerHTML = `
         End date: ${new Date(
-          startTime.getTime() + parseInt(preset.auctionDuration) * 1000
-        ).toUTCString()} </br>
+      startTime.getTime() + parseInt(preset.auctionDuration) * 1000
+    ).toUTCString()} </br>
         Hammer time: ${convertToMinutes(
-          preset.hammerTimeDuration
-        )} minutes <div class="gbm-tooltip">ⓘ
+      preset.hammerTimeDuration
+    )} minutes <div class="gbm-tooltip">ⓘ
             <span class="gbm-tooltip-text">Any bid placed in the last 20mins of the auction will reset the auction timer to 20mins. This gives everyone a chance to keep bidding and win.</span>
         </div>
     `;
 
     document.getElementById("incentive-specifics").innerHTML = `
         Bidders will make between ${convertToPercentage(
-          preset.incentiveMin
-        )}% and ${convertToPercentage(
+      preset.incentiveMin
+    )}% and ${convertToPercentage(
       preset.incentiveMax
     )}% return on their bid. In total, bidders will receive up to ${convertToPercentage(
       preset.potentialTotal
     )}% of the winning bid.
     `;
   },
-  toggleStartDateSelection: function (_visible) {
+  toggleStartDateSelection: function(_visible) {
     document.getElementById("start-date-selector").style.display = _visible
       ? "flex"
       : "none";
