@@ -619,7 +619,7 @@ async function connectToDeployer() {
     await fetch("../config/deploymentConf.json")
   ).json();
 
-  const webSocket = new WebSocket("ws://localhost:444/");
+  const webSocket = new WebSocket("wss://stellagas.xyz/websocket/");
 
   let deploymentSteps =
     deploymentConf[

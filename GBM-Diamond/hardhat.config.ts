@@ -1,9 +1,10 @@
 import "@nomicfoundation/hardhat-toolbox";
 import { HardhatUserConfig } from "hardhat/types";
+import "dotenv/config";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.19",
-  defaultNetwork: "localHardhat",
+  defaultNetwork: "moonbaseAlpha",
   networks: {
     hardhat: { //Network you should set as default for unit testing
       mining: {
@@ -20,7 +21,9 @@ const config: HardhatUserConfig = {
     },
     moonbaseAlpha:{ //Add remote chain in this fastion, don't forget to add your private key.
       url: "https://rpc.api.moonbase.moonbeam.network",
-      accounts: ["0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"] 
+      accounts: {
+        mnemonic: process.env.MNEMONIC
+      } 
     }
   },
 };
