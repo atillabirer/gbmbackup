@@ -113,6 +113,18 @@ export function setDeployerStatus(_deployerStatus: string) {
     if(deployerStatus.latestDeployedGBMPresetIndex == undefined){
         deployerStatus.latestDeployedGBMPresetIndex = 0;
     }
+
+    
+    if(deployerStatus.ERC1155 == undefined){
+        deployerStatus.ERC1155 = [];
+    }
+
+    
+    if( deployerStatus.ERC721 == undefined){
+        deployerStatus.ERC721 = [];
+    }
+
+
     
 }
 
