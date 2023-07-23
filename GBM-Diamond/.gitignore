@@ -3,6 +3,7 @@ node_modules
 coverage
 coverage.json
 typechain
+graph-node
 typechain-types
 .DS_Store
 
