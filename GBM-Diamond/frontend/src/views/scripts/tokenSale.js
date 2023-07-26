@@ -20,7 +20,7 @@ generateSelectDropdown(
   Object.values(deploymentStatus.registeredCurrencies).map(
     (currency) => currency.currencyDisplayName
   ),
-  () => {}
+  () => { }
 );
 
 initPage();
@@ -42,7 +42,7 @@ function initPage() {
     null,
     "\t"
   );
-  document.getElementById("smallest-bundle").onchange = function (event) {
+  document.getElementById("smallest-bundle").onchange = function(event) {
     document.getElementById("smallest-bundle-display").value =
       convertStepToValue(event.target.value);
     if (
@@ -54,7 +54,7 @@ function initPage() {
         convertStepToValue(event.target.value);
     }
   };
-  document.getElementById("biggest-bundle").onchange = function (event) {
+  document.getElementById("biggest-bundle").onchange = function(event) {
     document.getElementById("biggest-bundle-display").value =
       convertStepToValue(event.target.value);
 
@@ -67,7 +67,7 @@ function initPage() {
         convertStepToValue(event.target.value);
     }
   };
-  document.getElementById("whale-factor").onchange = function (event) {
+  document.getElementById("whale-factor").onchange = function(event) {
     document.getElementById("whale-factor-display").value = event.target.value;
   };
 
@@ -78,7 +78,7 @@ function initPage() {
     }
   );
 
-  document.getElementById("generate-btn").onclick = function (event) {
+  document.getElementById("generate-btn").onclick = function(event) {
     let saleNumber = parseInt(document.getElementById("token-for-sale").value);
     let smallest = parseFloat(
       document.getElementById("smallest-bundle-display").value
@@ -114,9 +114,8 @@ function initPage() {
     let totalation = 0;
     let aucCount = 0;
     for (i = 0; i < distribution[0].length; i++) {
-      distDisplay.innerHTML += `Bundle #${i + 1}: ${
-        distribution[1][i]
-      } copies of a coupon for #${distribution[0][i]} tokens </br>`;
+      distDisplay.innerHTML += `Bundle #${i + 1}: ${distribution[1][i]
+        } copies of a coupon for #${distribution[0][i]} tokens </br>`;
       totalation += distribution[0][i] * distribution[1][i];
       aucCount += distribution[1][i];
     }
@@ -214,7 +213,7 @@ function downloadMetadataJSON() {
 }
 
 const tokenSaleProcess = {
-  deployNewTokenContract: async function () {
+  deployNewTokenContract: async function() {
     const contract = new web3.eth.Contract(abis["tokenCoupon"]);
 
     const deployTx = contract.deploy({
@@ -242,11 +241,18 @@ const tokenSaleProcess = {
 
     console.log(`Contract deployed at ${newTokenContract.options.address}`);
     if (deploymentStatus.tokens === undefined) deploymentStatus.tokens = [];
-    deploymentStatus.ERC1155.push(newTokenContract.options.address);
-    deploymentStatus.tokens.push(newTokenContract.options.address);
+    deploymentStatus.ERC1155.push(newTokenContract.options.address.toLowerCase());
+    deploymentStatus.tokens.push(newTokenContract.options.address.toLowerCase());
     localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
+    fetch("/updateConfigPostgres", {
+      method: "POST",
+      body: JSON.stringify(deploymentStatus),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
   },
-  mintBatchFromDistribution: async function (
+  mintBatchFromDistribution: async function(
     _distributionTokenIds,
     _distributionAmounts
   ) {
@@ -256,7 +262,7 @@ const tokenSaleProcess = {
         .send({ from: window.ethereum.selectedAddress })
     );
   },
-  transferBatchToDiamond: async function (
+  transferBatchToDiamond: async function(
     _distributionTokenIds,
     _distributionAmounts
   ) {
@@ -272,7 +278,7 @@ const tokenSaleProcess = {
         .send({ from: window.ethereum.selectedAddress })
     );
   },
-  startAuctionBatch: async function () {
+  startAuctionBatch: async function() {
     let selectDuration = document.getElementById("select-duration");
     let selectIncentive = document.getElementById("select-incentive");
     let minBid = document.getElementById("min-bid");
@@ -329,7 +335,7 @@ const tokenSaleProcess = {
         .send({ from: window.ethereum.selectedAddress })
     );
   },
-  generateBundleGridDisplay: function (_bundles) {
+  generateBundleGridDisplay: function(_bundles) {
     let grid = document.getElementById("bundle-grid");
     grid.innerHTML = "";
     this.generateBundleGridHeader(grid);
@@ -339,7 +345,7 @@ const tokenSaleProcess = {
       }
     }
   },
-  generateBundleGridHeader: function (_gridElement) {
+  generateBundleGridHeader: function(_gridElement) {
     _gridElement.appendChild(this.generateBundleGridItem("Created", true));
     _gridElement.appendChild(
       this.generateBundleGridItem("Left to create", true)
@@ -347,7 +353,7 @@ const tokenSaleProcess = {
     _gridElement.appendChild(this.generateBundleGridItem("Select", true));
     _gridElement.appendChild(this.generateBundleGridItem("Bundle size", true));
   },
-  generateBundleRow: function (_gridElement, _bundle) {
+  generateBundleRow: function(_gridElement, _bundle) {
     _gridElement.appendChild(
       this.generateBundleGridItem(
         `${_bundle.createdAuctions} out of ${_bundle.totalAuctions}`,
@@ -362,10 +368,8 @@ const tokenSaleProcess = {
     );
     _gridElement.appendChild(
       this.generateBundleGridItem(
-        `<input id="auction-amount-input-${
-          _bundle.size
-        }" class="gbm-input-boxed h-2 bundle-grid-input" onchange="tokenSaleProcess.calculateSelectedAuctions()" value="${
-          _bundle.totalAuctions - _bundle.createdAuctions
+        `<input id="auction-amount-input-${_bundle.size
+        }" class="gbm-input-boxed h-2 bundle-grid-input" onchange="tokenSaleProcess.calculateSelectedAuctions()" value="${_bundle.totalAuctions - _bundle.createdAuctions
         }"/>`,
         false
       )
@@ -374,14 +378,14 @@ const tokenSaleProcess = {
       this.generateBundleGridItem(`${_bundle.size} tokens`, false)
     );
   },
-  generateBundleGridItem: function (_innerHTML, _headerFlag) {
+  generateBundleGridItem: function(_innerHTML, _headerFlag) {
     let gridItem = document.createElement("div");
     if (_headerFlag) gridItem.classList.add("gbm-header");
     gridItem.classList.add("bundle-grid-item");
     gridItem.innerHTML = _innerHTML;
     return gridItem;
   },
-  calculateSelectedAuctions: function () {
+  calculateSelectedAuctions: function() {
     const selectedAuctions = Array.from(
       document.getElementsByClassName("bundle-grid-input")
     ).reduce((sum, element) => sum + parseInt(element.value), 0);
@@ -426,7 +430,7 @@ function startElementCountdownTimer(_startTimestamp) {
   timestamp /= 1000;
   if (timestamp > 0) {
     timer.innerHTML = `Sale starts in ${countdownDisplay(timestamp)}`;
-    countdown = setInterval(function () {
+    countdown = setInterval(function() {
       timestamp--;
       timer.innerHTML = `Sale starts in ${countdownDisplay(timestamp)}`;
 
@@ -446,8 +450,7 @@ async function moveToStep(_step) {
       await tokenSaleProcess.deployNewTokenContract();
       document.getElementById(
         "tokens-for-sale-header"
-      ).innerHTML = `Number of ${
-        document.getElementById("token-symbol").value
+      ).innerHTML = `Number of ${document.getElementById("token-symbol").value
       } for sale`;
       break;
     case 2:

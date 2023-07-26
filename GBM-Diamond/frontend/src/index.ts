@@ -7,6 +7,7 @@ import {
   getDeployerStatus,
 } from "../../scripts/deployer";
 import { WebSocketServer } from "ws";
+import { writeFile } from "fs/promises"
 
 const sockServer = new WebSocketServer({ port: 444 });
 
@@ -83,6 +84,19 @@ app.post("/updateDeploymentStatus", async (req: Request, res: Response) => {
   }
 });
 
+app.post("/updateConfigPostgres", async (req: Request, res: Response) => {
+  try {
+
+
+    await writeFile(__dirname + "/views/config/config2.json", JSON.stringify(req.body));
+    res.status(200).send({ message: "ok" });
+  } catch (error) {
+    res.status(500).send({ error: "updateConfigPostgres failed" });
+    console.log(error);
+  }
+
+})
+
 sockServer.on("connection", (ws) => {
   setLogger((msg: string) => {
     ws.send(`MSG || ${msg}`);
@@ -91,9 +105,9 @@ sockServer.on("connection", (ws) => {
         Can extend the onClose to control a cancellation token that fully
         stops whatever hardhat is doing.
      */
-  ws.on("close", () => {});
+  ws.on("close", () => { });
 
-  ws.on("message", async function (data) {
+  ws.on("message", async function(data) {
     let receivedMsg = `${data}`;
     let commands = receivedMsg.split(" || ");
     switch (commands[0]) {
@@ -113,7 +127,7 @@ sockServer.on("connection", (ws) => {
       default:
     }
   });
-  ws.onerror = function () {
+  ws.onerror = function() {
     console.log("websocket error");
   };
 });

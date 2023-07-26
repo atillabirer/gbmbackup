@@ -48,7 +48,7 @@ const pageInitializer = {
     //if (!deploymentStatus || deploymentStatus === "undefined") return;
 
     deploymentStatus = JSON.parse(deploymentStatus);
-    fetch('/config/config.json')
+    fetch('/config/config2.json')
 
       .then((blob) => blob.json())
       .then((json) => {
@@ -441,7 +441,9 @@ const pageInitializer = {
   },
 
   async getGBMAdmin() {
-    return await gbmContracts.methods.getGBMAdmin().call();
+    if (gbmContracts) {
+      return await gbmContracts.methods.getGBMAdmin().call();
+    }
   },
 
   isMetamaskAccountOwnerOrAdmin() {
@@ -464,7 +466,7 @@ const shortenAddress = (_address) =>
 function enableMetamask() {
   ethereum
     .request({ method: "eth_requestAccounts" })
-    .then(() => enableWeb3DependentElements())
+    .then(() => this.enableWeb3DependentElements())
     .catch((err) => {
       console.error(err);
     });

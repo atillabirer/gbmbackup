@@ -1,3 +1,5 @@
+//const { GraphQLClient } = require("graphql-request");
+
 onScriptLoad();
 
 let auctionTypeCount = {
@@ -47,13 +49,32 @@ async function onScriptLoad() {
 }
 
 async function loadGBMAuctions() {
+  //  console.log(graphqlRequest);
+  //console.log(gql);
+  const query = gql`
+{
+  auctionRegistrationNewAuctions {
+    id
+  }
+}
+`
+
+
   try {
     if (!deploymentStatus || !deploymentStatus.ERC1155) {
       window.location.reload(); //localstorage fix
     }
-    const auctionNo = await getNumberOfAuctions();
+
+    const data = await request(query)
+    let auctionNo = data.auctionRegistrationNewAuctions.length;
+    console.log(auctionNo)
+
+
+    //const auctionNo = await getNumberOfAuctions();
     auctions = await loadAuctions(auctionNo);
     auctions = auctions.filter((_auction) => _auction); // Filter out undefined (meaning non-token) auctions
+    console.log("filtered:", auctions);
+
     baseAuctions = auctions;
 
     generateFilterConditions();
@@ -66,7 +87,8 @@ async function loadGBMAuctions() {
     sortAuctions("tokenPriceDesc");
     displayAuctions();
     subscribeToNewAuctions(retrieveNewAuction); // ToDo fix?
-  } catch {
+  } catch (error) {
+    console.log(error);
     setTimeout(async () => {
       await loadGBMAuctions();
     }, 2000);
@@ -277,25 +299,54 @@ async function loadAuctions(noOfAuctions) {
 }
 
 async function getAuctionInfoMinimal(saleID) {
-  const gbmPresetIndex = await gbmContracts.methods
-    .getSale_GBMPresetIndex(saleID)
-    .call();
+
+
+  //const response = await request(auctionQuery);
+  //  console.log(response);
+  const auctionQuery = gql`
+{
+  auctionRegistrationNewAuctions(where:{saleID: ${saleID}}) {
+    gbmPresetIndex,
+    tokenContractAddress,
+    tokenID
+    tokenKind
+    tokenAmount
+    startTimestamp
+    endTimeStamp
+  }
+}
+`
+  const response = await request(auctionQuery);
+  console.log(response);
+
+  // const gbmPresetIndex = await gbmContracts.methods
+  //   .getSale_GBMPresetIndex(saleID)
+  //
+  //   .call();
+  const gbmPresetIndex = response.auctionRegistrationNewAuctions[0]?.gbmPresetIndex || 0;
   let _highBidValueRaw = await gbmContracts.methods
     .getSale_HighestBid_Value(saleID)
     .call();
 
-  let tokenAddressFetched = await gbmContracts.methods
-    .getSale_TokenAddress(saleID)
-    .call();
-  let tokenIDFetched = parseInt(
-    await gbmContracts.methods.getSale_TokenID(saleID).call()
-  );
+  //let tokenAddressFetched = await gbmContracts.methods
+  // .getSale_TokenAddress(saleID)
+  //.call();
+  let tokenAddressFetched = response.auctionRegistrationNewAuctions[0]?.tokenContractAddress || 0;
+  // const tokenAddressFetched = response.auctionRegistrationNewAuctions[0]?.tokenContractAddress;
+  // let tokenIDFetched = parseInt(
+  //   await gbmContracts.methods.getSale_TokenID(saleID).call()
+  // );
+  const tokenIDFetched = response.auctionRegistrationNewAuctions[0]?.tokenID || 0;
+  console.log(tokenIDFetched, tokenAddressFetched, gbmPresetIndex);
+
 
   if (
     deploymentStatus.tokens &&
     !deploymentStatus.tokens.includes(tokenAddressFetched)
-  )
+  ) {
+    console.log("returned!!", tokenAddressFetched);
     return;
+  }
   let imageLink = tokenImages[tokenAddressFetched];
   if (imageLink === undefined) {
     if (deploymentStatus.tokens.indexOf(tokenAddressFetched) >= 0) {
@@ -336,8 +387,8 @@ async function getAuctionInfoMinimal(saleID) {
     tokenImage: imageLink,
     tokenAddress: tokenAddressFetched,
     tokenName,
-    tokenAmount: await gbmContracts.methods.getSale_TokenAmount(saleID).call(),
-    tokenKind: await gbmContracts.methods.getSale_TokenKind(saleID).call(),
+    tokenAmount: response.auctionRegistrationNewAuctions[0]?.tokenAmount,
+    tokenKind: response.auctionRegistrationNewAuctions[0]?.tokenKind,
     currencyName: await gbmContracts.methods
       .getSale_Currency_Name(saleID)
       .call(),
@@ -345,10 +396,10 @@ async function getAuctionInfoMinimal(saleID) {
       .getSale_Currency_Address(saleID)
       .call(),
     startTimestamp: parseFloat(
-      await gbmContracts.methods.getSale_StartTimestamp(saleID).call()
+      response.auctionRegistrationNewAuctions[0]?.startTimestamp
     ),
     endTimestamp: parseFloat(
-      await gbmContracts.methods.getSale_EndTimestamp(saleID).call()
+      response.auctionRegistrationNewAuctions[0]?.endTimeStamp
     ),
     highestBidValue: web3.utils.fromWei(_highBidValueRaw),
     highestBidValueRaw: _highBidValueRaw,
