@@ -6,7 +6,7 @@ typechain
 graph-node
 typechain-types
 .DS_Store
-
+subgraph
 hardhat.config.ts.backup
 
 # Hardhat files
