@@ -182,16 +182,20 @@ const pageInitializer = {
   addFreezeBar: function() {
     let freeze = document.createElement("div");
     freeze.classList.add("freeze");
+    document.body.insertBefore(freeze, document.body.children[0]);
     freeze.innerHTML = `
       <div class="freeze-container">
         <div class="freeze-box">
           <img src="./images/metamask-fox.svg" />
-          Please check your MetaMask plugin!
-          <button class="gbm-btn red h-3" style="width: 40%; margin: 2rem auto; font-size: x-large;">Cancel</button>
+          Please check your MetaMask.
+          <button 
+            class="gbm-btn red h-3" style="width: 40%; font-size: x-large;"
+            onClick="document.querySelector('.freeze').style.display = 'none'"
+          >Cancel</button>
         </div>
       </div>
     `;
-    document.body.insertBefore(freeze, document.body.children[0]);
+    // document.body.insertBefore(freeze, document.body.children[0]);
   },
   addTitleAndFavicon: function() {
     var favicon = document.createElement("link");
@@ -909,10 +913,7 @@ async function freezeAndSendToMetamask(_functionCall) {
   let freezer = document.getElementsByClassName("freeze")[0];
   freezer.style.display = "block";
   await _functionCall()
-    .then(() => {
-      freezer.style.display = "none";
-    })
-    .catch(() => {
+    .finally(() => {
       freezer.style.display = "none";
     });
 }
