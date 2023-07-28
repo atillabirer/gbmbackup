@@ -208,7 +208,7 @@ input::-webkit-input-placeholder {
   font-size: larger;
   padding: 10px;
   background: var(--secondary);
-  border-radius: 4px;
+  border-radius: 8px;
   border: none;
   cursor: text;
   height: 3rem;
