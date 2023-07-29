@@ -157,13 +157,6 @@ const pageInitializer = {
 
     this.addTitleAndFavicon();
 
-    this.addCSS("global");
-    this.addCSS(
-      window.location.pathname.substring(1) === ""
-        ? "deployment"
-        : window.location.pathname.substring(1)
-    );
-
     document.body.insertBefore(navBar, document.body.children[0]);
 
     metamaskTrigger = document.getElementById("metamask-enable");
@@ -207,14 +200,6 @@ const pageInitializer = {
     var pageTitle = document.createElement("title");
     pageTitle.innerHTML = "Stellaswap GBM dApp";
     document.head.appendChild(pageTitle);
-  },
-  addCSS: function(_filename) {
-    var pageCSS = document.createElement("link");
-    pageCSS.type = "text/css";
-    pageCSS.rel = "stylesheet";
-    pageCSS.href = `styles/${_filename}.css`;
-
-    document.head.appendChild(pageCSS);
   },
   addFooter: function() {
     let footer = document.createElement("div");
@@ -389,19 +374,17 @@ const pageInitializer = {
     const forceBtn = document.getElementById("metamask-refresh");
     forceBtn.onclick = chainZigZag;
 
-    var nftFetcher = document.createElement("script");
+    const nftFetcher = document.createElement("script");
     nftFetcher.type = "text/javascript";
     nftFetcher.src = `scripts/nftjsonfetcher.js`;
-
     document.body.appendChild(nftFetcher);
 
-    var script = document.createElement("script");
+    const script = document.createElement("script");
     script.type = "text/javascript";
     script.src = `scripts/${window.location.pathname.substring(1) === ""
       ? "deployment"
       : window.location.pathname.substring(1)
       }.js`;
-
     document.body.appendChild(script);
   },
 
