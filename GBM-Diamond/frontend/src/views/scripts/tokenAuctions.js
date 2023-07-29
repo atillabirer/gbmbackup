@@ -19,31 +19,6 @@ let currentBundleRange = [0];
 
 const range = document.querySelector(".range-selected");
 
-let sortOptions = [
-  "tokenPriceAsc",
-  "tokenPriceDesc",
-  "endsSoonest",
-  "endsLatest",
-  "bundleSizeDesc",
-  "bundleSizeAsc",
-  "currentBidDesc",
-  "currentBidAsc",
-];
-let sortLabels = [
-  "Sort by: Price per token (lowest)",
-  "Sort by: Price per token (highest)",
-  "Sort by: Ends (soonest)",
-  "Sort by: Ends (last)",
-  "Sort by: Bundle size (biggest)",
-  "Sort by: Bundle size (smallest)",
-  "Sort by: Current bid (highest)",
-  "Sort by: Current bid (lowest)",
-];
-
-generateSelectDropdown("select-sort", sortOptions, sortLabels, () =>
-  displayWithPreferredSort()
-);
-
 async function onScriptLoad() {
   await loadGBMAuctions();
 }
@@ -84,6 +59,11 @@ async function loadGBMAuctions() {
     document.getElementsByClassName(
       "auction-filters-container"
     )[0].style.display = "block";
+    const sortButtons = [...document.querySelectorAll(`.title .auction-item-flex > button`)]
+    for(let button of sortButtons) {
+      button.style.display = "block";
+    }
+
     sortAuctions("tokenPriceDesc");
     displayAuctions();
     subscribeToNewAuctions(retrieveNewAuction); // ToDo fix?
@@ -220,10 +200,10 @@ function sortAuctions(_sortType) {
     case "tokenPriceDesc":
       auctions = auctions.sort((a, b) => b.pricePerToken.cmp(a.pricePerToken));
       break;
-    case "endsSoonest":
+    case "statusDesc":
       auctions = auctions.sort((a, b) => a.endTimestamp < b.endTimestamp);
       break;
-    case "endsLatest":
+    case "statusAsc":
       auctions = auctions.sort((a, b) => a.endTimestamp > b.endTimestamp);
       break;
     case "bundleSizeDesc":
@@ -262,10 +242,26 @@ function displayAuctions() {
   }
 }
 
+function onClickSortButton(e) {
+  const imageElement = e.target
+  const sortedBy = imageElement.getAttribute('sort-name')
+  const sortedOrder = imageElement.getAttribute('sort-order')
+  const sortTo = sortedOrder === 'Desc' ? 'Asc' : 'Desc'
+
+  sortAuctions(sortedBy + sortTo);
+  displayWithPreferredSort();
+
+  const otherSortButtons = [...document.querySelectorAll(`.title .auction-item-flex > button > img:not([sort-name="${sortedBy}"])`)]
+  for(let sortButton of otherSortButtons) {
+    sortButton.setAttribute('sort-order', '')
+    sortButton.src = `../images/sort.svg`
+  }
+
+  imageElement.setAttribute('sort-order', sortTo)
+  imageElement.src = `../images/sort-${sortTo.toLowerCase()}.svg`
+}
+
 function displayWithPreferredSort() {
-  sortAuctions(
-    document.getElementById("select-sort").getAttribute("selected-value")
-  );
   for (i = 0; i < countdowns.length; i++) {
     clearInterval[countdowns[i]];
   }

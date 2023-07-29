@@ -361,6 +361,11 @@
   display: flex;
 }
 
+.auction-item-flex > button {
+  all: unset;
+  cursor: pointer;
+}
+
 .auction-item-flex.subtitle {
   grid-column-gap: 8px;
   color: var(--background);

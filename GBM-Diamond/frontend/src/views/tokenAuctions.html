@@ -74,7 +74,6 @@
                 <input id="show-cheapest" type="checkbox" checked="checked" />
                 <span class="gbm-checkmark"></span>
               </label>
-              <span id="select-sort" class="gbm-select"></span>
             </div>
           </div>
         </div>
@@ -84,15 +83,27 @@
           <div class="auction-grid-row auction-grid-item title">
             <div class="auction-item-flex">
               <div class="auction-item-title">Bundle size</div>
+              <button style="display: none;" onclick="onClickSortButton(event)">
+                <img width="30" src="../images/sort.svg" sort-name="bundleSize" sort-order="" />
+              </button>
             </div>
             <div class="auction-item-flex">
               <div class="auction-item-title">Token price</div>
+              <button style="display: none;" onclick="onClickSortButton(event)">
+                <img width="30" src="../images/sort.svg" sort-name="tokenPrice" sort-order="" />
+              </button>
             </div>
             <div class="auction-item-flex">
               <div class="auction-item-title">Current Bid</div>
+              <button style="display: none;" onclick="onClickSortButton(event)">
+                <img width="30" src="../images/sort.svg" sort-name="currentBid" sort-order="" />
+              </button>
             </div>
             <div class="auction-item-flex">
               <div class="auction-item-title">Status</div>
+              <button style="display: none;" onclick="onClickSortButton(event)">
+                <img width="30" src="../images/sort.svg" sort-name="status" sort-order="" />
+              </button>
             </div>
           </div>
           <div class="loading-container">
