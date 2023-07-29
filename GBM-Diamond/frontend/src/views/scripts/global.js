@@ -23,6 +23,27 @@ window.COLOR_PALLETE = {
   selection: "#FACF5A"
 }
 
+function onClosePopup () {
+  const freezerIcon = document.querySelector(".freeze-icon")
+  freezerIcon.innerHTML = `
+    <div class="lds-roller" style="margin:0;">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>`
+
+  const freezerText = document.querySelector(".freeze-text")
+  freezerText.classList.remove('error')
+  freezerText.innerText = 'Please check your MetaMask.'
+
+  const freezer = document.querySelector(".freeze");
+  freezer.style.display = "none";
+}
 
 // Functions to run on page load
 
@@ -179,11 +200,22 @@ const pageInitializer = {
     freeze.innerHTML = `
       <div class="freeze-container">
         <div class="freeze-box">
-          <img src="./images/metamask-fox.svg" />
-          Please check your MetaMask.
+          <div class="freeze-icon">
+            <div class="lds-roller" style="margin:0;">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <p class="freeze-text">Please check your MetaMask.</p>
           <button 
             class="gbm-btn red h-3" style="width: 40%; font-size: x-large;"
-            onClick="document.querySelector('.freeze').style.display = 'none'"
+            onClick="onClosePopup()"
           >Cancel</button>
         </div>
       </div>
@@ -893,11 +925,23 @@ const creationFunctions = {
 };
 
 async function freezeAndSendToMetamask(_functionCall) {
-  let freezer = document.getElementsByClassName("freeze")[0];
+  const freezer = document.querySelector(".freeze");
   freezer.style.display = "block";
+
+  const freezerIcon = document.querySelector(".freeze-icon")
+  const freezerText = document.querySelector(".freeze-text")
   await _functionCall()
+    .then(() => {
+      freezerText.classList.remove('error')
+      freezerText.innerText = 'Transaction success.'
+    })
+    .catch(e => {
+      console.error(e)
+      freezerText.classList.add('error')
+      freezerText.innerText = e.message
+    })
     .finally(() => {
-      freezer.style.display = "none";
+      freezerIcon.innerHTML = '<img src="./images/metamask-fox.svg" />'
     });
 }
 
