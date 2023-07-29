@@ -66,6 +66,7 @@ async function loadGBMAuctions() {
 
     sortAuctions("tokenPriceDesc");
     displayAuctions();
+    initTippy()
     subscribeToNewAuctions(retrieveNewAuction); // ToDo fix?
   } catch (error) {
     console.log(error);
@@ -240,6 +241,12 @@ function displayAuctions() {
   for (i = 0; i < auctions.length; i++) {
     generateAuctionElement(auctions[i], i);
   }
+}
+
+function initTippy() {
+  tippy('.highest-bidder', {
+    content: 'You are highest bidder<br/>of this auction',
+  });
 }
 
 function onClickSortButton(e) {
@@ -420,8 +427,8 @@ async function generateAuctionElement(auction, index) {
 
   const auctionInnerHTML = `
         <div class="auction-grid-row auction-grid-item">
-          <div class="auction-item-flex"><img src="${auction.tokenImage
-    }" loading="lazy" alt="" class="nft-image">
+          <div class="auction-item-flex">
+            <img src="${auction.tokenImage}" loading="lazy" alt="" class="nft-image">
             <div>
                 <div class="auction-item-name">${auction.tokenID}</div>
                 <div class="auction-item-flex subtitle">
@@ -430,25 +437,29 @@ async function generateAuctionElement(auction, index) {
             </div>
           </div>
           <div class="auction-item-current-bid">
-            <div class="auction-item-name">${web3.utils.fromWei(
-      auction.pricePerToken.toString()
-    )} ${auction.currencyName}</div>
+            <div class="auction-item-name">
+              ${web3.utils.fromWei(auction.pricePerToken.toString())} ${auction.currencyName}
+            </div>
             <div class="auction-item-flex subtitle">per ${auction.tokenName}</div>
+          </div>
+          <div class="auction-item-current-bid">
+            <div class="auction-item-name">${auction.highestBidValue} ${auction.currencyName}</div>
+            <div class="auction-item-flex subtitle">
+              ${shortenAddress(auction.highestBidBidder)}
             </div>
-            <div class="auction-item-current-bid">
-              <div class="auction-item-name">${auction.highestBidValue} ${auction.currencyName
-    }</div>
-              <div class="auction-item-flex subtitle">${shortenAddress(
-      auction.highestBidBidder
-    )}</div>
+          </div>
+          <div class="auction-item-current-timer">
+            <div class="time-flex-wrap">
+              <div id="circle-${index}" class="auction-time-circle" style="display: none"></div>
+              <div id="timer-${index}" class="auction-item-name countdown">Loading...</div>
             </div>
-            <div class="auction-item-current-timer">
-              <div class="time-flex-wrap">
-                <div id="circle-${index}" class="auction-time-circle" style="display: none"></div>
-                <div id="timer-${index}" class="auction-item-name countdown">Loading...</div>
-            </div>
-            <button id="button-${index}" class="gbm-btn bid-now-btn" onclick="redirectToAuction(${auction.saleID
-    })" style="display: none">Bid now</a>
+            <img width="30" class="highest-bidder" src="../images/highest-bidder.svg" style="display: ${
+              window.ethereum.selectedAddress === auction.highestBidBidder.toLowerCase() ? 'block' : 'none'
+            };"/>
+            <button id="button-${index}" class="gbm-btn bid-now-btn" 
+              onclick="redirectToAuction(${auction.saleID})" style="display: none">
+                Bid now
+            </button>
           </div>
         </div>
     `;

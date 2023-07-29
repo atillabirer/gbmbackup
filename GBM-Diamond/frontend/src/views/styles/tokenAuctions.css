@@ -179,7 +179,7 @@
 .auction-item-name {
   color: var(--background);
   margin-bottom: 17px;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 500;
   line-height: 1.2;
 }
@@ -371,14 +371,6 @@
   color: var(--background);
 }
 
-.auction-item-name {
-  color: var(--background);
-  margin-bottom: 17px;
-  font-size: 30px;
-  font-weight: 500;
-  line-height: 1.2;
-}
-
 .auction-item-name.countdown {
   margin: auto 0;
 }
@@ -389,6 +381,9 @@
 
 .auction-item-current-timer {
   margin: auto 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
 
 .auction-item-bidder {
@@ -618,9 +613,7 @@
   }
   .auction-item-current-timer {
     grid-column: span 3;
-    display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
   }
   .auction-item-current-timer > button {
     grid-column-start: 3;
