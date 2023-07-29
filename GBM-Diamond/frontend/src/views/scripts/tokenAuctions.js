@@ -228,13 +228,13 @@ function sortAuctions(_sortType) {
       break;
     case "bundleSizeDesc":
       auctions = auctions.sort((a, b) => {
-        if (a.tokenID > b.tokenID) return -1;
+        if (+a.tokenID > +b.tokenID) return -1;
         else return 1;
       });
       break;
     case "bundleSizeAsc":
       auctions = auctions.sort((a, b) => {
-        if (a.tokenID < b.tokenID) return -1;
+        if (+a.tokenID < +b.tokenID) return -1;
         else return 1;
       });
       break;
