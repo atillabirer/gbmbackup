@@ -19,6 +19,8 @@ bidInput.addEventListener("input", updatePotentialIncentive);
 onScriptLoad();
 
 async function onScriptLoad() {
+  initTippy();
+
   const urlParams = new URLSearchParams(window.location.search);
   saleId = urlParams.get("saleId");
   const auction = await auctionFunctions.getAuctionInfo(saleId);
@@ -37,6 +39,13 @@ async function onScriptLoad() {
   finalizeLoading();
   subscribeToNewBids(updateHighestBid, startElementCountdownTimer);
   await initializeBidHistory(saleId);
+}
+
+function initTippy() {
+  tippy('.share-btn', {
+    content: 'Copied!',
+    trigger: 'click'
+  });
 }
 
 function finalizeLoading() {

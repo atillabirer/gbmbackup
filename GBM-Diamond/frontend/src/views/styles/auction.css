@@ -137,7 +137,7 @@
 }
 
 .share-btn {
-  cursor: not-allowed;
+  cursor: pointer;
   margin: 5px 0;
   height: 4rem;
   width: 100%;
@@ -444,10 +444,6 @@
   }
   .incentive-box-right {
     font-size: inherit;
-  }
-
-  .incentive-text {
-    text-align: right;
   }
 
   #details-container {

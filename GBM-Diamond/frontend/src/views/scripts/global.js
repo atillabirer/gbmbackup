@@ -586,7 +586,7 @@ function timecalc(x, v) {
   return Math.floor(x / v);
 }
 
-function copyToClipboard() {
+function copyUrlPathToClipboard() {
   navigator.clipboard.writeText(window.location);
 }
 
