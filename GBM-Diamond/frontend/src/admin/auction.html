@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
+    </head>
+    <body>
+        <div class="page-content">
+            <div class="metamask-missing">
+                <p class="gbm-header">Please connect your MetaMask wallet.</p>
+            </div>
+            <div class="metamask-found" hidden>
+                <div class="loading-container">
+                    <div class="loading-text">Fetching auction</div>
+                    <div class="lds-roller">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="auction-container flex-row">
+                    <div class="column-container">
+                        <div class="media-container"></div>
+                        <div class="description-display-desktop">
+                            <br />
+                            <br />
+                            <div class="simpler-header">NFT Description</div>
+                            <br />
+                            <div id="description-container">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column-container info-container">
+                        <div class="collection-and-id"></div>
+                        <div class="token-name flex-row-mobile-friendly">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+                        <div class="auction-status">
+                            <div class="status-container cost-message">
+                                <div id="bidOrPrice" class="label">Current bid</div>
+                                <div id="bidOrPriceAmount" class="info-value"></div>
+                            </div>
+                            <div class="status-container timer-message">
+                                <div id="timerMessage" class="label">Ends in</div>
+                                <div id="timerCountdown" class="info-value">-</div>
+                            </div>
+                        </div>
+                        <div id="bids-enabled">
+                            <div id="minimum-bid-message" class="minimum-bid tooltip">Minimum bid: $111.65</div>
+                            <input class="bid-input" disabled type="text" placeholder="Enter bid" />
+                        </div>
+                        <div id="bids-disabled">
+                            <div id="bids-disabled-upper-msg"></div>
+                            <div id="bids-disabled-lower-msg"></div>
+                        </div>
+                        <div class="incentive tooltip">
+                            <div class="incentive-box">
+                                <div class="incentive-box-left">
+                                    <img class="incentive-logo" src="./images/logo.svg" />
+                                </div>
+                                <div id="incentive-box-type" class="incentive-box-right">
+                                    Medium
+                                </div>
+                            </div>    
+                            <div class="incentive-text">You will earn 0 (0%) if outbid.</div>
+                        </div>
+                        <div class="btn-container">
+                            <button class="bid-btn" onclick="placeBid()" disabled>Place bid</button>
+                            <button class="share-btn" onclick="copyToClipboard()">Share</button>
+                        </div>
+                        <div class="bid-history-container">
+                            <div class="simpler-header bid-history"></div>
+                            <div class="bids">
+                            </div>
+                        </div>
+                        </br>
+                        </br>
+                        <div class="description-display-mobile">
+                            <div class="simpler-header">NFT Description</div>
+                            <br />
+                            <div id="description-container2">
+                            </div>
+                            <br />
+                        </div>
+                        <div class="simpler-header">NFT Details</div>
+                        <br />
+                        <div id="details-container">
+                            <div class="flex-row-mobile-friendly opposite-ends">
+                                <div>Token ID</div>
+                                <div id="details-token-id">2</div>
+                            </div>
+                            <div class="flex-row-mobile-friendly opposite-ends">
+                                <div>Mint Date</div>
+                                <div id="details-mint-date">2</div>
+                            </div>
+                            <div class="flex-row-mobile-friendly opposite-ends">
+                                <div>Token Standard</div>
+                                <div id="details-token-standard">ERC-721</div>
+                            </div>
+                            <div class="flex-row-mobile-friendly opposite-ends">
+                                <div>Blockchain</div>
+                                <div id="details-blockchain">Local Hardhat</div>
+                            </div>
+                            <div class="flex-row-mobile-friendly opposite-ends">
+                                <div>Smart Contract</div>
+                                <div id="details-smart-contract">2</div>
+                            </div>
+                            <div class="flex-row-mobile-friendly opposite-ends">
+                                <div>Token URI</div>
+                                <div id="details-token-uri">2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="scripts/global.js"></script>
+    </body>
+</html>

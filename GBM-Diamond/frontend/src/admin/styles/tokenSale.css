@@ -1,0 +1,160 @@
+.step-container {
+  display: none;
+}
+
+.step-container.active {
+  display: block;
+}
+
+.step-header {
+  color: white;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 32px;
+  line-height: 65px;
+  letter-spacing: -0.03em;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.step-option {
+  padding-bottom: 2rem;
+}
+
+.step-option-label {
+  padding-bottom: 1.25rem;
+}
+
+.step-description {
+  font-family: inherit;
+  color: white;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 25px;
+  letter-spacing: -0.03em;
+  margin-top: -0.5rem;
+}
+
+.step-description.under {
+  margin-top: 0.5rem;
+}
+
+.step-slider {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.step-slider-description {
+  padding-left: 2rem;
+  color: white;
+  font-weight: 400;
+  font-size: large;
+}
+
+.width-limiter {
+  width: 100%;
+  max-width: 420px;
+}
+
+.metadata-json {
+  font-size: medium;
+  resize: none;
+  height: 390px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  word-wrap: normal;
+}
+
+.rangecontainer {
+  max-width: 420px;
+  padding-bottom: 1rem;
+}
+
+#after-generation {
+  margin-top: 2rem;
+}
+
+.distribution-text {
+  margin-top: 0.5rem;
+}
+
+.sale-nav {
+  margin-left: 10px;
+}
+
+.metadata-trigger {
+  font-family: inherit;
+}
+
+#date-time-header {
+  font-size: larger;
+  font-weight: lighter;
+  margin: auto 1rem auto 0;
+  color: var(--text);
+}
+
+#start-date-selector {
+  display: none;
+}
+
+#sale-countdown {
+  color: var(--tertiary);
+  font-weight: 700;
+  font-size: large;
+}
+
+#sale-selected {
+  color: var(--text);
+  font-weight: 400;
+  font-size: large;
+}
+
+#bundle-grid {
+  width: 70%;
+  color: var(--text);
+  font-weight: 700;
+  font-size: large;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.bundle-grid-item {
+  flex: 1 0 20%;
+  margin: auto 5px;
+  padding: 10px 0px;
+}
+
+.bundle-grid-input {
+  font-size: large;
+  max-width: 100px;
+  
+}
+
+@media (max-device-width: 768px), (max-width: 768px) {
+  .page-title {
+    font-size: 4rem;
+  }
+  .step-header {
+    font-size: 2rem;
+  }
+  .width-limiter { 
+    max-width: none;
+  }
+  .gbm-header {
+    font-size: 1rem;
+  }
+  .gbm-subtitle {
+    font-size: 0.8rem;
+    line-height: 1.5rem;
+  }
+  .step-description {
+    font-size: 0.8rem;
+    line-height: 1rem;
+  }
+  .rangecontainer {
+    margin: 0 auto;
+  }
+}

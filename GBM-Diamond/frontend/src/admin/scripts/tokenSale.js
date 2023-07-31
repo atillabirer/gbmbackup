@@ -244,12 +244,13 @@ const tokenSaleProcess = {
     deploymentStatus.ERC1155.push(newTokenContract.options.address.toLowerCase());
     deploymentStatus.tokens.push(newTokenContract.options.address.toLowerCase());
     localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
-    fetch("/updateConfigRedis", {
+    fetch("/updateConfig", {
       method: "POST",
       body: JSON.stringify(deploymentStatus),
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type":"application/json"
       }
+      
     })
   },
   mintBatchFromDistribution: async function(

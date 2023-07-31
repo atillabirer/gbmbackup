@@ -23,27 +23,6 @@ window.COLOR_PALLETE = {
   selection: "#FACF5A"
 }
 
-function onClosePopup () {
-  const freezerIcon = document.querySelector(".freeze-icon")
-  freezerIcon.innerHTML = `
-    <div class="lds-roller" style="margin:0;">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>`
-
-  const freezerText = document.querySelector(".freeze-text")
-  freezerText.classList.remove('error')
-  freezerText.innerText = 'Please check your MetaMask.'
-
-  const freezer = document.querySelector(".freeze");
-  freezer.style.display = "none";
-}
 
 // Functions to run on page load
 
@@ -150,18 +129,27 @@ const pageInitializer = {
       <div class="nav-bottom-row">
         <div class="deployment-found hide-mobile">
           <div class="flex-row">
-              <a class="nav-link link-${window.location.pathname === "/dapp/auctions"
+              <a class="nav-link link-${window.location.pathname === "/admin/auctions"
         ? `stay"`
-        : `leave" href="/dapp/auctions"`
+        : `leave" href="/admin/auctions"`
       }>Browse Auctions</a>
-              <a class="nav-link link-${window.location.pathname === "/dapp/tokens"
+              <a class="nav-link link-${window.location.pathname === "/tokens"
         ? `stay"`
-        : `leave" href="/dapp/tokens"`
+        : `leave" href="/admin/tokens"`
       }>My NFTs</a>
-             
-              <a class="nav-link link-${window.location.pathname === "/dapp/tokenAuctions"
+              <a class="nav-link link-${window.location.pathname === "/admin"
         ? `stay"`
-        : `leave" href="/dapp/tokenAuctions"`
+        : `leave" href="/admin/admin"`
+      }>Admin Panel</a>
+              <a class="nav-link link-${window.location.pathname === "/" ? `stay"` : `leave" href="/admin/deployment"`
+      }>Deployment</a>
+              <a class="nav-link link-${window.location.pathname === "/admin/tokenSale"
+        ? `stay"`
+        : `leave" href="/admin/tokenSale"`
+      }>Token Sale</a>
+              <a class="nav-link link-${window.location.pathname === "/admin/tokenAuctions"
+        ? `stay"`
+        : `leave" href="/admin/tokenAuctions"`
       }>Token Auctions</a>
           </div>
         </div>
@@ -170,16 +158,15 @@ const pageInitializer = {
 
     this.addTitleAndFavicon();
 
-<<<<<<< Updated upstream
-=======
     this.addCSS("global");
     this.addCSS(
-      window.location.pathname.substring(6) === ""
+      window.location.pathname.substring(7) === ""
         ? "deployment"
-        : window.location.pathname.substring(6)
+        : window.location.pathname.substring(7)
     );
-
->>>>>>> Stashed changes
+    console.log( window.location.pathname.substring(7) === ""
+    ? "deployment"
+    : window.location.pathname.substring(7));
     document.body.insertBefore(navBar, document.body.children[0]);
 
     metamaskTrigger = document.getElementById("metamask-enable");
@@ -198,31 +185,16 @@ const pageInitializer = {
   addFreezeBar: function() {
     let freeze = document.createElement("div");
     freeze.classList.add("freeze");
-    document.body.insertBefore(freeze, document.body.children[0]);
     freeze.innerHTML = `
       <div class="freeze-container">
         <div class="freeze-box">
-          <div class="freeze-icon">
-            <div class="lds-roller" style="margin:0;">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          </div>
-          <p class="freeze-text">Please check your MetaMask.</p>
-          <button 
-            class="gbm-btn red h-3" style="width: 40%; font-size: x-large;"
-            onClick="onClosePopup()"
-          >Cancel</button>
+          <img src="./images/metamask-fox.svg" />
+          Please check your MetaMask plugin!
+          <button class="gbm-btn red h-3" style="width: 40%; margin: 2rem auto; font-size: x-large;">Cancel</button>
         </div>
       </div>
     `;
-    // document.body.insertBefore(freeze, document.body.children[0]);
+    document.body.insertBefore(freeze, document.body.children[0]);
   },
   addTitleAndFavicon: function() {
     var favicon = document.createElement("link");
@@ -234,6 +206,14 @@ const pageInitializer = {
     var pageTitle = document.createElement("title");
     pageTitle.innerHTML = "Stellaswap GBM dApp";
     document.head.appendChild(pageTitle);
+  },
+  addCSS: function(_filename) {
+    var pageCSS = document.createElement("link");
+    pageCSS.type = "text/css";
+    pageCSS.rel = "stylesheet";
+    pageCSS.href = `styles/${_filename}.css`;
+
+    document.head.appendChild(pageCSS);
   },
   addFooter: function() {
     let footer = document.createElement("div");
@@ -316,7 +296,7 @@ const pageInitializer = {
     }
   },
   loadContracts: async function() {
-    abis = await (await fetch("/dapp/config/abis.json")).json();
+    abis = await (await fetch("/admin/config/abis.json")).json();
 
     web3 = new Web3(window.ethereum);
     gbmContracts = new web3.eth.Contract(abis["gbm"], diamondAddress);
@@ -408,22 +388,19 @@ const pageInitializer = {
     const forceBtn = document.getElementById("metamask-refresh");
     forceBtn.onclick = chainZigZag;
 
-    const nftFetcher = document.createElement("script");
+    var nftFetcher = document.createElement("script");
     nftFetcher.type = "text/javascript";
-<<<<<<< Updated upstream
-    nftFetcher.src = `scripts/nftjsonfetcher.js`;
-=======
     nftFetcher.src = `/dapp/scripts/nftjsonfetcher.js`;
 
->>>>>>> Stashed changes
     document.body.appendChild(nftFetcher);
 
-    const script = document.createElement("script");
+    var script = document.createElement("script");
     script.type = "text/javascript";
     script.src = `scripts/${window.location.pathname.substring(6) === ""
       ? "deployment"
       : window.location.pathname.substring(6)
       }.js`;
+
     document.body.appendChild(script);
   },
 
@@ -608,7 +585,7 @@ function timecalc(x, v) {
   return Math.floor(x / v);
 }
 
-function copyUrlPathToClipboard() {
+function copyToClipboard() {
   navigator.clipboard.writeText(window.location);
 }
 
@@ -932,23 +909,14 @@ const creationFunctions = {
 };
 
 async function freezeAndSendToMetamask(_functionCall) {
-  const freezer = document.querySelector(".freeze");
+  let freezer = document.getElementsByClassName("freeze")[0];
   freezer.style.display = "block";
-
-  const freezerIcon = document.querySelector(".freeze-icon")
-  const freezerText = document.querySelector(".freeze-text")
   await _functionCall()
     .then(() => {
-      freezerText.classList.remove('error')
-      freezerText.innerText = 'Transaction success.'
+      freezer.style.display = "none";
     })
-    .catch(e => {
-      console.error(e)
-      freezerText.classList.add('error')
-      freezerText.innerText = e.message
-    })
-    .finally(() => {
-      freezerIcon.innerHTML = '<img src="./images/metamask-fox.svg" />'
+    .catch(() => {
+      freezer.style.display = "none";
     });
 }
 

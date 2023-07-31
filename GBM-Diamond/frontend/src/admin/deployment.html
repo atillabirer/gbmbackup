@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+      integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <div class="page-content">
+      <div class="page-title">Stellaswap GBM dApp Deployment</div>
+      <div class="metamask-missing">
+        <p class="gbm-header">Please connect your MetaMask wallet.</p>
+      </div>
+      <div class="metamask-found" hidden>
+        <div class="dApp-exists" hidden>
+          <!-- <div class="gbm-header successful-deployment-header">Deployment</div> -->
+          <div class="successful-deployment-details">
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">
+                A Stellaswap GBM dApp is already deployed on this instance.
+              </div>
+            </div>
+
+            <div>
+              <button
+                id="deployExistingDApp"
+                class="gbm-btn rounded h-4 left-column mt-2 text-large bold"
+              >
+                Use deployed Stellaswap GBM dApp
+              </button>
+            </div>
+            <button
+              class="gbm-btn transparent rounded h-4 left-column mt-2 text-large bold"
+              onclick="initResetExistingDApp()"
+            >
+              Erase and deploy new Stellaswap GBM dApp
+            </button>
+          </div>
+        </div>
+        <div class="deployment-found" hidden>
+          <div class="gbm-header successful-deployment-header">
+            The Stellaswap GBM dApp has been deployed successfully!
+          </div>
+          <div class="successful-deployment-details">
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">Network</div>
+              <div id="deployed-network" class="left-column bold">
+                Localhost
+              </div>
+            </div>
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">Version</div>
+              <div id="deployed-version" class="left-column bold">Test</div>
+            </div>
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">
+                Deployer Address
+              </div>
+              <div id="deployed-deployer" class="left-column bold"></div>
+            </div>
+            <div class="successful-deployment-info">
+              <div class="successful-deployment-info-label">Admin address</div>
+              <div id="deployed-admin" class="left-column bold"></div>
+            </div>
+            <button
+              class="gbm-btn transparent rounded h-4 left-column mt-2 text-large bold"
+              onclick="initReset()"
+            >
+              Clear cache and deploy new contract
+            </button>
+            <div>
+              <button
+                class="gbm-btn rounded h-4 left-column mt-2 text-large bold"
+                onclick="downloadObjectAsJson()"
+              >
+                Export dApp configuration
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="deployment-missing">
+          <div class="flex-row opposite-ends">
+            <div class="left-column">
+              <div class="left-column-option">
+                <div class="gbm-header left-column-option-label">Network</div>
+                <div class="left-column-option-fields">
+                  <span id="select-network" class="gbm-select"></span>
+                  <p id="network-warning-p"></p>
+                  <p class="left-column-description"></p>
+                </div>
+              </div>
+              <div class="left-column-option">
+                <div class="gbm-header left-column-option-label">Version</div>
+                <div class="left-column-option-fields">
+                  <span id="select-version" class="gbm-select"></span>
+                </div>
+              </div>
+              <div class="left-column-option">
+                <div class="gbm-header left-column-option-label">
+                  Deployer address
+                </div>
+                <div class="left-column-option-fields">
+                  <p class="left-column-description">
+                    We recommend that you use a very safe account (e.g. cold
+                    wallet) to deploy the dApp if deploying on a mainnet.
+                    This address will be able to upgrade the smart contract. To
+                    select another address, switch account on Metamask.
+                  </p>
+                  <input
+                    id="deployer-address"
+                    class="gbm-input-boxed"
+                    type="text"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div class="left-column-option">
+                <div class="gbm-header left-column-option-label">
+                  Admin address
+                </div>
+                <div class="left-column-option-fields">
+                  <p class="left-column-description">
+                    This address will be the only one with admin privileges on
+                    the application, able to create and start auctions, add
+                    presets, currencies etc.
+                  </p>
+                  <input
+                    id="admin-address"
+                    class="gbm-input-boxed"
+                    type="text"
+                  />
+                  <label class="gbm-checkbox"
+                    >Use same as deployer address
+                    <input
+                      id="use-deployer"
+                      type="checkbox"
+                      checked="checked"
+                    />
+                    <span class="gbm-checkmark"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="left-column-option">
+                <div class="left-column-slider-group">
+                  <div class="flex-row items-center">
+                    <label class="gbm-switch">
+                      <input id="run-tests" type="checkbox" />
+                      <span class="gbm-slider round"></span>
+                    </label>
+                    <p class="left-column-slider-description">
+                      Mint test NFTs and create test auctions
+                    </p>
+                  </div>
+                  <div class="flex-row items-center">
+                    <label class="gbm-switch">
+                      <input id="enable-customization" type="checkbox" />
+                      <span class="gbm-slider round"></span>
+                    </label>
+                    <p class="left-column-slider-description">
+                      Customise dApp colors (advanced)
+                    </p>
+                  </div>
+                </div>
+                <div
+                  id="default-preset-container"
+                  class="configuration-default-preset"
+                  hidden
+                >
+                  <div class="left-column-option mt-2">
+                    <div class="flex-row opposite-ends">
+                      <div class="gbm-header left-column-option-label">
+                        Logo
+                      </div>
+                      <div
+                        class="reset-text"
+                        onclick="logoActions.resetToDefault()"
+                      >
+                        Reset to default
+                      </div>
+                    </div>
+                    <div class="left-column-option-fields">
+                      <p class="left-column-description">
+                        Please enter an URL or upload a file for the logo to be
+                        displayed in the navbar on all pages.
+                      </p>
+                      <div class="gbm-radio">
+                        <label>
+                          <input
+                            id="logo-update-first"
+                            type="radio"
+                            name="radio2"
+                            onclick="logoActions.toggleLogoUploadField()"
+                            checked
+                          />
+                          <div class="first-choice box">
+                            <p>URL</p>
+                          </div>
+                        </label>
+                        <label>
+                          <input
+                            id="logo-update-second"
+                            type="radio"
+                            name="radio2"
+                            onclick="logoActions.toggleLogoUploadField()"
+                          />
+                          <div class="second-choice box">
+                            <p>Upload file</p>
+                          </div>
+                        </label>
+                      </div>
+                      <input
+                        id="logo-url"
+                        class="gbm-input-boxed mt-1"
+                        type="text"
+                        onchange="logoActions.updateLogoByLink()"
+                      />
+                      <div id="logo-upload" class="mt-1" hidden>
+                        <input
+                          id="image-upload"
+                          type="file"
+                          accept=".svg, .jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*"
+                          hidden
+                        />
+                        <button
+                          class="gbm-btn transparent cover h-3"
+                          id="image-upload-btn"
+                          onclick="logoActions.imageUpload()"
+                        >
+                          Upload
+                        </button>
+                      </div>
+                      <div
+                        id="logo-upload-success"
+                        class="text-medium mt-1"
+                        hidden
+                      >
+                        The logo has been updated! Please scroll to the top of
+                        the page to see your changes.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="left-column-option mt-2">
+                    <div class="flex-row opposite-ends">
+                      <div class="gbm-header left-column-option-label">
+                        Colors
+                      </div>
+                      <div
+                        class="reset-text"
+                        onclick="colorActions.resetToDefault()"
+                      >
+                        Reset to default
+                      </div>
+                    </div>
+                    <div id="color-container">
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Background
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-background"
+                            class="gbm-input-boxed color-picker"
+                            value="#1E193E"
+                          />
+                          <div
+                            id="color-background-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Font and lines
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-font"
+                            class="gbm-input-boxed color-picker"
+                            value="#FFFFFF"
+                          />
+                          <div
+                            id="color-font-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Primary button and selection
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-primary"
+                            class="gbm-input-boxed color-picker"
+                            value="#E2107B"
+                          />
+                          <div
+                            id="color-primary-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Secondary button and selection
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-secondary"
+                            class="gbm-input-boxed color-picker"
+                            value="#FACF5A"
+                          />
+                          <div
+                            id="color-secondary-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Text fields and dropdowns
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-fields"
+                            class="gbm-input-boxed color-picker"
+                            value="#000000"
+                          />
+                          <div
+                            id="color-fields-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="configuration-default-preset-group">
+                        <div class="configuration-default-preset-label">
+                          Important actions and warnings
+                        </div>
+                        <div class="flex-row">
+                          <input
+                            type="text"
+                            id="color-important"
+                            class="gbm-input-boxed color-picker"
+                            value="#FF5959"
+                          />
+                          <div
+                            id="color-important-preview"
+                            class="color-preview"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button
+                id="deploy-btn"
+                class="gbm-btn red cover h-4 text-large"
+                onclick="connectToDeployer()"
+              >
+                Deploy
+              </button>
+              <label
+                for="file-upload"
+                id="file-upload-btn"
+                onclick="triggerUpload()"
+              >
+                <input id="file-upload" type="file" />
+                <button
+                  class="gbm-btn transparent cover h-4 mt-2 text-large"
+                  onclick=""
+                >
+                  Import dApp configuration
+                </button>
+              </label>
+              <button
+                class="gbm-btn rounded cover h-4 mt-2 text-large"
+                onclick="downloadObjectAsJson()"
+              >
+                Export dApp configuration
+              </button>
+              <button
+                class="gbm-btn transparent rounded cover h-4 left-column mt-2 text-large"
+                onclick="initReset()"
+              >
+                Clear cache and deploy new contract
+              </button>
+            </div>
+            <div class="right-column configuration-terminal">
+              <p id="terminal" class="configuration-terminal-text">
+                Press Deploy to start
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="scripts/global.js"></script>
+  </body>
+</html>

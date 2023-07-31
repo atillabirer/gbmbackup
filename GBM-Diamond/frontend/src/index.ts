@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import path from "path";
 import {
   performDeploymentStep,
@@ -7,21 +7,58 @@ import {
   getDeployerStatus,
 } from "../../scripts/deployer";
 import { WebSocketServer } from "ws";
-import { writeFile } from "fs/promises"
+import { Client } from "pg";
+import session from "express-session";
+import cookieParser from "cookie-parser";
+import {sign,verify,decode} from "jsonwebtoken";
+import {writeFile} from "fs/promises";
+
+
+const secret = "supersecuresecret";
+const expirationDate = 6 * 60 * 60 * 1000; //6 hours in millisec
 
 const sockServer = new WebSocketServer({ port: 444 });
 
 const app: Application = express();
 app.use(express.json({ limit: "12mb" }));
-app.use(express.static(path.join(__dirname + "/views")));
+app.use(express.urlencoded({extended: false}))
+
+const store = new session.MemoryStore();
+
+app.use(session({
+  secret,
+  saveUninitialized: false,
+  resave: false,
+  cookie: {secure: true,maxAge: expirationDate},
+  store
+
+}))
+app.use(cookieParser());
 
 const PORT = 3000;
 
-app.get("/", async (req: Request, res: Response) =>
-  res.status(200).sendFile(path.join(__dirname + "/views/deployment.html"))
-);
+const jwtMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  if(req.cookies.jwt) {
+    //check token
+    verify(req.cookies.jwt,secret,{},(error,decoded) => {
+      console.log("checked")
+      if(error) res.redirect('/admin/login');
+      if(decoded) next();
+    })
+  } else {
+    res.redirect('/admin/login');
+  }
+}
+
+
+
+app.get("/", async (req: Request, res: Response) => {
+  res.redirect('/dapp');
+});
 
 app.get("/presets", async (req: Request, res: Response) => {
+  
+
   res
     .status(200)
     .json(
@@ -39,15 +76,93 @@ app.get("/deploymentStatus", async (req, res) => {
   res.status(200).send(depStatus);
 });
 
-app.get("/:view", async (req: Request, res: Response) => {
+
+
+app.post("/updateDeploymentStatus", async (req: Request, res: Response) => {
+  const { body } = req;
+
+  try {
+    setDeployerStatus(JSON.stringify(body));
+
+    res.status(201).send({ updated: true });
+  } catch (error) {
+    res.status(500).send("Generic server error!");
+  }
+});
+
+app.post('/updateConfig',async (req,res) => {
+  console.log("body:\n",req.body);
+  try {
+
+  await writeFile(__dirname + '/admin/config/config2.json',JSON.stringify(req.body));
+
+  await writeFile(__dirname + '/views/config/config2.json',JSON.stringify(req.body));
+  res.json({message: "ok"});
+  } catch(error) {
+    res.status(500).json({error});
+    console.log(error);
+  }
+})
+
+
+app.get('/admin/login',async(req,res) => {
+
+  res.status(200).sendFile(path.join(__dirname + "/admin/login.html"));
+})
+
+
+
+app.get("/admin/:view",jwtMiddleware,async (req: Request, res: Response) => {
+  try {
+    res
+      .status(200)
+      .sendFile(path.join(__dirname + `/admin/${req.params.view}.html`));
+  } catch {
+    res.status(200).sendFile(path.join(__dirname + "/admin/deployment.html"));
+  }
+});
+
+
+app.get('/dapp',(req,res) => {
+  res.redirect('/dapp/tokenAuctions');
+})
+
+app.get("/dapp/:view",async (req: Request, res: Response) => {
   try {
     res
       .status(200)
       .sendFile(path.join(__dirname + `/views/${req.params.view}.html`));
   } catch {
-    res.status(200).sendFile(path.join(__dirname + "/views/deployment.html"));
+    res.status(200).sendFile(path.join(__dirname + "/views/tokenAuctions.html"));
   }
 });
+
+app.post('/login/password',async (req,res) => {
+  //if the username and password is good, generate a jwt token and then put it in users cookies
+  try {
+    const db = new Client({
+      user: "graph-node",
+      password: "let-me-in",
+      database: "ido",
+    })
+    await db.connect();
+    const query = await db.query("SELECT * FROM state WHERE admin = $1::text AND password = $2::text",[req.body.username,req.body.password]);
+    if(query.rows.length) {
+      sign(query.rows[0],secret,{expiresIn: expirationDate / 1000},(error,encoded) => {
+        if(error) res.status(500).json({error: "Signing error"})
+        if(encoded) res.cookie('jwt',encoded,{maxAge: expirationDate}).redirect('/admin/admin');
+      })
+      
+      
+    } else {
+      res.json({error:"error"});
+    }
+
+  } catch(error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+})
 
 app.get("/whale/:id/:jsonOrImage", async (req: Request, res: Response) => {
   try {
@@ -72,30 +187,9 @@ app.get("/whale/:id/:jsonOrImage", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/updateDeploymentStatus", async (req: Request, res: Response) => {
-  const { body } = req;
+app.use("/admin",jwtMiddleware,express.static(path.join(__dirname + "/admin")));
 
-  try {
-    setDeployerStatus(JSON.stringify(body));
-
-    res.status(201).send({ updated: true });
-  } catch (error) {
-    res.status(500).send("Generic server error!");
-  }
-});
-
-app.post("/updateConfigPostgres", async (req: Request, res: Response) => {
-  try {
-
-
-    await writeFile(__dirname + "/views/config/config2.json", JSON.stringify(req.body));
-    res.status(200).send({ message: "ok" });
-  } catch (error) {
-    res.status(500).send({ error: "updateConfigPostgres failed" });
-    console.log(error);
-  }
-
-})
+app.use("/dapp",express.static(path.join(__dirname + "/views")));
 
 sockServer.on("connection", (ws) => {
   setLogger((msg: string) => {
@@ -107,7 +201,7 @@ sockServer.on("connection", (ws) => {
      */
   ws.on("close", () => { });
 
-  ws.on("message", async function(data) {
+  ws.on("message", async function (data) {
     let receivedMsg = `${data}`;
     let commands = receivedMsg.split(" || ");
     switch (commands[0]) {
@@ -127,7 +221,7 @@ sockServer.on("connection", (ws) => {
       default:
     }
   });
-  ws.onerror = function() {
+  ws.onerror = function () {
     console.log("websocket error");
   };
 });

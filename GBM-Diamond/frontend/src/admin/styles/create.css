@@ -1,0 +1,59 @@
+.token-media {
+  width: 75%;
+  border-radius: 30px;
+  margin: 0 12.5% 0 12.5%;
+}
+
+#token-title {
+  font-family: "Roboto", sans-serif;
+  color: var(--text);
+  margin: 2rem 0 3rem 0;
+  font-size: 48px;
+  font-weight: 400;
+  text-align: center;
+}
+
+#quantity-container {
+  display: none;
+}
+
+#quantity-fields {
+  justify-content: center;
+}
+
+.quantity-control {
+  width: 40px;
+  font-weight: 700;
+  margin: auto 5px;
+}
+
+.quantity-box {
+  width: 56px;
+  height: 60px;
+  border-radius: 12px;
+  background-color: var(--primary);
+  font-size: x-large;
+  font-weight: 700;
+  text-align: center;
+}
+
+#quantity-owned {
+  margin-top: 5px;
+  color: var(--text);
+  text-align: center;
+}
+
+#cancellation-text1-1 {
+  margin-bottom: 1rem;
+}
+
+#date-time-header {
+  font-size: larger;
+  font-weight: lighter;
+  margin: auto 1rem auto 0;
+  color: var(--text);
+}
+
+#start-date-selector {
+  display: none;
+}

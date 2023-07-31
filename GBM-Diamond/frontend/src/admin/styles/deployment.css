@@ -1,0 +1,138 @@
+/*
+  Page specific
+*/
+
+.configuration-terminal {
+  border: 2px solid white;
+  background-color: #555753;
+  border-radius: 10px;
+  height: 100vh;
+}
+
+.configuration-terminal-text {
+  margin: 0;
+  padding: 3rem;
+  color: var(--text);
+  font-weight: 400;
+  font-size: medium;
+  line-height: 160%;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow: auto;
+  height: 100%;
+}
+
+.configuration-default-preset {
+  padding-top: 2rem;
+}
+
+.configuration-default-preset-header {
+  padding-bottom: 1.5rem;
+}
+
+.configuration-default-preset-group {
+  display: flex;
+  flex-direction: row;
+  padding: 0.25rem 0;
+  justify-content: space-between;
+}
+
+.configuration-default-preset-label {
+  font-size: large;
+  color: var(--text);
+  align-self: center;
+}
+
+.configuration-default-preset-input {
+  width: 45%;
+  height: 2.5rem;
+}
+
+.successful-deployment-header {
+  color: var(--primary);
+  padding-bottom: 2.5rem;
+}
+
+.successful-deployment-info {
+  max-width: 25rem;
+  display: flex;
+  flex-direction: row;
+  padding: 0.25rem 0;
+  justify-content: space-between;
+  color: var(--text);
+  font-size: large;
+  align-self: center;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+input[type="color"] {
+  margin-left: auto;
+  margin-right: 1.5rem;
+}
+
+#image-upload-btn {
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+#logoPreview {
+  max-width: 6rem;
+  max-height: 3rem;
+  margin-top: 1rem;
+  margin-left: auto;
+  margin-right: 2rem;
+}
+
+.color-picker {
+  width: 7rem;
+}
+
+.color-preview {
+  height: 3rem;
+  width: 7rem;
+  border-radius: 3px;
+  border: 2px solid white;
+  background-color: transparent;
+  margin-left: 5px;
+}
+
+#logo-upload-success {
+  color: var(--primary);
+}
+
+.reset-text {
+  color: var(--text);
+  text-decoration: underline;
+  font-size: medium;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+#network-warning-p {
+  background-color: #ff5959;
+  border: none;
+  display: none;
+  color: white;
+  padding: 15px 10px;
+  border-radius: 10px;
+  border: 2px solid white;
+}
+
+@media (max-device-width: 768px), (max-width: 768px) {
+  .deployment-missing .opposite-ends {
+    gap: 5rem;
+  }
+  .deployment-missing .opposite-ends > .left-column {
+    width: 100%;
+  }
+  .configuration-terminal {
+    width: 100%;
+    height: 800px;
+  }
+  .configuration-terminal-text {
+    font-size: 0.85rem;
+  }
+}

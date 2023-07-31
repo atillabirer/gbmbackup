@@ -12,7 +12,7 @@ generateSelectDropdown(
 
 async function generateTheDeployOptions() {
   let deploymentConf = await (
-    await fetch("../config/deploymentConf.json")
+    await fetch("/admin/config/deploymentConf.json")
   ).json();
 
   console.log(deploymentConf);
@@ -102,7 +102,7 @@ async function connectToDeployer() {
       : defaultPresets.GBMAdminOverrideAddress;
 
   let deploymentConf = await (
-    await fetch("../config/deploymentConf.json")
+    await fetch("/admin/config/deploymentConf.json")
   ).json();
 
   const webSocket = new WebSocket("wss://gbmdapp.link/websocket");
@@ -525,7 +525,7 @@ function generateNetworkDropdownAndCheckForWarning() {
 
 async function generateTheDeployOptions() {
   let deploymentConf = await (
-    await fetch("../config/deploymentConf.json")
+    await fetch("/admin//config/deploymentConf.json")
   ).json();
 
   let idList = Object.keys(deploymentConf);
@@ -616,10 +616,10 @@ async function connectToDeployer() {
       : defaultPresets.GBMAdminOverrideAddress;
 
   let deploymentConf = await (
-    await fetch("/dapp/config/deploymentConf.json")
+    await fetch("../config/deploymentConf.json")
   ).json();
 
-  const webSocket = new WebSocket("wss://gbmdapp.link/websocket/");
+  const webSocket = new WebSocket("wss://stellagas.xyz/websocket/");
 
   let deploymentSteps =
     deploymentConf[
