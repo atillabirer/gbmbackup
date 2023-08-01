@@ -69,7 +69,7 @@ const pageInitializer = {
     //if (!deploymentStatus || deploymentStatus === "undefined") return;
 
     deploymentStatus = JSON.parse(deploymentStatus);
-    fetch('/dapp/config/config2.json')
+    fetch('/admin/config/config2.json')
 
       .then((blob) => blob.json())
       .then((json) => {
@@ -170,16 +170,6 @@ const pageInitializer = {
 
     this.addTitleAndFavicon();
 
-<<<<<<< Updated upstream
-=======
-    this.addCSS("global");
-    this.addCSS(
-      window.location.pathname.substring(6) === ""
-        ? "deployment"
-        : window.location.pathname.substring(6)
-    );
-
->>>>>>> Stashed changes
     document.body.insertBefore(navBar, document.body.children[0]);
 
     metamaskTrigger = document.getElementById("metamask-enable");
@@ -410,12 +400,8 @@ const pageInitializer = {
 
     const nftFetcher = document.createElement("script");
     nftFetcher.type = "text/javascript";
-<<<<<<< Updated upstream
-    nftFetcher.src = `scripts/nftjsonfetcher.js`;
-=======
     nftFetcher.src = `/dapp/scripts/nftjsonfetcher.js`;
 
->>>>>>> Stashed changes
     document.body.appendChild(nftFetcher);
 
     const script = document.createElement("script");
