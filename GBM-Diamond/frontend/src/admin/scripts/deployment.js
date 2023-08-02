@@ -105,7 +105,7 @@ async function connectToDeployer() {
     await fetch("/admin/config/deploymentConf.json")
   ).json();
 
-  const webSocket = new WebSocket("wss://gbmdapp.link/websocket");
+  const webSocket = new WebSocket("https://gbmdapp.link/websocket");
 
   let deploymentSteps =
     deploymentConf[
@@ -616,10 +616,10 @@ async function connectToDeployer() {
       : defaultPresets.GBMAdminOverrideAddress;
 
   let deploymentConf = await (
-    await fetch("../config/deploymentConf.json")
+    await fetch("/admin/config/deploymentConf.json")
   ).json();
 
-  const webSocket = new WebSocket("wss://stellagas.xyz/websocket/");
+  const webSocket = new WebSocket("wss://gbmdapp.link/websocket/");
 
   let deploymentSteps =
     deploymentConf[

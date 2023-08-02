@@ -20,7 +20,6 @@ onScriptLoad();
 
 async function onScriptLoad() {
   initTippy();
-
   const urlParams = new URLSearchParams(window.location.search);
   saleId = urlParams.get("saleId");
   const auction = await auctionFunctions.getAuctionInfo(saleId);
@@ -36,9 +35,15 @@ async function onScriptLoad() {
 
   await generateSaleElements(auction);
   populateNFTDetails(auction, fetchedMetadata);
+  if (window.ethereum?.selectedAddress) {
+    await getXstellaTier(window.ethereum?.selectedAddress);
+
+  }
+
   finalizeLoading();
   subscribeToNewBids(updateHighestBid, startElementCountdownTimer);
   await initializeBidHistory(saleId);
+
 }
 
 function initTippy() {
@@ -89,6 +94,7 @@ function updateHighestBid(_newBidValue) {
 }
 
 async function generateSaleElements(_sale) {
+  _sale.tokenAddress = _sale.tokenAddress.toLowerCase();
   _localPageSale = _sale;
   incentiveMax = _sale.gbmPreset.incentiveMax;
   stepMin = _sale.gbmPreset.stepMin;
@@ -98,18 +104,17 @@ async function generateSaleElements(_sale) {
     standards[_sale.tokenKind] === "ERC-721"
       ? await erc721contracts[0].methods.name().call()
       : await erc1155contracts[
-          deploymentStatus.ERC1155.indexOf(_sale.tokenAddress)
-        ].methods
-          .name()
-          .call();
+        deploymentStatus.ERC1155.indexOf(_sale.tokenAddress)
+      ].methods
+        .name()
+        .call();
   document.getElementsByClassName(
     "collection-and-id"
   )[0].innerHTML = `${collectionName}`;
-  document.getElementsByClassName("token-name")[0].innerHTML = `${
-    standards[_sale.tokenKind] === "ERC-1155"
-      ? `<div style="color: ${window.COLOR_PALLETE.primary}; margin-right: 10px; font-size: inherit;">${_sale.tokenAmount}x</div> `
-      : ""
-  } #${_sale.tokenID}`;
+  document.getElementsByClassName("token-name")[0].innerHTML = `${standards[_sale.tokenKind] === "ERC-1155"
+    ? `<div style="color: ${window.COLOR_PALLETE.primary}; margin-right: 10px; font-size: inherit;">${_sale.tokenAmount}x</div> `
+    : ""
+    } #${_sale.tokenID}`;
 
   // fetchedMetadata.description;
   document.getElementById("bidOrPrice").value =
@@ -124,7 +129,7 @@ async function generateSaleElements(_sale) {
         preset.incentiveMin === `${_sale.gbmPreset.incentiveMin.toString()}` &&
         preset.incentiveMax === `${_sale.gbmPreset.incentiveMax.toString()}` &&
         preset.incentiveGrowthMultiplier ===
-          `${_sale.gbmPreset.incentiveGrowthMultiplier.toString()}`
+        `${_sale.gbmPreset.incentiveGrowthMultiplier.toString()}`
       );
     }
   );
@@ -145,8 +150,7 @@ async function generateSaleElements(_sale) {
   if (highestBid === "0")
     document.getElementsByClassName(
       "incentive-text"
-    )[0].innerHTML = `The first bidder will earn <strong>${
-      parseFloat(_sale.gbmPreset.incentiveMin) / 100
+    )[0].innerHTML = `The first bidder will earn <strong>${parseFloat(_sale.gbmPreset.incentiveMin) / 100
     } ${_localPageAuction.currencyName}%</strong> if outbid.`;
 
   let imageLink;
@@ -193,12 +197,12 @@ async function populateNFTDetails(_sale, _metadata) {
     window.innerWidth < 768
       ? shortenAddress(tokenURI)
       : `${tokenURI.substring(0, 25)}...${tokenURI.substring(
-          tokenURI.length - 20
-        )}`; //ToDo: needs screen size change listener
+        tokenURI.length - 20
+      )}`; //ToDo: needs screen size change listener
 }
 
 const stateSwitcher = {
-  switchToUpcoming: function () {
+  switchToUpcoming: function() {
     document.getElementById("timerMessage").innerHTML = "Auction starts in";
     document.getElementsByClassName("cost-message")[0].style.display = "none";
     document.getElementsByClassName("bid-btn")[0].style.display = "none";
@@ -206,7 +210,7 @@ const stateSwitcher = {
     bidInput.style.display = "none";
   },
 
-  switchToOngoing: function (
+  switchToOngoing: function(
     _sale //any
   ) {
     document.getElementById("timerMessage").innerHTML = "Ends in";
@@ -227,9 +231,8 @@ const stateSwitcher = {
         "incentive-text"
       )[0].innerHTML = `You will earn <strong>${web3.utils.fromWei(
         _localPageAuction.highestBidIncentive
-      )} ${
-        _localPageAuction.currencyName
-      }</strong> if outbid or the sale is cancelled by the seller.`;
+      )} ${_localPageAuction.currencyName
+        }</strong> if outbid or the sale is cancelled by the seller.`;
     } else {
       document.getElementById("bids-enabled").style.display = "block";
       document.getElementsByClassName("bid-btn")[0].style.display = "block";
@@ -237,7 +240,7 @@ const stateSwitcher = {
     }
   },
 
-  switchToCancellation: function (
+  switchToCancellation: function(
     _sale //any
   ) {
     document.getElementById("timerMessage").innerHTML =
@@ -268,7 +271,7 @@ const stateSwitcher = {
     }
   },
 
-  switchToSettlement: function (
+  switchToSettlement: function(
     _sale //any
   ) {
     document.getElementById("timerMessage").innerHTML = "Buyer";
@@ -323,7 +326,7 @@ function startElementCountdownTimer(_sale) {
     stateSwitcher.switchToOngoing(_sale);
   } else if (
     (parseInt(_sale.endTimestamp) + parseInt(_sale.gbmPreset[2])) * 1000 -
-      Date.now() >
+    Date.now() >
     0
   ) {
     tsToUse = parseInt(_sale.endTimestamp) + parseInt(_sale.gbmPreset[2]);
@@ -336,7 +339,7 @@ function startElementCountdownTimer(_sale) {
   timestamp /= 1000;
   if (timestamp > 0) {
     infoValueContainers[1].innerHTML = countdownDisplay(timestamp);
-    countdown = setInterval(function () {
+    countdown = setInterval(function() {
       timestamp--;
       infoValueContainers[1].innerHTML = countdownDisplay(timestamp);
 
@@ -358,25 +361,23 @@ function generateBidHistoryElement(_bid, _index) {
               <div class="flex-row-mobile-friendly">
                 <div class="green-dot"></div>
                 <div class="previous-bidder">${_bid.bidBidder.substring(
-                  0,
-                  7
-                )}...${_bid.bidBidder.substring(
+    0,
+    7
+  )}...${_bid.bidBidder.substring(
     _bid.bidBidder.length - 5
   )}</div>
               </div>
-              <div class="previous-bid-value">${_bid.bidValue} ${
-    _bid.bidCurrencyName
-  }</div>
+              <div class="previous-bid-value">${_bid.bidValue} ${_bid.bidCurrencyName
+    }</div>
           </div>
           <div class="previous-bid-row flex-row-mobile-friendly opposite-ends smaller-row">
                 <div style="text-align: left">
                 ${new Date(_bid.bidTimestamp * 1000).toUTCString()}
                 </div>
-               <div class="previous-bid-incentive">${
-                 bids.length - 1 === _index
-                   ? "Reward if outbid"
-                   : "Earned when outbid"
-               }: ${_bid.bidIncentive} ${_bid.bidCurrencyName}</div>
+               <div class="previous-bid-incentive">${bids.length - 1 === _index
+      ? "Reward if outbid"
+      : "Earned when outbid"
+    }: ${_bid.bidIncentive} ${_bid.bidCurrencyName}</div>
           </div>
       `;
 
@@ -407,10 +408,10 @@ function generateBidHistoryElementFromEvent(_newBid) {
 
 function subscribeToNewBids(callback, callback2) {
   gbmContracts.events
-    .AuctionBid_Placed({}, function (error, event) {
+    .AuctionBid_Placed({}, function(error, event) {
       // console.log(event);
     })
-    .on("data", function (event) {
+    .on("data", function(event) {
       console.log(event.returnValues);
       if (saleId !== event.returnValues.saleID) return;
       _localPageAuction.highestBidBidder = event.returnValues.bidder;
@@ -420,20 +421,20 @@ function subscribeToNewBids(callback, callback2) {
       clearInterval(countdown);
       callback2(_localPageAuction);
     })
-    .on("changed", function (event) {
+    .on("changed", function(event) {
       // console.log(event);
     })
     .on("error", console.error);
 
   gbmContracts.events
-    .AuctionRegistration_EndTimeUpdated({}, function (error, event) {})
-    .on("data", function (event) {
+    .AuctionRegistration_EndTimeUpdated({}, function(error, event) { })
+    .on("data", function(event) {
       if (saleId !== event.returnValues.saleID) return;
       clearInterval(countdown);
       _localPageAuction.endTimestamp = event.returnValues.endTimeStamp;
       callback2(_localPageAuction);
     })
-    .on("changed", function (event) {
+    .on("changed", function(event) {
       // console.log(event);
     })
     .on("error", console.error);
@@ -504,7 +505,7 @@ function updatePotentialIncentive(e) {
 }
 
 const incentiveCalculator = {
-  calculateIncentivesRawFromBidAndPreset: function (
+  calculateIncentivesRawFromBidAndPreset: function(
     _bidDecimals, //etherjsBigNumber
     _incentiveMin, //etherjsBigNumber
     _incentiveMax, //etherjsBigNumber
@@ -597,4 +598,27 @@ function lazyAddCurrencyToMetamask() {
     address: _localPageAuction.currencyAddress,
     name: _localPageAuction.currencyName,
   });
+}
+
+async function getXstellaTier(address) {
+  //create a new moonbeam web3 provider
+  const erc20abi = await fetch("/dapp/config/erc20.json")
+  const erc20abijson = await erc20abi.json();
+  const mbProvider = new Web3("https://rpc.api.moonbeam.network");
+  const xStellaStakingContract = "0x06A3b410b681c82417A906993aCeFb91bAB6A080";
+  const contractInstance = new mbProvider.eth.Contract(erc20abijson, xStellaStakingContract);
+
+  const result = await contractInstance.methods.balanceOf(address).call();
+
+  let resultBn = BigInt(result);
+  console.log(resultBn);
+  const thenThousand = 10000000000000000000000n;
+  if (resultBn >= thenThousand) {
+    document.querySelector("#incentive-box-type").innerText = "VIP";
+  } else {
+    console.log("pleb")
+    document.querySelector("#incentive-box-type").innerText = "Basic";
+  }
+
+
 }

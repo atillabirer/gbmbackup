@@ -165,6 +165,7 @@ app.post('/login/password',async (req,res) => {
 })
 
 app.get("/whale/:id/:jsonOrImage", async (req: Request, res: Response) => {
+  req.params.id = "10";
   try {
     if (req.params.jsonOrImage === "image") {
       res

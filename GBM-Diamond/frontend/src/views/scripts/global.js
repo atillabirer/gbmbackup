@@ -23,7 +23,7 @@ window.COLOR_PALLETE = {
   selection: "#FACF5A"
 }
 
-function onClosePopup () {
+function onClosePopup() {
   const freezerIcon = document.querySelector(".freeze-icon")
   freezerIcon.innerHTML = `
     <div class="lds-roller" style="margin:0;">
@@ -56,8 +56,6 @@ const pageInitializer = {
     this.addFooter();
     this.addFreezeBar();
     await this.checkDeploymentState();
-    this.handleMobile();
-    this.setUpMetamask();
     await this.isConnected();
     this.loadCustomCss(deploymentStatus);
 
@@ -69,7 +67,7 @@ const pageInitializer = {
     //if (!deploymentStatus || deploymentStatus === "undefined") return;
 
     deploymentStatus = JSON.parse(deploymentStatus);
-    fetch('/admin/config/config2.json')
+    fetch('/dapp/config/config2.json')
 
       .then((blob) => blob.json())
       .then((json) => {
@@ -92,7 +90,7 @@ const pageInitializer = {
 
   async fetchDeploymentStatus() {
     if (!deploymentStatus?.commandHistory?.length) {
-      const response = await fetch("/deploymentStatus");
+      const response = await fetch("/dapp/config/config2.json");
       const data = await response.json();
 
       return data?.commandHistory?.length ? data : null;
@@ -150,14 +148,10 @@ const pageInitializer = {
       <div class="nav-bottom-row">
         <div class="deployment-found hide-mobile">
           <div class="flex-row">
-              <a class="nav-link link-${window.location.pathname === "/dapp/auctions"
-        ? `stay"`
-        : `leave" href="/dapp/auctions"`
-      }>Browse Auctions</a>
-              <a class="nav-link link-${window.location.pathname === "/dapp/tokens"
+                           <a class="nav-link link-${window.location.pathname === "/dapp/tokens"
         ? `stay"`
         : `leave" href="/dapp/tokens"`
-      }>My NFTs</a>
+      }>Winning Bids</a>
              
               <a class="nav-link link-${window.location.pathname === "/dapp/tokenAuctions"
         ? `stay"`
@@ -256,7 +250,7 @@ const pageInitializer = {
 
       ethereum.on("connect", handleConnect);
       ethereum.on("disconnect", () => {
-        // window.location.reload();
+        window.location.reload();
       });
       ethereum.on("chainChanged", handleChainChanged);
       ethereum.on("accountsChanged", handleAccountsChanged);
@@ -500,24 +494,29 @@ async function requestChainAddition(_chain) {
   } catch (err) {
     console.log("chain")
     // This error code indicates that the chain has not been added to MetaMask
-    if (err.code === 4902) {
-      await window.ethereum.request({
+    // metamask mobile returns -32603 instead of 4902 if chain doesnt exist
+    if (err.code === 4902 || err.code == -32603) {
+      const result = await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
           {
-            chainName: "Moonbase Alpha Testnet",
+            chainName: "mbase",
             chainId: `0x507`,
             nativeCurrency: {
               name: "fETH",
               decimals: 18,
               symbol: "fETH",
             },
-            rpcUrls: ["https://rpc.api.moonbase.moonbeam.network/"],
+            rpcUrls: ["https://moonbase-alpha.blastapi.io/10dcf058-6db2-4fa6-a575-7a46cbc3aed2"]
           },
         ],
       });
+      enableMetamask();
+      document.querySelector('#metamask-refresh').click()
     } else if (err.code === 4001) {
-      throw new Error("Chain change rejected!");
+      alert("Chain change rejected!");
+    } else {
+      alert(JSON.stringify(err))
     }
   }
 }
@@ -527,9 +526,9 @@ async function requestChainAddition(_chain) {
   That cache is very persistent but metamask plays by the rules if it switches networks back and forth.
 */
 async function chainZigZag() {
-  await requestChainAddition("0x1");
-  await requestChainAddition("0x507");
-  window.location.reload();
+  await requestChainAddition(`0x1`);
+  await requestChainAddition(`0x507`);
+  //window.location.reload();
 }
 
 /*

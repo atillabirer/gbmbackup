@@ -35,8 +35,8 @@ const pageInitializer = {
     this.addFooter();
     this.addFreezeBar();
     await this.checkDeploymentState();
-    this.handleMobile();
-    this.setUpMetamask();
+    // this.handleMobile();
+    // this.setUpMetamask();
     await this.isConnected();
     this.loadCustomCss(deploymentStatus);
 
@@ -45,10 +45,10 @@ const pageInitializer = {
   },
 
   setDeploymentStatus() {
-    //if (!deploymentStatus || deploymentStatus === "undefined") return;
+    // if(!deploymentStatus || deploymentStatus === "undefined") return;
 
     deploymentStatus = JSON.parse(deploymentStatus);
-    fetch('/dapp/config/config2.json')
+    fetch('/admin/config/config2.json')
 
       .then((blob) => blob.json())
       .then((json) => {
@@ -71,7 +71,7 @@ const pageInitializer = {
 
   async fetchDeploymentStatus() {
     if (!deploymentStatus?.commandHistory?.length) {
-      const response = await fetch("/deploymentStatus");
+      const response = await fetch("/admin/config/config2.json");
       const data = await response.json();
 
       return data?.commandHistory?.length ? data : null;
@@ -320,7 +320,7 @@ const pageInitializer = {
     else if (deploymentStatus?.finished) this.flipVisibility();
     else if (
       (!deploymentStatus || deploymentStatus === "undefined") &&
-      window.location.pathname !== "/"
+      window.location.pathname !== "/admin/deployment"
     )
       return;
   },
@@ -328,7 +328,7 @@ const pageInitializer = {
   handleShowOptionToUseDeployedApp(data) {
     if (window.location.pathname === "/")
       this.showOptionToUseDeployedDApp(data);
-    else window.location.assign("/");
+    else window.location.assign("/admin/deployment");
   },
 
   showOptionToUseDeployedDApp(data) {

@@ -282,7 +282,7 @@ function reverseChildren(parent) {
 }
 
 function redirectToAuction(number) {
-  location.href = `${window.location.protocol}//${window.location.host}/auction?saleId=${number}`;
+  location.href = `${window.location.protocol}//${window.location.host}/admin/auction?saleId=${number}`;
 }
 
 async function getNumberOfAuctions() {
@@ -339,6 +339,12 @@ async function getAuctionInfoMinimal(saleID) {
   const tokenIDFetched = response.auctionRegistrationNewAuctions[0]?.tokenID || 0;
   console.log(tokenIDFetched, tokenAddressFetched, gbmPresetIndex);
 
+  if(deploymentStatus.tokens.includes("0xF5a74C539e89DF30225cF38a3e2F7Cb4Fd4A0c51")) {
+    console.log("capitalized");
+  }
+  if(deploymentStatus.tokens.includes("0xf5a74c539e89df30225cf38a3e2f7cb4fd4a0c51")) {
+  console.log("uncapitalized");
+  }
 
   if (
     deploymentStatus.tokens &&

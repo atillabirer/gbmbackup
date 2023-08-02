@@ -80,6 +80,7 @@ function updateHighestBid(_newBidValue) {
 }
 
 async function generateSaleElements(_sale) {
+  _sale.tokenAddress = _sale.tokenAddress.toLowerCase();
   _localPageSale = _sale;
   incentiveMax = _sale.gbmPreset.incentiveMax;
   stepMin = _sale.gbmPreset.stepMin;

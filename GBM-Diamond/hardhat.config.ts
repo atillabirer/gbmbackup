@@ -20,7 +20,7 @@ const config: HardhatUserConfig = {
       accounts: ["0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"] 
     },
     moonbaseAlpha:{ //Add remote chain in this fastion, don't forget to add your private key.
-      url: "https://rpc.api.moonbase.moonbeam.network",
+      url: "https://moonbase-alpha.blastapi.io/10dcf058-6db2-4fa6-a575-7a46cbc3aed2",
       accounts: {
         mnemonic: process.env.MNEMONIC
       } 
