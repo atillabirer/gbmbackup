@@ -60,7 +60,7 @@ async function loadGBMAuctions() {
       "auction-filters-container"
     )[0].style.display = "block";
     const sortButtons = [...document.querySelectorAll(`.title .auction-item-flex > button`)]
-    for(let button of sortButtons) {
+    for (let button of sortButtons) {
       button.style.display = "block";
     }
 
@@ -259,13 +259,13 @@ function onClickSortButton(e) {
   displayWithPreferredSort();
 
   const otherSortButtons = [...document.querySelectorAll(`.title .auction-item-flex > button > img:not([sort-name="${sortedBy}"])`)]
-  for(let sortButton of otherSortButtons) {
+  for (let sortButton of otherSortButtons) {
     sortButton.setAttribute('sort-order', '')
-    sortButton.src = `../images/sort.svg`
+    sortButton.src = `/dapp/images/sort.svg`
   }
 
   imageElement.setAttribute('sort-order', sortTo)
-  imageElement.src = `../images/sort-${sortTo.toLowerCase()}.svg`
+  imageElement.src = `/dapp/images/sort-${sortTo.toLowerCase()}.svg`
 }
 
 function displayWithPreferredSort() {
@@ -453,9 +453,8 @@ async function generateAuctionElement(auction, index) {
               <div id="circle-${index}" class="auction-time-circle" style="display: none"></div>
               <div id="timer-${index}" class="auction-item-name countdown">Loading...</div>
             </div>
-            <img width="30" class="highest-bidder" src="../images/highest-bidder.svg" style="display: ${
-              window.ethereum.selectedAddress === auction.highestBidBidder.toLowerCase() ? 'block' : 'none'
-            };"/>
+            <img width="30" class="highest-bidder" src="/dapp/images/highest-bidder.svg" style="display: ${window.ethereum.selectedAddress === auction.highestBidBidder.toLowerCase() ? 'block' : 'none'
+    };"/>
             <button id="button-${index}" class="gbm-btn bid-now-btn" 
               onclick="redirectToAuction(${auction.saleID})" style="display: none">
                 Bid now

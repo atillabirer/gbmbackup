@@ -447,7 +447,7 @@ async function claim() {
   const urlParams = new URLSearchParams(window.location.search);
   const saleId = urlParams.get("saleId");
   await auctionFunctions.claimToken(saleId);
-  location.href = `${window.location.protocol}//${window.location.host}/tokens`;
+  location.href = `${window.location.protocol}//${window.location.host}/dapp/tokens`;
 }
 
 function updatePotentialIncentive(e) {

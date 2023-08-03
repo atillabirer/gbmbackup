@@ -456,7 +456,7 @@ async function claim() {
   const urlParams = new URLSearchParams(window.location.search);
   const saleId = urlParams.get("saleId");
   await auctionFunctions.claimToken(saleId);
-  location.href = `${window.location.protocol}//${window.location.host}/tokens`;
+  location.href = `${window.location.protocol}//${window.location.host}/dapp/tokens`;
 }
 
 function updatePotentialIncentive(e) {
@@ -602,22 +602,26 @@ function lazyAddCurrencyToMetamask() {
 
 async function getXstellaTier(address) {
   //create a new moonbeam web3 provider
-  const erc20abi = await fetch("/dapp/config/erc20.json")
-  const erc20abijson = await erc20abi.json();
-  const mbProvider = new Web3("https://rpc.api.moonbeam.network");
-  const xStellaStakingContract = "0x06A3b410b681c82417A906993aCeFb91bAB6A080";
-  const contractInstance = new mbProvider.eth.Contract(erc20abijson, xStellaStakingContract);
+  try {
+    const erc20abi = await fetch("/dapp/config/erc20.json")
+    const erc20abijson = await erc20abi.json();
+    const mbProvider = new Web3("https://rpc.api.moonbeam.network");
+    const xStellaStakingContract = "0x06A3b410b681c82417A906993aCeFb91bAB6A080";
+    const contractInstance = new mbProvider.eth.Contract(erc20abijson, xStellaStakingContract);
 
-  const result = await contractInstance.methods.balanceOf(address).call();
+    const result = await contractInstance.methods.balanceOf(address).call();
 
-  let resultBn = BigInt(result);
-  console.log(resultBn);
-  const thenThousand = 10000000000000000000000n;
-  if (resultBn >= thenThousand) {
-    document.querySelector("#incentive-box-type").innerText = "VIP";
-  } else {
-    console.log("pleb")
-    document.querySelector("#incentive-box-type").innerText = "Basic";
+    let resultBn = BigInt(result);
+    console.log(resultBn);
+    const thenThousand = 10000000000000000000000n;
+    if (resultBn >= thenThousand) {
+      document.querySelector("#incentive-box-type").innerText = "VIP";
+    } else {
+      console.log("pleb")
+      document.querySelector("#incentive-box-type").innerText = "Basic";
+    }
+  } catch (error) {
+    console.log(error);
   }
 
 

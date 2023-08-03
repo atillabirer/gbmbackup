@@ -704,7 +704,7 @@ function subscribeToTransfers() {
 }
 
 function redirectToAuction(number) {
-  location.href = `${window.location.protocol}//${window.location.host}/auction?saleId=${number}`;
+  location.href = `${window.location.protocol}//${window.location.host}/dapp/auction?saleId=${number}`;
 }
 
 function toggleNFTView(_filterButtonIndex) {
