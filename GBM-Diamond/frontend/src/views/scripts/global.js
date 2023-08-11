@@ -120,25 +120,51 @@ const pageInitializer = {
     logoImg.src = data.logo || logo;
   },
   addNavBar: function() {
-    let navBar = document.createElement("div");
-    navBar.classList.add("nav-bar");
-    navBar.innerHTML = `
-    <div class="pad-vertical-2">
-      <div id="connect-wallet-container" class="metamask-missing">
-        <button id="metamask-enable" class="gbm-btn">Connect MetaMask</button>
-      </div>
-      <div class="flex-row opposite-ends">
-        <div style="display: flex;">
-          <img id="nav-bar-logo" class="h-3" src="${logo}" style="margin: auto;"/>
+    const pathname = window.location.pathname
+    const connectedAddress = window.ethereum.selectedAddress
+    const header = document.createElement("header")
+    const button = document.createElement("button")
+    button.setAttribute('id', 'connect-wallet')
+    if (connectedAddress) {
+      button.classList.add('connected')
+      button.innerHTML = `
+        <p>${shortenAddress(window.ethereum.selectedAddress)}</p>
+        <img src="images/metamask-fox.svg" width="20px" height="20px" alt="Metamask"/>
+      `
+    } else {
+      button.innerText = `Connect to a wallet`
+    }
+    header.innerHTML = `
+      <section class="header-left">
+        <div class="header-logo-container">
+          <a href="https://gbmdapp.link/ido">
+            <img
+              id="nav-bar-logo"
+              src="images/logo.svg"
+              width="200px"
+              height="40px"
+              alt="Stellaswap"
+            />
+          </a>
         </div>
-        <div class="nav-metamask">
-          <div class="metamask-found" hidden>
-            <div class="items-center flex-row">
-              <p id="active-metamask-account"></p>
-              <button id="metamask-disable" class="gbm-btn transparent ml-75" hidden>Disconnect</button>
-              <button id="metamask-refresh" class="gbm-btn ml-75">⟳</button>
-            </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/ido">
+            IDO Home
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/v1/dapp/tokens" class="${pathname.endsWith('/dapp/tokens') ? 'active' : ''}">
+            My Bids
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/v1/dapp/tokenAuctions" class="${pathname.endsWith('/dapp/tokenAuctions') ? 'active' : ''}">
+            Token Auctions
+          </a>
+        </div>
+      </section>
 
+<<<<<<< HEAD
             <button class="gbm-btn transparent rounded w-4 h-4 text-large bold">
               ☰
             </button>
@@ -168,23 +194,18 @@ const pageInitializer = {
         </div>
       </div>
     </div>`;
+=======
+      <section class='header-right'>
+        ${button.outerHTML}
+      </section>`;
+>>>>>>> refs/remotes/origin/recovery
 
     this.addTitleAndFavicon();
-
-    document.body.insertBefore(navBar, document.body.children[0]);
-
-    metamaskTrigger = document.getElementById("metamask-enable");
-    metamaskTrigger.onclick = enableMetamask;
-
-    const hamburgerMenu = document.querySelector('.metamask-found > .gbm-btn')
-    const menus = document.querySelector('.nav-bottom-row > .deployment-found')
-    window.addEventListener('click', () => {
-      menus.classList.add('hide-mobile')
-    })
-    hamburgerMenu.addEventListener('click', (e) => {
-      e.stopPropagation()
-      menus.classList.toggle('hide-mobile')
-    })
+    document.body.insertBefore(header, document.body.children[0]);
+    if (!connectedAddress) {
+      metamaskTrigger = document.getElementById("connect-wallet");
+      metamaskTrigger.onclick = enableMetamask;
+    }
   },
   addFreezeBar: function() {
     let freeze = document.createElement("div");
@@ -391,14 +412,6 @@ const pageInitializer = {
       (_element) => (_element.hidden = false)
     );
 
-    document.getElementById(
-      "active-metamask-account"
-    ).innerHTML = `Connected: ${shortenAddress(
-      window.ethereum.selectedAddress
-    )}`;
-    const forceBtn = document.getElementById("metamask-refresh");
-    forceBtn.onclick = chainZigZag;
-
     const nftFetcher = document.createElement("script");
     nftFetcher.type = "text/javascript";
     nftFetcher.src = `/v1/dapp/scripts/nftjsonfetcher.js`;
@@ -470,7 +483,7 @@ const pageInitializer = {
 };
 
 const shortenAddress = (_address) =>
-  `${_address.substring(0, 6)}...${_address.substring(_address.length - 6)}`;
+  `${_address.substring(0, 6)}...${_address.substring(_address.length - 4)}`;
 
 /*
   Basic function to request MetaMask access, then add & switch the network to the
@@ -499,11 +512,10 @@ async function requestChainAddition(_chain) {
       params: [{ chainId: _chain }],
     });
   } catch (err) {
-    console.log("chain")
     // This error code indicates that the chain has not been added to MetaMask
     // metamask mobile returns -32603 instead of 4902 if chain doesnt exist
     if (err.code === 4902 || err.code == -32603) {
-      const result = await window.ethereum.request({
+      await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
           {
@@ -519,7 +531,7 @@ async function requestChainAddition(_chain) {
         ],
       });
       enableMetamask();
-      document.querySelector('#metamask-refresh').click()
+      chainZigZag()
     } else if (err.code === 4001) {
       alert("Chain change rejected!");
     } else {
