@@ -67,7 +67,7 @@ const pageInitializer = {
     //if (!deploymentStatus || deploymentStatus === "undefined") return;
 
     deploymentStatus = JSON.parse(deploymentStatus);
-    fetch('/dapp/config/config2.json')
+    fetch('/v1/dapp/config/config2.json')
 
       .then((blob) => blob.json())
       .then((json) => {
@@ -90,7 +90,7 @@ const pageInitializer = {
 
   async fetchDeploymentStatus() {
     if (!deploymentStatus?.commandHistory?.length) {
-      const response = await fetch("/dapp/config/config2.json");
+      const response = await fetch("/v1/dapp/config/config2.json");
       const data = await response.json();
 
       return data?.commandHistory?.length ? data : null;
@@ -148,15 +148,22 @@ const pageInitializer = {
       <div class="nav-bottom-row">
         <div class="deployment-found hide-mobile">
           <div class="flex-row">
-                           <a class="nav-link link-${window.location.pathname === "/dapp/tokens"
+     <a class="nav-link link-${window.location.pathname === "/ido"
         ? `stay"`
-        : `leave" href="/dapp/tokens"`
-      }>Winning Bids</a>
+        : `leave" href="/ido"`
+      }>IDO Home</a>
+
+
+                           <a class="nav-link link-${window.location.pathname === "/v1/dapp/tokens"
+        ? `stay"`
+        : `leave" href="/v1/dapp/tokens"`
+      }>My Bids</a>
              
-              <a class="nav-link link-${window.location.pathname === "/dapp/tokenAuctions"
+              <a class="nav-link link-${window.location.pathname === "/v1/dapp/tokenAuctions"
         ? `stay"`
-        : `leave" href="/dapp/tokenAuctions"`
+        : `leave" href="/v1/dapp/tokenAuctions"`
       }>Token Auctions</a>
+
           </div>
         </div>
       </div>
@@ -300,7 +307,7 @@ const pageInitializer = {
     }
   },
   loadContracts: async function() {
-    abis = await (await fetch("/dapp/config/abis.json")).json();
+    abis = await (await fetch("/v1/dapp/config/abis.json")).json();
 
     web3 = new Web3(window.ethereum);
     gbmContracts = new web3.eth.Contract(abis["gbm"], diamondAddress);
@@ -394,15 +401,15 @@ const pageInitializer = {
 
     const nftFetcher = document.createElement("script");
     nftFetcher.type = "text/javascript";
-    nftFetcher.src = `/dapp/scripts/nftjsonfetcher.js`;
+    nftFetcher.src = `/v1/dapp/scripts/nftjsonfetcher.js`;
 
     document.body.appendChild(nftFetcher);
 
     const script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = `scripts/${window.location.pathname.substring(6) === ""
+    script.src = `scripts/${window.location.pathname.substring(9) === ""
       ? "deployment"
-      : window.location.pathname.substring(6)
+      : window.location.pathname.substring(9)
       }.js`;
     document.body.appendChild(script);
   },
@@ -933,7 +940,7 @@ async function freezeAndSendToMetamask(_functionCall) {
       freezerText.innerText = e.message
     })
     .finally(() => {
-      freezerIcon.innerHTML = '<img src="./images/metamask-fox.svg" />'
+      freezerIcon.innerHTML = '<img src="/v1/dapp/images/metamask-fox.svg" />'
     });
 }
 

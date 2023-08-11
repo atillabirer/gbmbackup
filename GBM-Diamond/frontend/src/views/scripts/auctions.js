@@ -9,7 +9,7 @@ let currentView = 0;
 
 Array.from(document.getElementsByClassName("filter-btn")).forEach(
   (_element, index) => {
-    _element.onclick = function () {
+    _element.onclick = function() {
       currentView = index;
       toggleAuctions(index);
     };
@@ -59,7 +59,7 @@ function reverseChildren(parent) {
 }
 
 function redirectToAuction(number) {
-  location.href = `${window.location.protocol}//${window.location.host}/auction?saleId=${number}`;
+  location.href = `https://gbmdapp.link/v1/dapp/auction?saleId=${number}`;
 }
 
 async function getNumberOfAuctions() {
@@ -168,37 +168,33 @@ async function generateAuctionElement(auction, index) {
 
   const auctionInnerHTML = `
         <div class="auction-grid-row auction-grid-item">
-            <div class="auction-item-flex"><img src="${
-              auction.tokenImage
-            }" loading="lazy" alt="" class="nft-image">
+            <div class="auction-item-flex"><img src="${auction.tokenImage
+    }" loading="lazy" alt="" class="nft-image">
             <div>
-                <div class="auction-item-name">${
-                  auction.tokenKind === "0x973bb640"
-                    ? `<div style="color: ${window.COLOR_PALLETE.primary}; margin-right: 10px; font-size: inherit; font-weight: 700; display: inline-block">${auction.tokenAmount}x</div>`
-                    : ""
-                  // }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
-                }${auction.tokenName} #${auction.tokenID}</div>
-                <div class="auction-item-flex subtitle"><img src="images/hardhat.svg" loading="lazy" alt="" class="company-icon">
+                <div class="auction-item-name">${auction.tokenKind === "0x973bb640"
+      ? `<div style="color: ${window.COLOR_PALLETE.primary}; margin-right: 10px; font-size: inherit; font-weight: 700; display: inline-block">${auction.tokenAmount}x</div>`
+      : ""
+    // }${await erc1155contracts[deploymentStatus.ERC1155.indexOf(auction.tokenAddress)].methods.name().call()} #${auction.tokenID}</div>
+    }${auction.tokenName} #${auction.tokenID}</div>
+                <div class="auction-item-flex subtitle"><img src="/v1/dapp/images/hardhat.svg" loading="lazy" alt="" class="company-icon">
                 <div class="text-block">Stellaswap GBM</div>
                 </div>
             </div>
             </div>
             <div class="auction-item-current-bid">
-            <div class="auction-item-name">${auction.highestBidValue} ${
-    auction.currencyName
-  }</div>
+            <div class="auction-item-name">${auction.highestBidValue} ${auction.currencyName
+    }</div>
             <div class="auction-item-bidder">${shortenAddress(
-              auction.highestBidBidder
-            )}</div>
+      auction.highestBidBidder
+    )}</div>
             </div>
             <div class="auction-item-current-timer">
             <div class="time-flex-wrap">
                 <div id="circle-${index}" class="auction-time-circle" style="display: none"></div>
                 <div id="timer-${index}" class="auction-item-name countdown">Loading...</div>
             </div>
-            <button id="button-${index}" class="gbm-btn bid-now-btn" onclick="redirectToAuction(${
-    auction.saleID
-  })" style="display: none">Bid now</a>
+            <button id="button-${index}" class="gbm-btn bid-now-btn" onclick="redirectToAuction(${auction.saleID
+    })" style="display: none">Bid now</a>
             </div>
         </div>
     `;
@@ -230,13 +226,13 @@ async function retrieveNewAuction(newAuction) {
 
 function subscribeToNewAuctions(callback) {
   gbmContracts.events
-    .AuctionRegistration_NewAuction({}, function (error, event) {
+    .AuctionRegistration_NewAuction({}, function(error, event) {
       // console.log(event);
     })
-    .on("data", function (event) {
+    .on("data", function(event) {
       callback(event.returnValues);
     })
-    .on("changed", function (event) {
+    .on("changed", function(event) {
       // console.log(event);
     })
     .on("error", console.error);
@@ -259,7 +255,7 @@ function toggleAuctions(_filterButtonIndex) {
   );
   document
     .getElementsByClassName("filter-btn")
-    [currentView].classList.add("active");
+  [currentView].classList.add("active");
 }
 
 function timecalc(x, v) {
@@ -294,7 +290,7 @@ function startElementCountdownTimer(_auction, _index) {
     updateCounters();
     toggleAuctions(currentView);
     timer.innerHTML = `${messagePrefix} in ${countdownDisplay(timestamp)}`;
-    countdowns[_index] = setInterval(function () {
+    countdowns[_index] = setInterval(function() {
       timestamp--;
       if (timestamp >= 0)
         timer.innerHTML = `${messagePrefix} in ${countdownDisplay(timestamp)}`;

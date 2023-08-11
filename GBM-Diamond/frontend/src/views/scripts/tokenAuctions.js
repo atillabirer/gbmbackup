@@ -261,11 +261,11 @@ function onClickSortButton(e) {
   const otherSortButtons = [...document.querySelectorAll(`.title .auction-item-flex > button > img:not([sort-name="${sortedBy}"])`)]
   for (let sortButton of otherSortButtons) {
     sortButton.setAttribute('sort-order', '')
-    sortButton.src = `/dapp/images/sort.svg`
+    sortButton.src = `/v1/dapp/images/sort.svg`
   }
 
   imageElement.setAttribute('sort-order', sortTo)
-  imageElement.src = `/dapp/images/sort-${sortTo.toLowerCase()}.svg`
+  imageElement.src = `/v1/dapp/images/sort-${sortTo.toLowerCase()}.svg`
 }
 
 function displayWithPreferredSort() {
@@ -285,7 +285,7 @@ function reverseChildren(parent) {
 }
 
 function redirectToAuction(number) {
-  location.href = `${window.location.protocol}//${window.location.host}/dapp/auction?saleId=${number}`;
+  location.href = `${window.location.protocol}//${window.location.host}/v1/dapp/auction?saleId=${number}`;
 }
 
 async function getNumberOfAuctions() {
@@ -364,7 +364,7 @@ async function getAuctionInfoMinimal(saleID) {
     } else {
       tokenImages[
         `${tokenAddressFetched}-${tokenIDFetched}`
-      ] = `/whale/${tokenIDFetched}/image`;
+      ] = `/v1/whale/${tokenIDFetched}/image`;
       imageLink = tokenImages[`${tokenAddressFetched}-${tokenIDFetched}`];
     }
   }

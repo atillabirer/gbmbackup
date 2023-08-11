@@ -27,10 +27,10 @@ async function onScriptLoad() {
 
   try {
     fetchedMetadata = await (
-      await fetch(`/whale/${auction.tokenID}/json`)
+      await fetch(`/v1/whale/${auction.tokenID}/json`)
     ).json();
   } catch {
-    fetchedMetadata = await (await fetch(`/whale/1/json`)).json();
+    fetchedMetadata = await (await fetch(`/v1/whale/1/json`)).json();
   }
 
   await generateSaleElements(auction);
@@ -94,6 +94,7 @@ function updateHighestBid(_newBidValue) {
 }
 
 async function generateSaleElements(_sale) {
+  console.log(_sale);
   _sale.tokenAddress = _sale.tokenAddress.toLowerCase();
   _localPageSale = _sale;
   incentiveMax = _sale.gbmPreset.incentiveMax;
@@ -165,7 +166,7 @@ async function generateSaleElements(_sale) {
     imageLink = fetched.image;
     description = fetched.description;
   } else {
-    imageLink = `/whale/${_sale.tokenID}/image`;
+    imageLink = `/v1/whale/${_sale.tokenID}/image`;
     description = "Stellaswap GBM Whale, An NFT used for testing purposes";
   }
 
@@ -456,7 +457,7 @@ async function claim() {
   const urlParams = new URLSearchParams(window.location.search);
   const saleId = urlParams.get("saleId");
   await auctionFunctions.claimToken(saleId);
-  location.href = `${window.location.protocol}//${window.location.host}/dapp/tokens`;
+  location.href = `${window.location.protocol}//${window.location.host}/v1/dapp/tokens`;
 }
 
 function updatePotentialIncentive(e) {
@@ -603,7 +604,7 @@ function lazyAddCurrencyToMetamask() {
 async function getXstellaTier(address) {
   //create a new moonbeam web3 provider
   try {
-    const erc20abi = await fetch("/dapp/config/erc20.json")
+    const erc20abi = await fetch("/v1/dapp/config/erc20.json")
     const erc20abijson = await erc20abi.json();
     const mbProvider = new Web3("https://rpc.api.moonbeam.network");
     const xStellaStakingContract = "0x06A3b410b681c82417A906993aCeFb91bAB6A080";

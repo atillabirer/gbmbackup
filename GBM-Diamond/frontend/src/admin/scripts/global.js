@@ -48,7 +48,7 @@ const pageInitializer = {
     // if(!deploymentStatus || deploymentStatus === "undefined") return;
 
     deploymentStatus = JSON.parse(deploymentStatus);
-    fetch('/admin/config/config2.json')
+    fetch('/v1/admin/config/config2.json')
 
       .then((blob) => blob.json())
       .then((json) => {
@@ -71,7 +71,7 @@ const pageInitializer = {
 
   async fetchDeploymentStatus() {
     if (!deploymentStatus?.commandHistory?.length) {
-      const response = await fetch("/admin/config/config2.json");
+      const response = await fetch("/v1/admin/config/config2.json");
       const data = await response.json();
 
       return data?.commandHistory?.length ? data : null;
@@ -160,13 +160,13 @@ const pageInitializer = {
 
     this.addCSS("global");
     this.addCSS(
-      window.location.pathname.substring(7) === ""
+      window.location.pathname.substring(9) === ""
         ? "deployment"
-        : window.location.pathname.substring(7)
+        : window.location.pathname.substring(9)
     );
-    console.log( window.location.pathname.substring(7) === ""
+    console.log( window.location.pathname.substring(9) === ""
     ? "deployment"
-    : window.location.pathname.substring(7));
+    : window.location.pathname.substring(9 ));
     document.body.insertBefore(navBar, document.body.children[0]);
 
     metamaskTrigger = document.getElementById("metamask-enable");
@@ -296,7 +296,7 @@ const pageInitializer = {
     }
   },
   loadContracts: async function() {
-    abis = await (await fetch("/admin/config/abis.json")).json();
+    abis = await (await fetch("/v1/admin/config/abis.json")).json();
 
     web3 = new Web3(window.ethereum);
     gbmContracts = new web3.eth.Contract(abis["gbm"], diamondAddress);
@@ -390,15 +390,15 @@ const pageInitializer = {
 
     var nftFetcher = document.createElement("script");
     nftFetcher.type = "text/javascript";
-    nftFetcher.src = `/dapp/scripts/nftjsonfetcher.js`;
+    nftFetcher.src = `/v1/admin/scripts/nftjsonfetcher.js`;
 
     document.body.appendChild(nftFetcher);
 
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = `scripts/${window.location.pathname.substring(6) === ""
+    script.src = `scripts/${window.location.pathname.substring(9) === ""
       ? "deployment"
-      : window.location.pathname.substring(6)
+      : window.location.pathname.substring(9)
       }.js`;
 
     document.body.appendChild(script);

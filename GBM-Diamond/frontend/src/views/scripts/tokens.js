@@ -10,7 +10,7 @@ let currentView = 0;
 
 Array.from(document.getElementsByClassName("filter-btn")).forEach(
   (_element, index) => {
-    _element.onclick = function () {
+    _element.onclick = function() {
       currentView = index;
       toggleNFTView(index);
     };
@@ -18,7 +18,7 @@ Array.from(document.getElementsByClassName("filter-btn")).forEach(
 );
 
 const TokenFetcherProto = {
-  getTokens: async function () {
+  getTokens: async function() {
     const [token721Result, tokens1155Result] = await Promise.all([
       this.get721Tokens(),
       this.get1155Tokens(),
@@ -29,7 +29,7 @@ const TokenFetcherProto = {
       tokens1155: tokens1155Result,
     };
   },
-  get721Tokens: async function () {
+  get721Tokens: async function() {
     let keysArray = [];
 
     for (let i = 0; i < erc721contracts.length; i++) {
@@ -55,15 +55,15 @@ const TokenFetcherProto = {
       escrowed721: escrowed721.value?.map((v) => v?.value),
     };
   },
-  get1155Tokens: async function () {
+  get1155Tokens: async function() {
     const getErc1155TokensIDs = await this.getErc1155TokenIDs();
 
     const keysArray = getErc1155TokensIDs.reduce((acc, currValue, index) => {
       const modifiedCurrentValue = currValue?.value
         ? currValue.value.map((v) => ({
-            contractIndex: index,
-            key: parseInt(v),
-          }))
+          contractIndex: index,
+          key: parseInt(v),
+        }))
         : [];
 
       return [...acc, ...modifiedCurrentValue];
@@ -94,7 +94,7 @@ const TokenFetcherProto = {
       escrowed1155: itemEscrowed1155?.value?.map((v) => v.value),
     };
   },
-  getCollectionNames: async function () {
+  getCollectionNames: async function() {
     return Promise.all(
       erc1155contracts.map(async (contract) => contract.methods.name().call())
     );
@@ -306,7 +306,7 @@ function createLiveAuctionsHandler() {
 }
 
 const CardGeneratorProto = {
-  generateAllCards: async function (
+  generateAllCards: async function(
     _beneficiaries,
     _escrowed721,
     _owners721,
@@ -327,7 +327,7 @@ const CardGeneratorProto = {
     await this.generateTokensOwned1155(_owned1155);
   },
 
-  generateTokensOnSale: async function (_tokensOnSale) {
+  generateTokensOnSale: async function(_tokensOnSale) {
     const ownedTokens = _tokensOnSale.filter(
       (item) =>
         item?.owner?.toLowerCase() ===
@@ -358,7 +358,7 @@ const CardGeneratorProto = {
     // }
   },
 
-  generateTokensInEscrow721: async function (_escrowed, _tokensOnSale) {
+  generateTokensInEscrow721: async function(_escrowed, _tokensOnSale) {
     const ownedTokens = _escrowed.filter(
       (item) =>
         item?.depositor === window.ethereum.selectedAddress.toLowerCase() &&
@@ -378,7 +378,7 @@ const CardGeneratorProto = {
     );
   },
 
-  generateTokensInEscrow1155: async function (_escrowed, _tokensOnSale) {
+  generateTokensInEscrow1155: async function(_escrowed, _tokensOnSale) {
     const inEscrow1155 = _escrowed;
     _tokensOnSale
       .filter((item) => item.tokenKind === "0x973bb640")
@@ -409,7 +409,7 @@ const CardGeneratorProto = {
     );
   },
 
-  generateTokensOwned721: async function (_tokens) {
+  generateTokensOwned721: async function(_tokens) {
     const ownedTokens = _tokens.filter(
       (item) => item.owner === window.ethereum.selectedAddress.toLowerCase()
     );
@@ -427,7 +427,7 @@ const CardGeneratorProto = {
     );
   },
 
-  generateTokensOwned1155: async function (_tokens) {
+  generateTokensOwned1155: async function(_tokens) {
     const ownedTokens = _tokens.filter((item) => item.amount > 0);
 
     await Promise.allSettled(
@@ -493,7 +493,7 @@ const CardGeneratorProto = {
     );
   },
 
-  generateTokenElement: function (
+  generateTokenElement: function(
     _token,
     _className,
     _buttonText,
@@ -507,49 +507,47 @@ const CardGeneratorProto = {
     tokenEl.classList.add(_className);
 
     const tokenInnerHTML = `
-      <img class="nft-media" src="/whale/${_token.tokenId}/image">
+      <img class="nft-media" src="/v1/whale/${_token.tokenId}/image">
       <div class="nft-info">
-          <div class="nft-name flex-row">${
-            _amount !== undefined
-              ? `<div style="color: ${window.COLOR_PALLETE.primary}; font-weight: 400">${_amount}x&nbsp;</div>`
-              : ""
-          }${_token.name} #${_token.tokenId}</div>
+          <div class="nft-name flex-row">${_amount !== undefined
+        ? `<div style="color: ${window.COLOR_PALLETE.primary}; font-weight: 400">${_amount}x&nbsp;</div>`
+        : ""
+      }${_token.name} #${_token.tokenId}</div>
           <div class="flex-row" style="margin-top: 15px;">
           ${
-            //     <div class="nft-company">
-            //     <img class="nft-company-image" src="images/hardhat.svg">
-            //     <div class="nft-company-name">Stellaswap GBM</div>
-            // </div>
+      //     <div class="nft-company">
+      //     <img class="nft-company-image" src="images/hardhat.svg">
+      //     <div class="nft-company-name">Stellaswap GBM</div>
+      // </div>
 
-            //   _amount !== undefined && _className == 'nft-escrowed' ? `<button
-            //   class="gbm-btn quantity-control"
-            //   onclick="changeQuantity(-1)"
-            //   style="margin-left: 10px;"
-            // >
-            //   -
-            // </button>
-            // <div>
-            //   <input
-            //     id="quantity-input"
-            //     class="gbm-input-boxed quantity-box"
-            //     type="text"
-            //     value="1"
-            //     disabled
-            //   />
-            // </div>
-            // <button
-            //   class="gbm-btn quantity-control"
-            //   onclick="changeQuantity(1)"
-            // >
-            //   +
-            // </button>` : ''
-            ""
-          }
-          ${
-            _buttonCallback !== "none"
-              ? `<button class="gbm-btn nft-btn" onclick="${_buttonCallback}">${_buttonText}</button>`
-              : ``
-          }
+      //   _amount !== undefined && _className == 'nft-escrowed' ? `<button
+      //   class="gbm-btn quantity-control"
+      //   onclick="changeQuantity(-1)"
+      //   style="margin-left: 10px;"
+      // >
+      //   -
+      // </button>
+      // <div>
+      //   <input
+      //     id="quantity-input"
+      //     class="gbm-input-boxed quantity-box"
+      //     type="text"
+      //     value="1"
+      //     disabled
+      //   />
+      // </div>
+      // <button
+      //   class="gbm-btn quantity-control"
+      //   onclick="changeQuantity(1)"
+      // >
+      //   +
+      // </button>` : ''
+      ""
+      }
+          ${_buttonCallback !== "none"
+        ? `<button class="gbm-btn nft-btn" onclick="${_buttonCallback}">${_buttonText}</button>`
+        : ``
+      }
         </div>
       </div>
     `;
@@ -637,7 +635,7 @@ async function generateTokens() {
 }
 
 async function createNewAuction(_tokenId, _tokenKind, _index) {
-  location.href = `${window.location.protocol}//${window.location.host}/create?tokenId=${_tokenId}&tokenKind=${_tokenKind}&contractIndex=${_index}`;
+  location.href = `${window.location.protocol}//${window.location.host}/v1/dapp/create?tokenId=${_tokenId}&tokenKind=${_tokenKind}&contractIndex=${_index}`;
 }
 
 async function sendToEscrow(tokenId) {
@@ -673,30 +671,30 @@ async function sendToEscrow1155(tokenId, index) {
 //TODO apply for 1155
 function subscribeToTransfers() {
   erc721contracts[0].events
-    .Transfer({}, function (error, event) {
+    .Transfer({}, function(error, event) {
       // console.log(event);
     })
-    .on("data", async function (event) {
+    .on("data", async function(event) {
       await generateTokens();
       updateCounters();
       toggleNFTView(currentView);
     })
-    .on("changed", function (event) {
+    .on("changed", function(event) {
       // console.log(event);
     })
     .on("error", console.error);
 
   for (i = 0; i < erc1155contracts.length; i++) {
     erc1155contracts[i].events
-      .TransferSingle({}, function (error, event) {
+      .TransferSingle({}, function(error, event) {
         // console.log(event);
       })
-      .on("data", async function (event) {
+      .on("data", async function(event) {
         await generateTokens();
         updateCounters();
         toggleNFTView(currentView);
       })
-      .on("changed", function (event) {
+      .on("changed", function(event) {
         // console.log(event);
       })
       .on("error", console.error);
@@ -704,7 +702,7 @@ function subscribeToTransfers() {
 }
 
 function redirectToAuction(number) {
-  location.href = `${window.location.protocol}//${window.location.host}/dapp/auction?saleId=${number}`;
+  location.href = `${window.location.protocol}//${window.location.host}/v1/dapp/auction?saleId=${number}`;
 }
 
 function toggleNFTView(_filterButtonIndex) {
@@ -713,20 +711,20 @@ function toggleNFTView(_filterButtonIndex) {
   );
   Array.from(document.getElementsByClassName("nft-on-auction")).forEach(
     (_element) =>
-      (_element.style.display =
-        _filterButtonIndex == 0 || _filterButtonIndex == 3 ? `block` : `none`)
+    (_element.style.display =
+      _filterButtonIndex == 0 || _filterButtonIndex == 3 ? `block` : `none`)
   );
   Array.from(document.getElementsByClassName("nft-escrowed")).forEach(
     (_element) =>
-      (_element.style.display =
-        _filterButtonIndex == 1 || _filterButtonIndex == 3 ? `block` : `none`)
+    (_element.style.display =
+      _filterButtonIndex == 1 || _filterButtonIndex == 3 ? `block` : `none`)
   );
   Array.from(document.getElementsByClassName("nft-owned")).forEach(
     (_element) =>
-      (_element.style.display =
-        _filterButtonIndex == 2 || _filterButtonIndex == 3 ? `block` : `none`)
+    (_element.style.display =
+      _filterButtonIndex == 2 || _filterButtonIndex == 3 ? `block` : `none`)
   );
   document
     .getElementsByClassName("filter-btn")
-    [currentView].classList.add("active");
+  [currentView].classList.add("active");
 }
