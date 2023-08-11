@@ -101,86 +101,80 @@ const pageInitializer = {
     logoImg.src = data.logo || logo;
   },
   addNavBar: function() {
-    let navBar = document.createElement("div");
-    navBar.classList.add("nav-bar");
-    navBar.innerHTML = `
-    <div class="pad-vertical-2">
-      <div id="connect-wallet-container" class="metamask-missing">
-        <button id="metamask-enable" class="gbm-btn">Connect MetaMask</button>
-      </div>
-      <div class="flex-row opposite-ends">
-        <div style="display: flex;">
-          <img id="nav-bar-logo" class="h-3" src="${logo}" style="margin: auto;"/>
+    const pathname = window.location.pathname
+    const connectedAddress = window.ethereum.selectedAddress
+    const header = document.createElement("header")
+    const button = document.createElement("button")
+    button.setAttribute('id', 'connect-wallet')
+    if (connectedAddress) {
+      button.classList.add('connected')
+      button.innerHTML = `
+        <p>${shortenAddress(window.ethereum.selectedAddress)}</p>
+        <img src="images/metamask-fox.svg" width="20px" height="20px" alt="Metamask"/>
+      `
+    } else {
+      button.innerText = `Connect to a wallet`
+    }
+    header.innerHTML = `
+      <section class="header-left">
+        <div class="header-logo-container">
+          <a href="https://gbmdapp.link/ido">
+            <img
+              id="nav-bar-logo"
+              src="images/logo.svg"
+              width="200px"
+              height="40px"
+              alt="Stellaswap"
+            />
+          </a>
         </div>
-        <div class="nav-metamask">
-          <div class="metamask-found" hidden>
-            <div class="items-center flex-row">
-              <p id="active-metamask-account"></p>
-              <button id="metamask-disable" class="gbm-btn transparent ml-75" hidden>Disconnect</button>
-              <button id="metamask-refresh" class="gbm-btn ml-75">⟳</button>
-            </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/ido">
+            IDO Home
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/v1/admin/auctions" class="${pathname.endsWith('/admin/auctions') ? 'active' : ''}">
+            Browse Auctions
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/v1/admin/tokens" class="${pathname.endsWith('/admin/tokens') ? 'active' : ''}">
+            My Bids
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/v1/admin/admin" class="${pathname.endsWith('/admin/admin') ? 'active' : ''}">
+            Admin Panel
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/v1/admin/deployment" class="${pathname.endsWith('/admin/deployment') ? 'active' : ''}">
+            Deployment
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/v1/admin/tokenSale" class="${pathname.endsWith('/admin/tokenSale') ? 'active' : ''}">
+            Token Sale
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="https://gbmdapp.link/v1/admin/tokenAuctions" class="${pathname.endsWith('/admin/tokenAuctions') ? 'active' : ''}">
+            Token Auctions
+          </a>
+        </div>
+      </section>
 
-            <button class="gbm-btn transparent rounded w-4 h-4 text-large bold">
-              ☰
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="nav-bottom-row">
-        <div class="deployment-found hide-mobile">
-          <div class="flex-row">
-              <a class="nav-link link-${window.location.pathname === "/admin/auctions"
-        ? `stay"`
-        : `leave" href="/admin/auctions"`
-      }>Browse Auctions</a>
-              <a class="nav-link link-${window.location.pathname === "/tokens"
-        ? `stay"`
-        : `leave" href="/admin/tokens"`
-      }>My NFTs</a>
-              <a class="nav-link link-${window.location.pathname === "/admin"
-        ? `stay"`
-        : `leave" href="/admin/admin"`
-      }>Admin Panel</a>
-              <a class="nav-link link-${window.location.pathname === "/" ? `stay"` : `leave" href="/admin/deployment"`
-      }>Deployment</a>
-              <a class="nav-link link-${window.location.pathname === "/admin/tokenSale"
-        ? `stay"`
-        : `leave" href="/admin/tokenSale"`
-      }>Token Sale</a>
-              <a class="nav-link link-${window.location.pathname === "/admin/tokenAuctions"
-        ? `stay"`
-        : `leave" href="/admin/tokenAuctions"`
-      }>Token Auctions</a>
-          </div>
-        </div>
-      </div>
-    </div>`;
+      <section class='header-right'>
+        ${button.outerHTML}
+      </section>`;
 
     this.addTitleAndFavicon();
-
-    this.addCSS("global");
-    this.addCSS(
-      window.location.pathname.substring(7) === ""
-        ? "deployment"
-        : window.location.pathname.substring(7)
-    );
-    console.log( window.location.pathname.substring(7) === ""
-    ? "deployment"
-    : window.location.pathname.substring(7));
-    document.body.insertBefore(navBar, document.body.children[0]);
-
-    metamaskTrigger = document.getElementById("metamask-enable");
-    metamaskTrigger.onclick = enableMetamask;
-
-    const hamburgerMenu = document.querySelector('.metamask-found > .gbm-btn')
-    const menus = document.querySelector('.nav-bottom-row > .deployment-found')
-    window.addEventListener('click', () => {
-      menus.classList.add('hide-mobile')
-    })
-    hamburgerMenu.addEventListener('click', (e) => {
-      e.stopPropagation()
-      menus.classList.toggle('hide-mobile')
-    })
+    document.body.insertBefore(header, document.body.children[0]);
+    if (!connectedAddress) {
+      metamaskTrigger = document.getElementById("connect-wallet");
+      metamaskTrigger.onclick = enableMetamask;
+    }
   },
   addFreezeBar: function() {
     let freeze = document.createElement("div");
@@ -380,27 +374,18 @@ const pageInitializer = {
       (_element) => (_element.hidden = false)
     );
 
-    document.getElementById(
-      "active-metamask-account"
-    ).innerHTML = `Connected: ${shortenAddress(
-      window.ethereum.selectedAddress
-    )}`;
-    const forceBtn = document.getElementById("metamask-refresh");
-    forceBtn.onclick = chainZigZag;
-
-    var nftFetcher = document.createElement("script");
+    const nftFetcher = document.createElement("script");
     nftFetcher.type = "text/javascript";
     nftFetcher.src = `/dapp/scripts/nftjsonfetcher.js`;
 
     document.body.appendChild(nftFetcher);
 
-    var script = document.createElement("script");
+    const script = document.createElement("script");
     script.type = "text/javascript";
     script.src = `scripts/${window.location.pathname.substring(6) === ""
       ? "deployment"
       : window.location.pathname.substring(6)
       }.js`;
-
     document.body.appendChild(script);
   },
 
@@ -460,7 +445,7 @@ const pageInitializer = {
 };
 
 const shortenAddress = (_address) =>
-  `${_address.substring(0, 6)}...${_address.substring(_address.length - 6)}`;
+  `${_address.substring(0, 6)}...${_address.substring(_address.length - 4)}`;
 
 /*
   Basic function to request MetaMask access, then add & switch the network to the
@@ -489,26 +474,30 @@ async function requestChainAddition(_chain) {
       params: [{ chainId: _chain }],
     });
   } catch (err) {
-    console.log("chain")
     // This error code indicates that the chain has not been added to MetaMask
-    if (err.code === 4902) {
+    // metamask mobile returns -32603 instead of 4902 if chain doesnt exist
+    if (err.code === 4902 || err.code == -32603) {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
           {
-            chainName: "Moonbase Alpha Testnet",
+            chainName: "mbase",
             chainId: `0x507`,
             nativeCurrency: {
               name: "fETH",
               decimals: 18,
               symbol: "fETH",
             },
-            rpcUrls: ["https://rpc.api.moonbase.moonbeam.network/"],
+            rpcUrls: ["https://moonbase-alpha.blastapi.io/10dcf058-6db2-4fa6-a575-7a46cbc3aed2"]
           },
         ],
       });
+      enableMetamask();
+      chainZigZag()
     } else if (err.code === 4001) {
-      throw new Error("Chain change rejected!");
+      alert("Chain change rejected!");
+    } else {
+      alert(JSON.stringify(err))
     }
   }
 }

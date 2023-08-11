@@ -37,7 +37,7 @@ header {
   display: flex;
   padding: 2.5rem 0 3rem;
   flex-wrap: wrap;
-  gap: 2rem;
+  row-gap: 2rem;
   justify-content: space-between;
 }
 
@@ -53,9 +53,8 @@ header {
 
 .header-right {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
-  width: fit-content;
 }
 
 .header-right > div {
@@ -151,12 +150,13 @@ header {
     transform-origin: bottom center;
     margin-top: 55%;
   }
-  .header-left,
+  .header-left {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
   .header-right {
     width: 100%;
-  }
-  .header-left {
-    grid-template-columns: 1fr;
+    justify-content: center;
   }
   .header-logo-container {
     margin-left: -2.5rem;
