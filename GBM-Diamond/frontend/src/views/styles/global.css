@@ -770,7 +770,7 @@ input:checked + .gbm-slider:before {
 .footer {
   width: 100%;
   text-align: left;
-  margin-top: 5rem;
+  margin: 5rem 0;
 }
 
 .section-divider-bottom {
@@ -782,7 +782,6 @@ input:checked + .gbm-slider:before {
   font-weight: 700;
   font-size: 20px;
   color: var(--primary);
-  margin-top: 3rem;
 }
 
 .description-display-mobile {
@@ -1007,8 +1006,6 @@ input:checked + .gbm-slider:before {
   .page-content,
   .copyright {
     padding: 0 3rem;
-  }
-  .copyright {
     font-size: 14px;
   }
   .freeze-container {

@@ -164,41 +164,9 @@ const pageInitializer = {
         </div>
       </section>
 
-<<<<<<< HEAD
-            <button class="gbm-btn transparent rounded w-4 h-4 text-large bold">
-              ☰
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="nav-bottom-row">
-        <div class="deployment-found hide-mobile">
-          <div class="flex-row">
-     <a class="nav-link link-${window.location.pathname === "/ido"
-        ? `stay"`
-        : `leave" href="/ido"`
-      }>IDO Home</a>
-
-
-                           <a class="nav-link link-${window.location.pathname === "/v1/dapp/tokens"
-        ? `stay"`
-        : `leave" href="/v1/dapp/tokens"`
-      }>My Bids</a>
-             
-              <a class="nav-link link-${window.location.pathname === "/v1/dapp/tokenAuctions"
-        ? `stay"`
-        : `leave" href="/v1/dapp/tokenAuctions"`
-      }>Token Auctions</a>
-
-          </div>
-        </div>
-      </div>
-    </div>`;
-=======
       <section class='header-right'>
         ${button.outerHTML}
       </section>`;
->>>>>>> refs/remotes/origin/recovery
 
     this.addTitleAndFavicon();
     document.body.insertBefore(header, document.body.children[0]);
