@@ -196,7 +196,7 @@ const pageInitializer = {
           </div>
           <p class="freeze-text">Please check your MetaMask.</p>
           <button 
-            class="gbm-btn red h-3" style="width: 40%; font-size: x-large;"
+            class="gbm-btn red h-3"
             onClick="onClosePopup()"
           >Cancel</button>
         </div>

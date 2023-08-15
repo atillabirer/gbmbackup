@@ -208,7 +208,7 @@ const pageInitializer = {
         <div class="freeze-box">
           <img src="./images/metamask-fox.svg" />
           Please check your MetaMask plugin!
-          <button class="gbm-btn red h-3" style="width: 40%; font-size: x-large;">Cancel</button>
+          <button class="gbm-btn red h-3">Cancel</button>
         </div>
       </div>
     `;
