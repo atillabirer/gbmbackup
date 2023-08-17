@@ -23,6 +23,27 @@ window.COLOR_PALLETE = {
   selection: "#FACF5A"
 }
 
+function onClosePopup() {
+  const freezerIcon = document.querySelector(".freeze-icon")
+  freezerIcon.innerHTML = `
+    <div class="lds-roller" style="margin:0;">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>`
+
+  const freezerText = document.querySelector(".freeze-text")
+  freezerText.classList.remove('error')
+  freezerText.innerText = 'Please check your MetaMask.'
+
+  const freezer = document.querySelector(".freeze");
+  freezer.style.display = "none";
+}
 
 // Functions to run on page load
 
@@ -35,8 +56,6 @@ const pageInitializer = {
     this.addFooter();
     this.addFreezeBar();
     await this.checkDeploymentState();
-    // this.handleMobile();
-    // this.setUpMetamask();
     await this.isConnected();
     this.loadCustomCss(deploymentStatus);
 
@@ -100,6 +119,7 @@ const pageInitializer = {
     const logoImg = document.querySelector("#nav-bar-logo");
     logoImg.src = data.logo || logo;
   },
+
   addNavBar: function() {
     const pathname = window.location.pathname
     const connectedAddress = window.ethereum.selectedAddress
@@ -170,50 +190,42 @@ const pageInitializer = {
       </section>`;
 
     this.addTitleAndFavicon();
-
-    this.addCSS("global");
-    this.addCSS(
-      window.location.pathname.substring(9) === ""
-        ? "deployment"
-        : window.location.pathname.substring(9)
-    );
-    console.log( window.location.pathname.substring(9) === ""
-    ? "deployment"
-    : window.location.pathname.substring(9 ));
-    document.body.insertBefore(navBar, document.body.children[0]);
-
-    metamaskTrigger = document.getElementById("metamask-enable");
-    metamaskTrigger.onclick = enableMetamask;
-
-    const hamburgerMenu = document.querySelector('.metamask-found > .gbm-btn')
-    const menus = document.querySelector('.nav-bottom-row > .deployment-found')
-    window.addEventListener('click', () => {
-      menus.classList.add('hide-mobile')
-    })
-    hamburgerMenu.addEventListener('click', (e) => {
-      e.stopPropagation()
-      menus.classList.toggle('hide-mobile')
-    })
     document.body.insertBefore(header, document.body.children[0]);
     if (!connectedAddress) {
       metamaskTrigger = document.getElementById("connect-wallet");
       metamaskTrigger.onclick = enableMetamask;
     }
   },
+
   addFreezeBar: function() {
     let freeze = document.createElement("div");
     freeze.classList.add("freeze");
+    document.body.insertBefore(freeze, document.body.children[0]);
     freeze.innerHTML = `
       <div class="freeze-container">
         <div class="freeze-box">
-          <img src="./images/metamask-fox.svg" />
-          Please check your MetaMask plugin!
-          <button class="gbm-btn red h-3">Cancel</button>
+          <div class="freeze-icon">
+            <div class="lds-roller" style="margin:0;">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <p class="freeze-text">Please check your MetaMask.</p>
+          <button 
+            class="gbm-btn red h-3"
+            onClick="onClosePopup()"
+          >Cancel</button>
         </div>
       </div>
     `;
-    document.body.insertBefore(freeze, document.body.children[0]);
   },
+
   addTitleAndFavicon: function() {
     var favicon = document.createElement("link");
     favicon.type = "image/x-icon";
@@ -225,28 +237,16 @@ const pageInitializer = {
     pageTitle.innerHTML = "Stellaswap GBM dApp";
     document.head.appendChild(pageTitle);
   },
-  addCSS: function(_filename) {
-    var pageCSS = document.createElement("link");
-    pageCSS.type = "text/css";
-    pageCSS.rel = "stylesheet";
-    pageCSS.href = `styles/${_filename}.css`;
 
-    document.head.appendChild(pageCSS);
-  },
   addFooter: function() {
     let footer = document.createElement("div");
     footer.classList.add("footer");
-    // footer.innerHTML = `
-    //   <a href="https://www.gbm.auction" target="_blank">
-    //     <img src="images/PoweredbyGBMBadge-LightGreen.svg" loading="lazy" alt="" class="copyright">
-    //   </a>
-    //   <div class="copyright">© Copyright 2018-2023 Stellaswap. All rights reserved.</div>
-    // `;
     footer.innerHTML = `
       <div class="copyright">© Copyright 2018-2023 Stellaswap. All rights reserved.</div>
     `;
     document.body.appendChild(footer);
   },
+
   setUpMetamask: function() {
     if (ethereum && ethereum.on) {
       const handleConnect = () => {
@@ -264,7 +264,7 @@ const pageInitializer = {
 
       ethereum.on("connect", handleConnect);
       ethereum.on("disconnect", () => {
-        // window.location.reload();
+        window.location.reload();
       });
       ethereum.on("chainChanged", handleChainChanged);
       ethereum.on("accountsChanged", handleAccountsChanged);
@@ -278,6 +278,7 @@ const pageInitializer = {
       };
     }
   },
+
   isConnected: async function() {
     const accounts = await ethereum.request({ method: "eth_accounts" });
     if (accounts.length) {
@@ -313,6 +314,7 @@ const pageInitializer = {
       console.log("Metamask is not connected");
     }
   },
+  
   loadContracts: async function() {
     abis = await (await fetch("/v1/admin/config/abis.json")).json();
 
@@ -598,7 +600,7 @@ function timecalc(x, v) {
   return Math.floor(x / v);
 }
 
-function copyToClipboard() {
+function copyUrlPathToClipboard() {
   navigator.clipboard.writeText(window.location);
 }
 
@@ -922,14 +924,23 @@ const creationFunctions = {
 };
 
 async function freezeAndSendToMetamask(_functionCall) {
-  let freezer = document.getElementsByClassName("freeze")[0];
+  const freezer = document.querySelector(".freeze");
   freezer.style.display = "block";
+
+  const freezerIcon = document.querySelector(".freeze-icon")
+  const freezerText = document.querySelector(".freeze-text")
   await _functionCall()
     .then(() => {
-      freezer.style.display = "none";
+      freezerText.classList.remove('error')
+      freezerText.innerText = 'Transaction success.'
     })
-    .catch(() => {
-      freezer.style.display = "none";
+    .catch(e => {
+      console.error(e)
+      freezerText.classList.add('error')
+      freezerText.innerText = e.message
+    })
+    .finally(() => {
+      freezerIcon.innerHTML = '<img src="/v1/dapp/images/metamask-fox.svg" />'
     });
 }
 

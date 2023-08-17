@@ -119,6 +119,7 @@ const pageInitializer = {
     const logoImg = document.querySelector("#nav-bar-logo");
     logoImg.src = data.logo || logo;
   },
+
   addNavBar: function() {
     const pathname = window.location.pathname
     const connectedAddress = window.ethereum.selectedAddress
@@ -175,6 +176,7 @@ const pageInitializer = {
       metamaskTrigger.onclick = enableMetamask;
     }
   },
+
   addFreezeBar: function() {
     let freeze = document.createElement("div");
     freeze.classList.add("freeze");
@@ -202,8 +204,8 @@ const pageInitializer = {
         </div>
       </div>
     `;
-    // document.body.insertBefore(freeze, document.body.children[0]);
   },
+
   addTitleAndFavicon: function() {
     var favicon = document.createElement("link");
     favicon.type = "image/x-icon";
@@ -215,20 +217,16 @@ const pageInitializer = {
     pageTitle.innerHTML = "Stellaswap GBM dApp";
     document.head.appendChild(pageTitle);
   },
+
   addFooter: function() {
     let footer = document.createElement("div");
     footer.classList.add("footer");
-    // footer.innerHTML = `
-    //   <a href="https://www.gbm.auction" target="_blank">
-    //     <img src="images/PoweredbyGBMBadge-LightGreen.svg" loading="lazy" alt="" class="copyright">
-    //   </a>
-    //   <div class="copyright">© Copyright 2018-2023 Stellaswap. All rights reserved.</div>
-    // `;
     footer.innerHTML = `
       <div class="copyright">© Copyright 2018-2023 Stellaswap. All rights reserved.</div>
     `;
     document.body.appendChild(footer);
   },
+
   setUpMetamask: function() {
     if (ethereum && ethereum.on) {
       const handleConnect = () => {
@@ -260,6 +258,7 @@ const pageInitializer = {
       };
     }
   },
+
   isConnected: async function() {
     const accounts = await ethereum.request({ method: "eth_accounts" });
     if (accounts.length) {
@@ -295,6 +294,7 @@ const pageInitializer = {
       console.log("Metamask is not connected");
     }
   },
+
   loadContracts: async function() {
     abis = await (await fetch("/v1/dapp/config/abis.json")).json();
 
@@ -515,7 +515,7 @@ async function requestChainAddition(_chain) {
 async function chainZigZag() {
   await requestChainAddition(`0x1`);
   await requestChainAddition(`0x507`);
-  //window.location.reload();
+  window.location.reload();
 }
 
 /*
