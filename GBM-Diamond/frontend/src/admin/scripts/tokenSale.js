@@ -18,7 +18,7 @@ generateSelectDropdown(
     return currency.currencyName;
   }),
   Object.values(deploymentStatus.registeredCurrencies).map(
-    (currency) => currency.currencyDisplayName
+    (currency) => currency.currencyDisplayName  
   ),
   () => { }
 );
@@ -79,7 +79,7 @@ function initPage() {
   );
 
   document.getElementById("generate-btn").onclick = function(event) {
-    let saleNumber = parseInt(document.getElementById("token-for-sale").value);
+    let saleNumber = BigInt(document.getElementById("token-for-sale").value);
     let smallest = parseFloat(
       document.getElementById("smallest-bundle-display").value
     );
@@ -111,13 +111,13 @@ function initPage() {
     let distDisplay = document.getElementById("token-dist");
     distDisplay.innerHTML = "";
 
-    let totalation = 0;
-    let aucCount = 0;
+    let totalation = BigInt(0);
+    let aucCount = BigInt(0);
     for (i = 0; i < distribution[0].length; i++) {
       distDisplay.innerHTML += `Bundle #${i + 1}: ${distribution[1][i]
         } copies of a coupon for #${distribution[0][i]} tokens </br>`;
-      totalation += distribution[0][i] * distribution[1][i];
-      aucCount += distribution[1][i];
+      totalation += BigInt(distribution[0][i]) * BigInt(distribution[1][i]);
+      aucCount += BigInt(distribution[1][i]);
     }
     distDisplay.innerHTML +=
       "</br> Total: " +
@@ -146,7 +146,7 @@ function initPage() {
       _plotData.push({
         bundleSize: resu.saleBundling[i].value,
         shareOfTokens:
-          (resu.saleBundling[i].amount * resu.saleBundling[i].value) /
+          (resu.saleBundling[i].amount * BigInt(resu.saleBundling[i].value)) /
           saleNumber,
       });
     }
@@ -244,7 +244,7 @@ const tokenSaleProcess = {
     deploymentStatus.ERC1155.push(newTokenContract.options.address.toLowerCase());
     deploymentStatus.tokens.push(newTokenContract.options.address.toLowerCase());
     localStorage.setItem("deploymentStatus", JSON.stringify(deploymentStatus));
-    fetch("/v1/updateConfig", {
+    await fetch("/v1/updateConfig", {
       method: "POST",
       body: JSON.stringify(deploymentStatus),
       headers: {
@@ -252,6 +252,23 @@ const tokenSaleProcess = {
       }
       
     })
+    await fetch('/v1/projectDetails',{
+      method: "POST",
+      body: JSON.stringify({
+        tokencontractaddress: newTokenContract.options.address.toLowerCase(),
+        product: document.getElementById("token-product").value,
+        overview: document.getElementById("token-description").value,
+        businessmodel: document.getElementById("token-business-model").value,
+        team: document.getElementById("token-team").value,
+        tokenutility: document.getElementById("token-utility").value,
+        milestones: document.getElementById("token-milestones").value,
+        documents: document.getElementById("token-documents").value,
+
+      }),
+      headers: {
+        "Content-Type":"application/json"
+      }
+    });
   },
   mintBatchFromDistribution: async function(
     _distributionTokenIds,
@@ -321,6 +338,13 @@ const tokenSaleProcess = {
     }
 
     console.log(presetNumber);
+    console.log( tokenIDUnroll,
+      tokenAmountUnroll,
+      deploymentStatus.tokens[deploymentStatus.tokens.length - 1],
+      presetNumber,
+      getStartTime(),
+      currencyIndexToUse,
+      window.ethereum.selectedAddress);
 
     await freezeAndSendToMetamask(() =>
       gbmContracts.methods
@@ -363,14 +387,14 @@ const tokenSaleProcess = {
     );
     _gridElement.appendChild(
       this.generateBundleGridItem(
-        `${_bundle.totalAuctions - _bundle.createdAuctions}`,
+        `${BigInt(_bundle.totalAuctions) - BigInt(_bundle.createdAuctions)}`,
         false
       )
     );
     _gridElement.appendChild(
       this.generateBundleGridItem(
         `<input id="auction-amount-input-${_bundle.size
-        }" class="gbm-input-boxed h-2 bundle-grid-input" onchange="tokenSaleProcess.calculateSelectedAuctions()" value="${_bundle.totalAuctions - _bundle.createdAuctions
+        }" class="gbm-input-boxed h-2 bundle-grid-input" onchange="tokenSaleProcess.calculateSelectedAuctions()" value="${BigInt(_bundle.totalAuctions) - BigInt(_bundle.createdAuctions)
         }"/>`,
         false
       )

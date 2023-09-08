@@ -12,6 +12,7 @@ import cookieParser from "cookie-parser";
 import { sign, verify, decode } from "jsonwebtoken";
 import { writeFile } from "fs/promises";
 import { Client } from 'pg'
+import cors from "cors";
 
 
 const secret = "supersecuresecret";
@@ -20,6 +21,8 @@ const expirationDate = 6 * 60 * 60 * 1000; //6 hours in millisec
 const sockServer = new WebSocketServer({ port: 444 });
 
 const app: Application = express();
+app.use(cors());
+app.options('*',cors());
 app.use(express.json({ limit: "12mb" }));
 app.use(express.urlencoded({ extended: false }))
 
@@ -142,6 +145,49 @@ app.get("/dapp/:view", async (req: Request, res: Response) => {
     res.status(200).sendFile(path.join(__dirname + "/views/tokenAuctions.html"));
   }
 });
+
+app.post("/projectDetails",async(req: Request, res: Response) => {
+
+  const client = new Client({ user: "graph-node", password: "let-me-in", database: "ido", host: "localhost", port: 5432 });
+  await client.connect();
+  const qres = await client.query("insert into project_details(tokencontractaddress,product,overview,businessmodel,team,tokenutility,milestones,documents) \
+  VALUES($1::text,$2::text,$3::text,$4::text,$5::text,$6::text,$7::text,$8::text)", [
+    req.body.tokencontractaddress, //tokencontractaddress
+    req.body.product,
+    req.body.overview, //overview
+    req.body.businessmodel, //businessmodel
+    req.body.team, //team
+    req.body.tokenutility, //tokenutility
+    req.body.milestones, //milestones
+    req.body.documents //documents
+  ]);
+  console.log([
+    req.body.tokencontractaddress, //tokencontractaddress
+    req.body.product,
+    req.body.overview, //overview
+    req.body.businessmodel, //businessmodel
+    req.body.team, //team
+    req.body.tokenutility, //tokenutility
+    req.body.milestones, //milestones
+    req.body.documents //documents
+  ]);
+  res.json({ message: "ok" });
+
+});
+
+app.get('/projectDetails/:tokenContractAddress',async(req: Request, res: Response) => {
+  if(req.params?.tokenContractAddress) {
+
+  const client = new Client({ user: "graph-node", password: "let-me-in", database: "ido", host: "localhost", port: 5432 });
+  await client.connect();
+  const qres = await client.query("SELECT * FROM project_details WHERE tokencontractaddress = $1::text", [
+    req.params.tokenContractAddress
+  ]);
+  res.json(qres.rows);
+  } else {
+    res.status(404).json({"error":"Not Found"});
+  }
+})
 
 app.post('/login/password', async (req, res) => {
   //if the username and password is good, generate a jwt token and then put it in users cookies

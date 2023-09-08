@@ -64,13 +64,13 @@ function getSalesDistributionMath(_totalTokens, _distrib, _whale_factor){
     let saleBundling = [];
     //console.log(_distrib);
     for(let i = _distrib.length-1; i >= 0; i--){
-        let localAmount = Math.floor( //Must be an integer
-                _whale_factor * ( //Control how top-heavy the distribution is
-                        reminder_tokens / _distrib[i]
-                    )
-            );
+        let localAmount =  //Must be an integer
+                BigInt(_whale_factor * 10) * ( //Control how top-heavy the distribution is
+                        reminder_tokens / BigInt(_distrib[i])
+                    ) / 10n;
+            
         saleBundling.push({"value":_distrib[i], "amount":localAmount});
-        reminder_tokens -= localAmount * _distrib[i];
+        reminder_tokens -= localAmount * BigInt( _distrib[i]);
     }
 
     /*
@@ -91,9 +91,14 @@ function getSalesDistributionMath(_totalTokens, _distrib, _whale_factor){
             if(localWhale > 1){
                 localWhale = 1;
             }
-            let localAmount = Math.floor((localWhale * reminder_tokens / _distrib[i]));
+
+            console.log("localWhale:",localWhale);
+            console.log("bigintilocalwhale",BigInt(Math.floor(localWhale * 10)));   
+            console.log("remindertokens",reminder_tokens);
+            console.log("_distrib[i]",_distrib[i]);
+            let localAmount = BigInt(Math.floor(localWhale * 10)) * BigInt(reminder_tokens) / BigInt(_distrib[i]) / 10n;
             saleBundling[saleBundling.length - i - 1] = ({"value":_distrib[i], "amount":(localAmount + saleBundling[saleBundling.length - i - 1].amount)});
-            reminder_tokens -= localAmount * _distrib[i];
+            reminder_tokens -= localAmount * BigInt(_distrib[i]);
     
         }
     }
