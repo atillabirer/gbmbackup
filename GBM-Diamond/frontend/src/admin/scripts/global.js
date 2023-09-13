@@ -300,7 +300,7 @@ const pageInitializer = {
       const chainIdInUse = await web3.eth.getChainId();
 
       if (
-        chainIdInUse === 31337 &&
+        chainIdInUse === 13337 &&
         localStorage.getItem("metamaskNonce") === null
       ) {
         const nonceCheck = web3.eth
@@ -397,7 +397,7 @@ const pageInitializer = {
     }
   },
 
-  enableWeb3DependentElements: async function() {
+  async enableWeb3DependentElements() {
     // Toggle between no-metamask/metamask states
     Array.from(document.getElementsByClassName("metamask-missing")).forEach(
       (_element) => (_element.hidden = true)
@@ -486,7 +486,7 @@ const shortenAddress = (_address) =>
 function enableMetamask() {
   ethereum
     .request({ method: "eth_requestAccounts" })
-    .then(() => this.enableWeb3DependentElements())
+    .then(() => pageInitializer.enableWeb3DependentElements())
     .catch((err) => {
       console.error(err);
     });
@@ -972,7 +972,7 @@ async function storeNewDeploymentStatus(data) {
 
 async function storeNewDeploymentStatusInServerMemory(jsonDeploymentStatus) {
   try {
-    const response = await fetch("/updateDeploymentStatus", {
+    const response = await fetch("/v1/updateDeploymentStatus", {
       method: "POST",
       body: jsonDeploymentStatus,
       headers: new Headers({ "Content-Type": "application/json" }),

@@ -26,10 +26,10 @@ generateSelectDropdown(
 initPage();
 
 function initPage() {
-  document.getElementById("smallest-bundle").value = 3;
-  document.getElementById("smallest-bundle-display").value = 10;
-  document.getElementById("biggest-bundle").value = 11;
-  document.getElementById("biggest-bundle-display").value = 5000;
+  document.getElementById("smallest-bundle").value = 10;
+  document.getElementById("smallest-bundle-display").value = 1000;
+  document.getElementById("biggest-bundle").value = 14;
+  document.getElementById("biggest-bundle-display").value = 2000000;
   document.getElementById("whale-factor").value = 50;
   document.getElementById("whale-factor-display").value = 50;
 
@@ -221,7 +221,7 @@ const tokenSaleProcess = {
       arguments: [
         document.getElementById("token-name").value,
         document.getElementById("token-symbol").value,
-        document.getElementById("token-uri").value,
+        'https://fuchsia-melted-crocodile-498.mypinata.cloud/ipfs/QmT4CG7FaCPsqoYUbtC9g68vjj6gSMg1i1TrNSGpv5PDSu',
         !document.getElementById("disable-transferability").checked,
         diamondAddress,
       ],
@@ -255,6 +255,9 @@ const tokenSaleProcess = {
     await fetch('/v1/projectDetails',{
       method: "POST",
       body: JSON.stringify({
+        image: document.getElementById("token-image").value,
+        symbol: document.getElementById("token-symbol").value,
+        name: document.getElementById("token-name").value,
         tokencontractaddress: newTokenContract.options.address.toLowerCase(),
         product: document.getElementById("token-product").value,
         overview: document.getElementById("token-description").value,
@@ -263,6 +266,7 @@ const tokenSaleProcess = {
         tokenutility: document.getElementById("token-utility").value,
         milestones: document.getElementById("token-milestones").value,
         documents: document.getElementById("token-documents").value,
+
 
       }),
       headers: {

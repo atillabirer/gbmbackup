@@ -150,8 +150,8 @@ app.post("/projectDetails",async(req: Request, res: Response) => {
 
   const client = new Client({ user: "graph-node", password: "let-me-in", database: "ido", host: "localhost", port: 5432 });
   await client.connect();
-  const qres = await client.query("insert into project_details(tokencontractaddress,product,overview,businessmodel,team,tokenutility,milestones,documents) \
-  VALUES($1::text,$2::text,$3::text,$4::text,$5::text,$6::text,$7::text,$8::text)", [
+  const qres = await client.query("insert into project_details(tokencontractaddress,product,overview,businessmodel,team,tokenutility,milestones,documents,title,image,symbol) \
+  VALUES($1::text,$2::text,$3::text,$4::text,$5::text,$6::text,$7::text,$8::text,$9::text,$10::text,$11::text)", [
     req.body.tokencontractaddress, //tokencontractaddress
     req.body.product,
     req.body.overview, //overview
@@ -159,18 +159,14 @@ app.post("/projectDetails",async(req: Request, res: Response) => {
     req.body.team, //team
     req.body.tokenutility, //tokenutility
     req.body.milestones, //milestones
-    req.body.documents //documents
+    req.body.documents, //documents
+    req.body.name,
+    req.body.image,
+    req.body.symbol
   ]);
-  console.log([
-    req.body.tokencontractaddress, //tokencontractaddress
-    req.body.product,
-    req.body.overview, //overview
-    req.body.businessmodel, //businessmodel
-    req.body.team, //team
-    req.body.tokenutility, //tokenutility
-    req.body.milestones, //milestones
-    req.body.documents //documents
-  ]);
+  console.log(
+    req.body
+  );
   res.json({ message: "ok" });
 
 });

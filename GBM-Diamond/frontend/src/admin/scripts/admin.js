@@ -17,6 +17,7 @@ const adminAddressActions = {
   },
   setGBMAdmin: async function () {
     // ToDo: Add valid hex check (although the contract side also does one too)
+    console.log(document.getElementById("new-admin-address").value)
     await freezeAndSendToMetamask(() =>
       gbmContracts.methods
         .setGBMAdmin(document.getElementById("new-admin-address").value)

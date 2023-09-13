@@ -178,7 +178,7 @@
               </div>
             </div>
 
-            <div class="step-option">
+            <div class="step-option" hidden>
               <div class="gbm-header step-option-label">Metadata JSON</div>
               <div class="step-option-fields">
                 <textarea
@@ -196,9 +196,9 @@
               </button>
             </div>
             <div class="step-option">
-              <div class="gbm-header step-option-label">JSON hosted file</div>
+              <div class="gbm-header step-option-label" hidden>JSON hosted file</div>
               <div class="step-option-fields">
-                <p class="step-description">
+                <p class="step-description" hidden>
                   Please upload the JSON file generated above (e.g. IPFS, your
                   own website), and enter the URL below.
                 </p>
@@ -207,6 +207,7 @@
                   class="gbm-input-boxed width-limiter"
                   type="text"
                   placeholder="Enter URL"
+                  hidden
                 />
               </div>
             </div>
