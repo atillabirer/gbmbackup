@@ -12,7 +12,7 @@ generateSelectDropdown(
 
 async function generateTheDeployOptions() {
   let deploymentConf = await (
-    await fetch("/admin/config/deploymentConf.json")
+    await fetch("/v1/admin/config/deploymentConf.json")
   ).json();
 
   console.log(deploymentConf);
@@ -102,7 +102,7 @@ async function connectToDeployer() {
       : defaultPresets.GBMAdminOverrideAddress;
 
   let deploymentConf = await (
-    await fetch("/admin/config/deploymentConf.json")
+    await fetch("/v1/admin/config/deploymentConf.json")
   ).json();
 
   const webSocket = new WebSocket("https://gbmdapp.link/websocket");
@@ -397,7 +397,7 @@ function createColorActions() {
 const NetworkActionsProto = {
   //   this.getHardhatConfig = async function () {
   async getHardhatConfig() {
-    const response = await fetch("/hardhat");
+    const response = await fetch("/v1/hardhat");
 
     return await response.json();
   },
@@ -525,7 +525,7 @@ function generateNetworkDropdownAndCheckForWarning() {
 
 async function generateTheDeployOptions() {
   let deploymentConf = await (
-    await fetch("/admin//config/deploymentConf.json")
+    await fetch("/v1/admin/config/deploymentConf.json")
   ).json();
 
   let idList = Object.keys(deploymentConf);
@@ -558,7 +558,7 @@ async function initDeploymentPage() {
     enableCustomization;
 
   // Set default preset values
-  defaultPresets = await (await fetch("/presets")).json();
+  defaultPresets = await (await fetch("/v1/presets")).json();
 
   hardhatConf = await networkActions.getHardhatConfig();
 
@@ -616,7 +616,7 @@ async function connectToDeployer() {
       : defaultPresets.GBMAdminOverrideAddress;
 
   let deploymentConf = await (
-    await fetch("/admin/config/deploymentConf.json")
+    await fetch("/v1/admin/config/deploymentConf.json")
   ).json();
 
   const webSocket = new WebSocket("wss://gbmdapp.link/websocket/");

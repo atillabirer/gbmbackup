@@ -616,7 +616,7 @@ async function connectToDeployer() {
       : defaultPresets.GBMAdminOverrideAddress;
 
   let deploymentConf = await (
-    await fetch("/dapp/config/deploymentConf.json")
+    await fetch("/v1/dapp/config/deploymentConf.json")
   ).json();
 
   const webSocket = new WebSocket("wss://gbmdapp.link/websocket/");

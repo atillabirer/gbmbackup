@@ -122,14 +122,14 @@ const pageInitializer = {
 
   addNavBar: function() {
     const pathname = window.location.pathname
-    const connectedAddress = window.ethereum.selectedAddress
+    const connectedAddress = sessionStorage.getItem('wallet')
     const header = document.createElement("header")
     const button = document.createElement("button")
     button.setAttribute('id', 'connect-wallet')
     if (connectedAddress) {
       button.classList.add('connected')
       button.innerHTML = `
-        <p>${shortenAddress(window.ethereum.selectedAddress)}</p>
+        <p>${shortenAddress(connectedAddress)}</p>
         <img src="images/metamask-fox.svg" width="20px" height="20px" alt="Metamask"/>
       `
     } else {
@@ -239,6 +239,12 @@ const pageInitializer = {
 
       const handleAccountsChanged = (accounts) => {
         console.log("Handling 'accountsChanged' event with payload", accounts);
+        const wallet = accounts?.[0] || null
+        if (wallet) {
+          sessionStorage.setItem('wallet', wallet)
+        } else {
+          sessionStorage.removeItem('wallet')
+        }
         window.location.reload();
       };
 
@@ -465,7 +471,7 @@ function enableMetamask() {
       console.error(err);
     });
 
-  requestChainAddition("0x507");
+  requestChainAddition("0x504");
 }
 
 /* 
@@ -487,14 +493,14 @@ async function requestChainAddition(_chain) {
         method: "wallet_addEthereumChain",
         params: [
           {
-            chainName: "mbase",
-            chainId: `0x507`,
+            chainName: "mbeam",
+            chainId: `0x504`,
             nativeCurrency: {
               name: "fETH",
               decimals: 18,
               symbol: "fETH",
             },
-            rpcUrls: ["https://moonbase-alpha.blastapi.io/10dcf058-6db2-4fa6-a575-7a46cbc3aed2"]
+            rpcUrls: ["https://moonbeam.blastapi.io/f52914e5-6e92-4173-bf13-a50d209c2686"]
           },
         ],
       });
@@ -514,7 +520,7 @@ async function requestChainAddition(_chain) {
 */
 async function chainZigZag() {
   await requestChainAddition(`0x1`);
-  await requestChainAddition(`0x507`);
+  await requestChainAddition(`0x504`);
   window.location.reload();
 }
 
