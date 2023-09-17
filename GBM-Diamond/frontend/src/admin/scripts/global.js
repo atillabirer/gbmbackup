@@ -483,10 +483,10 @@ const shortenAddress = (_address) =>
   Basic function to request MetaMask access, then add & switch the network to the
   local hardhat node for convenience.
 */
-function enableMetamask() {
+ function enableMetamask() {
   ethereum
     .request({ method: "eth_requestAccounts" })
-    .then(() => pageInitializer.enableWeb3DependentElements())
+    .then(() => this.enableWeb3DependentElements())
     .catch((err) => {
       console.error(err);
     });

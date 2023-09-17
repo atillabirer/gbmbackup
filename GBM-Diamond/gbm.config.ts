@@ -34,9 +34,9 @@ let confi =  {
     },
     {
         "currencyIndex": 2,
-        "currencyName": "fUSD",
-        "currencyDisplayName": "Fake Dollar (fUSD)",                                           // To be used by your frontend, not used otherwise
-        "currencyAddress": "0x0000000000000000000000000000000000000001", //Address 0x0 for the base currency, ERC20 token address if not
+        "currencyName": "STELLA",
+        "currencyDisplayName": "StellaSwap (STELLA)",                                           // To be used by your frontend, not used otherwise
+        "currencyAddress": "0x0E358838ce72d5e61E0018a2ffaC4bEC5F4c88d2", //Address 0x0 for the base currency, ERC20 token address if not
     }],
 }
 
